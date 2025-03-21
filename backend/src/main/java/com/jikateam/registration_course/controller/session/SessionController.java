@@ -1,18 +1,17 @@
 package com.jikateam.registration_course.controller.session;
 
 import com.jikateam.registration_course.dto.request.CreateSessionRequest;
+import com.jikateam.registration_course.dto.request.UpdateSessionInfoRequest;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.DataResponse;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.service.session.CreateSingleSessionService;
+import com.jikateam.registration_course.service.session.UpdateSessionInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,6 +22,7 @@ public class SessionController {
     public static final String SESSION_API_URL = "/api/v1/sessions";
 
     private final CreateSingleSessionService createSingleSessionService;
+    private final UpdateSessionInfoService updateSessionInfoService;
 
     @PostMapping
     public DataResponse<SessionInfoResponse> createSingleSession
@@ -39,6 +39,20 @@ public class SessionController {
                 .data(response)
                 .build();
     }
+
+    @PutMapping("/{id}")
+    public DataResponse<SessionInfoResponse> createSingleSession
+            (@RequestBody @Valid UpdateSessionInfoRequest request, @PathVariable("id") Integer sessionId) {
+
+        SessionInfoResponse response = updateSessionInfoService.update(request, sessionId);
+        CodeResponse codeResponse = CodeResponse.UPDATE_SESSION_SUCCESSFULLY;
+        return DataResponse.<SessionInfoResponse>builder()
+                .code(codeResponse.getCode())
+                .message(codeResponse.getMessage())
+                .data(response)
+                .build();
+    }
+
 
 
 }

@@ -7,7 +7,7 @@ import com.jikateam.registration_course.entity.Course;
 import java.time.LocalDate;
 
 public record SessionInfoResponse (
-        String sessionId,
+        Integer sessionId,
         CourseInfoResponse courseInfo,
         String clazzId,
         Integer year,

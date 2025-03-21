@@ -18,9 +18,12 @@ public enum CodeResponse {
     LOGOUT_SUCCESSFULLY(1000, HttpStatus.OK, "Logout successfully"),
     RESET_PASSWORD_SUCCESSFULLY(1000, HttpStatus.OK, "Reset password successfully"),
     CREATE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Create a session successfully"),
+    UPDATE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Update a session successfully"),
 
 
-    DISSATISFIED_SCHEDULE(9057, HttpStatus.CONFLICT, "Dissatisfied time for schedule"),
+    SESSION_IS_CONFLICT(9063, HttpStatus.CONFLICT, "Session is opening for register or teaching"),
+    SESSION_NOT_FOUND(9061, HttpStatus.NOT_FOUND, "Session does not exist"),
+    DISSATISFIED_SCHEDULE(9059, HttpStatus.CONFLICT, "Dissatisfied time for schedule"),
     DISSATISFIED_TEACHER(9057, HttpStatus.CONFLICT, "Dissatisfied teacher for schedule"),
     NO_SESSION_DATE_PROVIDED(9054, HttpStatus.CONFLICT, "No session date provided"),
     DISSATISFIED_CAPACITY(9051, HttpStatus.CONFLICT, "Dissatisfied capacity of place"),
