@@ -11,6 +11,7 @@ import com.jikateam.registration_course.repository.ClassRepository;
 import com.jikateam.registration_course.repository.CourseRepository;
 import com.jikateam.registration_course.repository.OpenSessionRegistrationRepository;
 import com.jikateam.registration_course.repository.SessionRepository;
+import com.jikateam.registration_course.validator.SessionValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

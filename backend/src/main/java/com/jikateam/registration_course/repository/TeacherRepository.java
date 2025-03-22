@@ -12,6 +12,6 @@ import java.util.Set;
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher, String> {
 
-    @EntityGraph(attributePaths = {"courses"})
+    @EntityGraph(attributePaths = {"courses", "schedules"})
     List<Teacher> findByTeacherIdIn(Set<String> ids);
 }

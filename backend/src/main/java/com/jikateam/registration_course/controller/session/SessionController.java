@@ -10,6 +10,7 @@ import com.jikateam.registration_course.dto.response.SchedulesOnSessionResponse;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.service.session.CreateSingleSessionService;
 import com.jikateam.registration_course.service.session.DeleteSessionService;
+import com.jikateam.registration_course.service.session.UpdateScheduleService;
 import com.jikateam.registration_course.service.session.UpdateSessionInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class SessionController {
     private final CreateSingleSessionService createSingleSessionService;
     private final UpdateSessionInfoService updateSessionInfoService;
     private final DeleteSessionService deleteSessionService;
+    private final UpdateScheduleService updateScheduleService;
 
     @PostMapping
     public DataResponse<SessionInfoResponse> createSingleSession
@@ -63,13 +65,14 @@ public class SessionController {
 
     @PutMapping("/{id}/schedules")
     public DataResponse<SchedulesOnSessionResponse> updateScheduleOnSession
-            (@RequestBody @Valid UpdateSchedulesRequest request) {
+            (@PathVariable("id") Integer sessionId, @RequestBody @Valid UpdateSchedulesRequest request) {
 
+        SchedulesOnSessionResponse response = updateScheduleService.updateSchedule(request, sessionId);
         CodeResponse codeResponse = CodeResponse.UPDATE_SESSION_SUCCESSFULLY;
         return DataResponse.<SchedulesOnSessionResponse>builder()
                 .code(codeResponse.getCode())
                 .message(codeResponse.getMessage())
-                .data(null)
+                .data(response)
                 .build();
     }
 

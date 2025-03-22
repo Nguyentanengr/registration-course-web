@@ -1,10 +1,10 @@
 package com.jikateam.registration_course.dto.response;
 
-import java.util.List;
+import java.util.Set;
 
 public record SchedulesOnSessionResponse(
 
         String sessionId,
-        List<ScheduleResponse> schedules
+        Set<ScheduleResponse> schedules
 ) {
 }

@@ -22,10 +22,11 @@ public enum CodeResponse {
     DELETE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a session successfully"),
 
 
+    SCHEDULE_NOT_FOUND(9065, HttpStatus.CONFLICT, "Schedule does not exist"),
     SESSION_IS_CONFLICT(9063, HttpStatus.CONFLICT, "Session is opening for register or teaching"),
     SESSION_NOT_FOUND(9061, HttpStatus.NOT_FOUND, "Session does not exist"),
     DISSATISFIED_SCHEDULE(9059, HttpStatus.CONFLICT, "Dissatisfied time for schedule"),
-    DISSATISFIED_TEACHER(9057, HttpStatus.CONFLICT, "Dissatisfied teacher for schedule"),
+    DISSATISFIED_TEACHER(9057, HttpStatus.CONFLICT, "Dissatisfied teacher for schedule or course"),
     NO_SESSION_DATE_PROVIDED(9054, HttpStatus.CONFLICT, "No session date provided"),
     DISSATISFIED_CAPACITY(9051, HttpStatus.CONFLICT, "Dissatisfied capacity of place"),
     INVALID_TEACHER_FOR_COURSE(9049, HttpStatus.CONFLICT, "Teacher is not matches"),

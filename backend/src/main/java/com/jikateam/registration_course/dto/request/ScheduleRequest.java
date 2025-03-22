@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public record ScheduleRequest(
 
-        String scheduleId,
+        Integer scheduleId,
 
         @NotBlank(message = "COURSE_ID_IS_BLANK")
         @NotNull(message = "COURSE_ID_IS_BLANK")
