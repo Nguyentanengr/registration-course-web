@@ -1,4 +1,4 @@
-package com.jikateam.registration_course.dto.request;
+package com.jikateam.registration_course.dto.response;
 
 public record ClazzInfoResponse(
 

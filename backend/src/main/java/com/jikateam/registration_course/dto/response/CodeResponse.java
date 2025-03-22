@@ -19,6 +19,7 @@ public enum CodeResponse {
     RESET_PASSWORD_SUCCESSFULLY(1000, HttpStatus.OK, "Reset password successfully"),
     CREATE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Create a session successfully"),
     UPDATE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Update a session successfully"),
+    DELETE_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a session successfully"),
 
 
     SESSION_IS_CONFLICT(9063, HttpStatus.CONFLICT, "Session is opening for register or teaching"),
