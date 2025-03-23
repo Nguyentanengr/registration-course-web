@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 public enum CodeResponse {
 
+    SUCCESS(1000, HttpStatus.OK, ""),
     USER_CREATED(1000, HttpStatus.OK, ""),
     REGISTER_SUCCESSFULLY(1000, HttpStatus.OK, "Register account successfully"),
     EMAIL_HAS_BEEN_SEND(1000, HttpStatus.OK, "Email has been sent"),
