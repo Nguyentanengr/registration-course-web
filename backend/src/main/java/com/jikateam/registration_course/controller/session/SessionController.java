@@ -1,25 +1,18 @@
 package com.jikateam.registration_course.controller.session;
 
-import com.jikateam.registration_course.dto.request.CreateSessionRequest;
-import com.jikateam.registration_course.dto.request.DeleteSessionListRequest;
-import com.jikateam.registration_course.dto.request.UpdateSchedulesRequest;
-import com.jikateam.registration_course.dto.request.UpdateSessionInfoRequest;
-import com.jikateam.registration_course.dto.response.CodeResponse;
-import com.jikateam.registration_course.dto.response.DataResponse;
-import com.jikateam.registration_course.dto.response.SchedulesOnSessionResponse;
-import com.jikateam.registration_course.dto.response.SessionInfoResponse;
-import com.jikateam.registration_course.service.session.CreateSingleSessionService;
-import com.jikateam.registration_course.service.session.DeleteSessionService;
-import com.jikateam.registration_course.service.session.UpdateScheduleService;
-import com.jikateam.registration_course.service.session.UpdateSessionInfoService;
+import com.jikateam.registration_course.constant.SessionStatus;
+import com.jikateam.registration_course.dto.request.*;
+import com.jikateam.registration_course.dto.response.*;
+import com.jikateam.registration_course.service.session.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.classfile.Code;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,6 +26,68 @@ public class SessionController {
     private final UpdateSessionInfoService updateSessionInfoService;
     private final DeleteSessionService deleteSessionService;
     private final UpdateScheduleService updateScheduleService;
+    private final SearchFilterSessionService searchFilterSessionService;
+
+    @GetMapping
+    public DataResponse<PageSessionInfoResponse> getAllSessions(
+            @RequestParam(defaultValue = "") String searchKey,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer semester,
+            @RequestParam(required = false) String classId,
+            @RequestParam(required = false) String courseId,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(required = false) String fieldSorted,
+            @RequestParam(required = false) String sorter
+    ) {
+
+        Map<String, String> mapFieldSorted = new HashMap<>();
+        mapFieldSorted.put("classId", "clazz.clazzId");
+        mapFieldSorted.put("courseId", "course.courseId");
+        mapFieldSorted.put("year", "year");
+        mapFieldSorted.put("semester", "semester");
+
+        String convertFieldSorted = mapFieldSorted.get(fieldSorted) == null
+                ? mapFieldSorted.get("classId")
+                : mapFieldSorted.get(fieldSorted);
+
+        SessionStatus convertStatus = status == null ? null
+                : status == 0 ? SessionStatus.PENDING
+                : status == 1 ? SessionStatus.TEACHING
+                : status == 2 ? SessionStatus.COMPLETED
+                : null;
+
+        String convertSorter = sorter != null
+                && sorter.equalsIgnoreCase("desc") ? "desc" : "asc";
+
+        SessionFilterRequest request = SessionFilterRequest.builder()
+                .searchKey(searchKey)
+                .year(year)
+                .semester(semester)
+                .clazzId(classId)
+                .courseId(courseId)
+                .status(convertStatus)
+                .page(page)
+                .size(size)
+                .fieldSorted(convertFieldSorted)
+                .sorter(convertSorter)
+                .build();
+
+        PageRequest pageRequest = PageRequest.of(request.page(), request.size()
+                , request.sorter().equals("asc")
+                        ? Sort.by(request.fieldSorted()).ascending()
+                        : Sort.by(request.fieldSorted()).descending()
+        );
+
+        log.info("Param: {}", request);
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+
+        return DataResponse.<PageSessionInfoResponse>builder()
+                .code(codeResponse.getCode())
+                .data(searchFilterSessionService.getAllSession(request, pageRequest))
+                .build();
+    }
 
     @PostMapping
     public DataResponse<SessionInfoResponse> createSingleSession
@@ -97,9 +152,4 @@ public class SessionController {
                 .message(codeResponse.getMessage())
                 .build();
     }
-
-
-
-
-
 }
