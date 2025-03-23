@@ -36,7 +36,8 @@ public class SecurityConfig {
             "/api/v1/auth/refresh-token", "api/v1/auth/reset-password/require-otp",
             "/api/v1/auth/logout", "api/v1/auth/hello",
             "/api/v1/sessions", "api/v1/sessions/*",
-            "/api/v1/sessions/*/schedules"
+            "/api/v1/sessions/*/schedules", "/api/v1/places/*",
+            "/api/v1/places", "/api/v1/teachers", "api/v1/teachers/?"
 
     };
 
