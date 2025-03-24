@@ -27,6 +27,9 @@ public class StudyPlanDetail {
     @Column(nullable = false)
     private Integer semester;
 
+    @Column(nullable = false)
+    private Integer year;
+
     @OneToOne(mappedBy = "studyPlanDetail")
     private PeriodDetail periodDetail;
 
@@ -37,6 +40,7 @@ public class StudyPlanDetail {
                 ", studyPlan=" + studyPlan +
                 ", course=" + course +
                 ", semester=" + semester +
+                ", year=" + year +
                 ", periodDetail=" + periodDetail +
                 '}';
     }

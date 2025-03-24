@@ -20,7 +20,7 @@ public interface CourseRepository extends JpaRepository<Course, String> {
             "OR c.courseId LIKE CONCAT('%', :searchKey, '%') " +
             "OR c.courseName LIKE CONCAT('%', :searchKey, '%')) " +
             "AND (:classId IS NULL OR :year IS NULL OR :semester IS NULL " +
-            "OR (cl.clazzId = :classId AND spd.semester = ((:year - cl.startYear) * 2 + :semester)))")
+            "OR (cl.clazzId = :classId AND spd.semester = :semester AND spd.year = (:year - cl.startYear) + 1))")
     List<Course> getAllByFilter(
             @Param("searchKey") String searchKey,
             @Param("classId") String classId,
