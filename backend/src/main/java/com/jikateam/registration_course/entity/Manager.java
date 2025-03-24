@@ -25,7 +25,7 @@ public class Manager {
     private Account account;
 
     @OneToMany(mappedBy = "manager")
-    private Set<RegistrationPhase> registrationPhases;
+    private Set<OpenSessionRegistration> openSessionRegistrations;
 
     @Override
     public String toString() {

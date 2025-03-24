@@ -29,6 +29,9 @@ public class Clazz {
     @Column(name = "current_semester", nullable = false)
     private Integer currentSemester;
 
+    @Column(name = "current_year", nullable = false)
+    private Integer currentYear;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "education_program_id")
     private EducationProgram educationProgram;

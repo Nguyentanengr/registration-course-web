@@ -22,7 +22,7 @@ public class OpenSessionRegistration {
     @Column(name = "open_session_registration_id")
     private Integer openSessionRegistrationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
     private Session session;
 
@@ -31,6 +31,10 @@ public class OpenSessionRegistration {
 
     @Column(nullable = false)
     private RegistrationStatus status; // 0: pending, 1: open, 2: close, 3: cancel, 4: conform
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registration_phase_id")
