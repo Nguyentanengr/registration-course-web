@@ -73,4 +73,10 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
             @Param("type") PhaseType type,
             @Param("year") Integer year
     );
+
+    @Query("SELECT p FROM RegistrationPhase p " +
+            "WHERE p.registrationPhaseId IN :phaseIds " +
+            "AND p.openTime > CURRENT_TIMESTAMP"
+    )
+    List<RegistrationPhase> findAllInvalidPhaseToOpen(@Param("phaseIds") Iterable<Integer> phaseIds);
 }
