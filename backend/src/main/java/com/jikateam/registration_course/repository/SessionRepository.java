@@ -55,4 +55,33 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     );
 
 
+    @Query("SELECT s FROM Session s " +
+            "WHERE " +
+            "(:searchKey IS NULL OR s.clazz.clazzId LIKE %:searchKey% " +
+            "OR s.course.courseId LIKE %:searchKey% " +
+            "OR s.course.courseName LIKE %:searchKey%) " +
+            "AND (:year IS NULL OR s.year = :year) " +
+            "AND (:semester IS NULL OR s.semester = :semester) " +
+            "AND (:clazzId IS NULL OR s.clazz.clazzId = :clazzId) " +
+            "AND s.status = 0 " +
+            "AND s.startDate > CURRENT_TIMESTAMP " +
+            "AND NOT EXISTS (SELECT o FROM OpenSessionRegistration o WHERE o.session= s) " +
+            "ORDER BY s.startDate DESC"
+    )
+    List<Session> findAllAbleSessionByFilter(
+            @Param("searchKey") String searchKey,
+            @Param("year") Integer year,
+            @Param("semester") Integer semester,
+            @Param("clazzId") String clazzId
+    );
+
+
+    @Query("SELECT s FROM Session s " +
+            "WHERE s.sessionId IN :sessionIds " +
+            "AND s.status = 0 " +
+            "AND s.startDate > CURRENT_TIMESTAMP " +
+            "AND NOT EXISTS (SELECT o FROM OpenSessionRegistration o WHERE o.session = s)"
+    )
+    List<Session> findAllInvalidSessionToOpenByIds(@Param("sessionIds") Iterable<Integer> sessionIds);
+
 }

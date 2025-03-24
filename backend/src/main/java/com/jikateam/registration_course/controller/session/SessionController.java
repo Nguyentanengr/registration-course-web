@@ -5,6 +5,7 @@ import com.jikateam.registration_course.dto.request.*;
 import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.service.session.*;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -27,6 +29,7 @@ public class SessionController {
     private final DeleteSessionService deleteSessionService;
     private final UpdateScheduleService updateScheduleService;
     private final SearchFilterSessionService searchFilterSessionService;
+    private final FilterAbleOpenSessionService filterAbleOpenSessionService;
 
     @GetMapping
     public DataResponse<PageSessionInfoResponse> getAllSessions(
@@ -86,6 +89,26 @@ public class SessionController {
         return DataResponse.<PageSessionInfoResponse>builder()
                 .code(codeResponse.getCode())
                 .data(searchFilterSessionService.getAllSession(request, pageRequest))
+                .build();
+    }
+
+    @GetMapping("/able-open")
+    public DataResponse<List<SessionInfoResponse>> getAbleSessionByFilter(
+            @RequestParam(defaultValue = "") String searchKey,
+            @RequestParam(defaultValue = "") String classId
+    ) {
+
+        List<SessionInfoResponse> responses = filterAbleOpenSessionService
+                .getAbleOpenSessionByFilter(searchKey, classId);
+
+        log.info("Response for searchKey = {}, classId = {}: {}",
+                searchKey, classId, responses.stream().map(SessionInfoResponse::sessionId));
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+
+        return DataResponse.<List<SessionInfoResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
                 .build();
     }
 
@@ -152,4 +175,6 @@ public class SessionController {
                 .message(codeResponse.getMessage())
                 .build();
     }
+
+
 }

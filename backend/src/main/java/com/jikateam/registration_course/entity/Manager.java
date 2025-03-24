@@ -20,7 +20,7 @@ public class Manager {
     @Column(name = "manager_name", nullable = false, length = 255)
     private String managerName;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
