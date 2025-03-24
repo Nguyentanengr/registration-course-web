@@ -19,10 +19,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = CourseController.SESSION_API_URL)
+@RequestMapping(value = CourseController.COURSE_API_URL)
 public class CourseController {
 
-    public static final String SESSION_API_URL = "/api/v1/courses";
+    public static final String COURSE_API_URL = "/api/v1/courses";
     private final CourseService courseService;
 
     @GetMapping

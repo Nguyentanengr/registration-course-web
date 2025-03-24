@@ -39,7 +39,7 @@ public class SecurityConfig {
             "/api/v1/sessions/*/schedules", "/api/v1/places/*",
             "/api/v1/places", "/api/v1/teachers", "api/v1/teachers/*",
             "/api/v1/courses", "/api/v1/courses/*", "/api/v1/phases",
-            "/api/v1/phases/*"
+            "/api/v1/phases/*", "/api/v1/classes", "/api/v1/classes/*"
 
     };
 

@@ -20,11 +20,11 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = TeacherController.SESSION_API_URL)
+@RequestMapping(value = TeacherController.TEACHER_API_URL)
 public class TeacherController {
 
 
-    public static final String SESSION_API_URL = "/api/v1/teachers";
+    public static final String TEACHER_API_URL = "/api/v1/teachers";
     private final TeacherService teacherService;
 
     @GetMapping
