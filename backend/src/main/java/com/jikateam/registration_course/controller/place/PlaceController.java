@@ -17,10 +17,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = PlaceController.SESSION_API_URL)
+@RequestMapping(value = PlaceController.PLACE_API_URL)
 public class PlaceController {
 
-    public static final String SESSION_API_URL = "/api/v1/places";
+    public static final String PLACE_API_URL = "/api/v1/places";
     private final PlaceService placeService;
 
     @GetMapping

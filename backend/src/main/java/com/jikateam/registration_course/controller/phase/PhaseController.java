@@ -19,10 +19,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = PhaseController.SESSION_API_URL)
+@RequestMapping(value = PhaseController.PHASE_API_URL)
 public class PhaseController {
 
-    public static final String SESSION_API_URL = "/api/v1/phases";
+    public static final String PHASE_API_URL = "/api/v1/phases";
     private final PhaseService phaseService;
 
 
