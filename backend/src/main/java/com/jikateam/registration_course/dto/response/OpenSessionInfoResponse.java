@@ -10,7 +10,7 @@ public record OpenSessionInfoResponse(
         PhaseResponse registrationPhase,
         RegistrationStatus status,
         SessionInfoResponse session,
-        Integer numberOfRegister
+        Long numberOfRegister
 
 ) {
 }
