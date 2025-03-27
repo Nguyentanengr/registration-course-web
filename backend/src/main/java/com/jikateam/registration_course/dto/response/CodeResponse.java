@@ -24,8 +24,13 @@ public enum CodeResponse {
     DELETE_PHASE_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a phase successfully"),
     DELETE_PHASE_LIST_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a phase list successfully"),
     CREATE_OPEN_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Create a open session list successfully"),
+    DELETE_OPEN_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a open session list successfully"),
+    UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY(1000, HttpStatus.OK, "Update a open session status successfully"),
 
 
+    SESSIONS_NOT_PROVIDED(9099, HttpStatus.BAD_REQUEST, "Open session list is not provided"),
+    OPEN_SESSIONS_CANNOT_DELETE(9099, HttpStatus.BAD_REQUEST, "One of the open sessions is not ready for deletion"),
+    OPEN_SESSION_CANNOT_DELETE(9097, HttpStatus.BAD_REQUEST, "Open session cannot delete"),
     INVALID_MANAGER_TO_OPEN(9095, HttpStatus.CONFLICT, "One of the managers is invalid"),
     INVALID_PHASE_TO_OPEN(9093, HttpStatus.CONFLICT, "One of the registration phases is invalid"),
     INVALID_SESSION_TO_OPEN(9091, HttpStatus.CONFLICT, "One of the sessions is invalid"),

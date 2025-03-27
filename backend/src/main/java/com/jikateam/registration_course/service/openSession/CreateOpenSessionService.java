@@ -93,17 +93,8 @@ public class CreateOpenSessionService {
         log.info("Saved open sessions: {}", savedOpenSessions.stream().map(OpenSessionRegistration::getOpenSessionRegistrationId));
 
         // trả về với record
-        return savedOpenSessions.stream().map(openSession -> {
-            OpenSessionInfoResponse response = openSessionConverter
-                    .mapToOpenSessionInfoResponse(openSession);
-
-            return OpenSessionInfoResponse.builder()
-                    .openSessionRegistrationId(response.openSessionRegistrationId())
-                    .session(response.session())
-                    .registrationPhase(response.registrationPhase())
-                    .status(response.status())
-                    .numberOfRegister(0)
-                    .build();
-        }).toList();
+        return savedOpenSessions.stream().map(openSession ->
+            openSessionConverter.mapToNewOpenSessionInfoResponse(openSession, 0L)
+        ).toList();
     }
 }

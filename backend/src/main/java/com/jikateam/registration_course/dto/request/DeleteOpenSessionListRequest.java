@@ -4,8 +4,9 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record DeletePhaseListRequest(
-        @NotNull(message = "PHASES_NOT_PROVIDED")
-        List<Integer> phaseIds
+public record DeleteOpenSessionListRequest(
+
+        @NotNull(message = "SESSIONS_NOT_PROVIDED")
+        List<Integer> openSessionIds
 ) {
 }
