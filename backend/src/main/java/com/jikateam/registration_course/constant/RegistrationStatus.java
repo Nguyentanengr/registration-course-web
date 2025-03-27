@@ -5,5 +5,7 @@ public enum RegistrationStatus {
     OPEN,
     CLOSE,
     CANCEL,
-    CONFORM,
+    CONFIRM,
+    TEACHING,
+    COMPLETED
 }

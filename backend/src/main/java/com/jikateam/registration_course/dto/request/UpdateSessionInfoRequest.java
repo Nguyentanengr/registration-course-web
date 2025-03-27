@@ -1,10 +1,9 @@
 package com.jikateam.registration_course.dto.request;
 
-import com.jikateam.registration_course.constant.SessionStatus;
 import jakarta.validation.constraints.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public record UpdateSessionInfoRequest(
 
@@ -30,10 +29,7 @@ public record UpdateSessionInfoRequest(
 
         @NotBlank(message = "CLASS_ID_IS_BLANK")
         @NotNull(message = "CLASS_ID_IS_BLANK")
-        String clazzId,
-
-        @NotNull(message = "STATUS_IS_BLANK")
-        SessionStatus status
+        String clazzId
 ) {
 
         @AssertTrue(message = "INVALID_STUDENT_QUANTITY")

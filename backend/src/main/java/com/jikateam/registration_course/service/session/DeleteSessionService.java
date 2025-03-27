@@ -1,6 +1,5 @@
 package com.jikateam.registration_course.service.session;
 
-import com.jikateam.registration_course.constant.SessionStatus;
 import com.jikateam.registration_course.dto.request.DeleteSessionListRequest;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.entity.Session;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -28,8 +26,9 @@ public class DeleteSessionService {
         Session session = sessionRepository.findSessionWithOpenSession(id)
                 .orElseThrow(() -> new BusinessException(CodeResponse.DELETE_SESSION_SUCCESSFULLY));
 
-        boolean isOpening = !session.getOpenSessionRegistrations().isEmpty()
-                || session.getStatus() != SessionStatus.PENDING;
+        // Session chưa được mở bao giờ thì mới được xóa
+        boolean isOpening = session.getOpenSessionRegistration() != null;
+
         if (isOpening) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
         sessionRepository.delete(session);
@@ -41,8 +40,7 @@ public class DeleteSessionService {
                 .findAllSessionWithOpenSessionByIds(request.sessionIds());
 
         sessions.forEach(session -> {
-            boolean isOpening = !session.getOpenSessionRegistrations().isEmpty()
-                    || session.getStatus() != SessionStatus.PENDING;
+            boolean isOpening = session.getOpenSessionRegistration() != null;
             if (isOpening) {
                 log.info("Exist conflicted session: {}", session.getSessionId());
                 throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);

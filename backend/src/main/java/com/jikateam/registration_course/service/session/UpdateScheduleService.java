@@ -1,6 +1,5 @@
 package com.jikateam.registration_course.service.session;
 
-import com.jikateam.registration_course.constant.SessionStatus;
 import com.jikateam.registration_course.converter.ScheduleConverter;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.request.ScheduleRequest;
@@ -42,8 +41,7 @@ public class UpdateScheduleService {
                 .orElseThrow(() -> new BusinessException(CodeResponse.SESSION_NOT_FOUND));
 
         // IMPORTANT: can change schedule of session when session's status is pending (not teaching)
-        boolean isOpeningOrTeaching = openSessionRegistrationRepository.existBySession(sessionId)
-                || session.getStatus() != SessionStatus.PENDING;
+        boolean isOpeningOrTeaching = openSessionRegistrationRepository.existBySession(sessionId);
         if (isOpeningOrTeaching) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
         // preload entity

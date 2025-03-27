@@ -1,11 +1,10 @@
 package com.jikateam.registration_course.dto.response;
 
 import com.jikateam.registration_course.constant.RegistrationStatus;
-import org.springframework.web.bind.support.SessionStatus;
 
 import java.time.LocalDate;
 
-public record SessionInfoResponse (
+public record SessionNoStatusResponse(
         Integer sessionId,
         CourseInfoResponse courseInfo,
         String clazzId,
@@ -15,7 +14,6 @@ public record SessionInfoResponse (
         Integer minStudents,
         Integer maxStudents,
         LocalDate startDate,
-        LocalDate endDate,
-        RegistrationStatus status
+        LocalDate endDate
 ) {
 }

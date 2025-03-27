@@ -9,7 +9,7 @@ public record OpenSessionInfoResponse(
         String openSessionRegistrationId,
         PhaseResponse registrationPhase,
         RegistrationStatus status,
-        SessionInfoResponse session,
+        SessionNoStatusResponse session,
         Long numberOfRegister
 
 ) {

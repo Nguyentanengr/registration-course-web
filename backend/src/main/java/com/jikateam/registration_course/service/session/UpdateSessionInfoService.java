@@ -1,6 +1,6 @@
 package com.jikateam.registration_course.service.session;
 
-import com.jikateam.registration_course.constant.SessionStatus;
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.request.UpdateSessionInfoRequest;
 import com.jikateam.registration_course.dto.response.CodeResponse;
@@ -11,7 +11,6 @@ import com.jikateam.registration_course.repository.ClassRepository;
 import com.jikateam.registration_course.repository.CourseRepository;
 import com.jikateam.registration_course.repository.OpenSessionRegistrationRepository;
 import com.jikateam.registration_course.repository.SessionRepository;
-import com.jikateam.registration_course.validator.SessionValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,10 +36,8 @@ public class UpdateSessionInfoService {
         Session session = sessionRepository.findSessionForUpdate(sessionId)
                 .orElseThrow(() -> new BusinessException(CodeResponse.SESSION_NOT_FOUND));
 
-        // can not update when status != 'pending' and session is opening
-        // (it mean sessionId is contained Open Session Registration)
-        boolean isOpening = openSessionRegistrationRepository.existBySession(sessionId)
-                || session.getStatus() != SessionStatus.PENDING;
+        // can not update when sessionId is contained Open Session Registration
+        boolean isOpening = openSessionRegistrationRepository.existBySession(sessionId);
         if (isOpening) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
 
@@ -84,10 +81,11 @@ public class UpdateSessionInfoService {
         if (course != null) session.setCourse(course);
 
         Session updatedSession = sessionRepository.save(session);
+        RegistrationStatus status = sessionRepository.findStatusById(sessionId);
         log.info("Updated session: {}", updatedSession.getSessionId());
         log.info("Updated session detail: {}", updatedSession);
 
-        return sessionConverter.mapToSessionInfoResponse(updatedSession);
+        return sessionConverter.mapToSessionInfoResponse(updatedSession, status);
     }
 
     private void validateCapacity(UpdateSessionInfoRequest request, Set<Place> places) {

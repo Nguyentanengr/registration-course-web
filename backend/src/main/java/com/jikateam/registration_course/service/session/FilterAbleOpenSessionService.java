@@ -1,7 +1,6 @@
 package com.jikateam.registration_course.service.session;
 
 
-import com.jikateam.registration_course.constant.SessionStatus;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.entity.Clazz;
@@ -42,6 +41,7 @@ public class FilterAbleOpenSessionService {
         }
 
         return sessionRepository.findAllAbleSessionByFilter(searchKey, year, semester, clazzId)
-                .stream().map(sessionConverter::mapToSessionInfoResponse).toList();
+                .stream().map(session -> sessionConverter.mapToSessionInfoResponse(session
+                        , session.getOpenSessionRegistration().getStatus())).toList();
     }
 }

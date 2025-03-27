@@ -1,7 +1,5 @@
 package com.jikateam.registration_course.dto.request;
 
-import com.jikateam.registration_course.constant.SessionStatus;
-import com.jikateam.registration_course.validator.ValidYear;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;

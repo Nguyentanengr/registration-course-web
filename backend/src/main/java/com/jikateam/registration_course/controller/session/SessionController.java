@@ -1,16 +1,16 @@
 package com.jikateam.registration_course.controller.session;
 
-import com.jikateam.registration_course.constant.SessionStatus;
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.dto.request.*;
 import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.service.session.*;
 import jakarta.validation.Valid;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public class SessionController {
             @RequestParam(required = false) Integer semester,
             @RequestParam(required = false) String classId,
             @RequestParam(required = false) String courseId,
-            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer status, // 0
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
             @RequestParam(required = false) String fieldSorted,
@@ -55,12 +55,6 @@ public class SessionController {
                 ? mapFieldSorted.get("classId")
                 : mapFieldSorted.get(fieldSorted);
 
-        SessionStatus convertStatus = status == null ? null
-                : status == 0 ? SessionStatus.PENDING
-                : status == 1 ? SessionStatus.TEACHING
-                : status == 2 ? SessionStatus.COMPLETED
-                : null;
-
         String convertSorter = sorter != null
                 && sorter.equalsIgnoreCase("desc") ? "desc" : "asc";
 
@@ -70,7 +64,6 @@ public class SessionController {
                 .semester(semester)
                 .clazzId(classId)
                 .courseId(courseId)
-                .status(convertStatus)
                 .page(page)
                 .size(size)
                 .fieldSorted(convertFieldSorted)
@@ -88,7 +81,7 @@ public class SessionController {
 
         return DataResponse.<PageSessionInfoResponse>builder()
                 .code(codeResponse.getCode())
-                .data(searchFilterSessionService.getAllSession(request, pageRequest))
+                .data(searchFilterSessionService.getAllSession(request, status, pageRequest))
                 .build();
     }
 

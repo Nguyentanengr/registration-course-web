@@ -1,6 +1,6 @@
 package com.jikateam.registration_course.service.session;
 
-import com.jikateam.registration_course.constant.SessionStatus;
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.converter.ScheduleConverter;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.request.CreateSessionRequest;
@@ -68,7 +68,6 @@ public class CreateSingleSessionService {
         Session session = sessionConverter.mapToSessionEntity(request);
         session.setCourse(course);
         session.setClazz(clazz);
-        session.setStatus(SessionStatus.PENDING);
         session.setStartDate(request.scheduleRequests().stream()
                 .map(ScheduleRequest::startDate)
                 .min(LocalDate::compareTo)
@@ -94,10 +93,12 @@ public class CreateSingleSessionService {
         scheduleRepository.saveAll(schedules);
         Session savedSession = sessionRepository.save(session);
 
+        RegistrationStatus status = sessionRepository.findStatusById(session.getSessionId());
 
         log.info("Session created: {}", savedSession.getSessionId());
 
-        return sessionConverter.mapToSessionInfoResponse(session);
+
+        return sessionConverter.mapToSessionInfoResponse(session, status);
     }
 
     private void validateSchedule(CreateSessionRequest request) {

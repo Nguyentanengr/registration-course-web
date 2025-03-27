@@ -1,7 +1,5 @@
 package com.jikateam.registration_course.entity;
 
-import com.jikateam.registration_course.constant.SessionStatus;
-import com.jikateam.registration_course.dto.request.CreateSessionRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,14 +48,11 @@ public class Session {
     @JoinColumn(name = "class_id")
     private Clazz clazz;
 
-    @Column(nullable = false)
-    private SessionStatus status; // 0: pending, 1: teaching, 2: completed
-
     @OneToMany(mappedBy = "session")
     private Set<Schedule> schedules;
 
-    @OneToMany(mappedBy = "session")
-    private Set<OpenSessionRegistration> openSessionRegistrations;
+    @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OpenSessionRegistration openSessionRegistration;
 
     @Override
     public String toString() {
@@ -70,7 +65,6 @@ public class Session {
                 ", minStudents=" + minStudents +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", status=" + status +
                 '}';
     }
 

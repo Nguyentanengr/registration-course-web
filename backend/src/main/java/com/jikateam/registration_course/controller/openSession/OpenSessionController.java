@@ -30,7 +30,7 @@ public class OpenSessionController {
     private final DeleteOpenSessionService deleteOpenSessionService;
 
     @GetMapping
-    public DataResponse<List<OpenSessionInfoResponse>> getAllSessionByPhaseAndClass(
+    public DataResponse<List<OpenSessionInfoResponse>> getAllOpenSessionByPhaseAndClass(
             @RequestParam(defaultValue = "") String searchKey,
             @RequestParam(required = false) Integer phaseId,
             @RequestParam(required = false) String classId

@@ -22,8 +22,8 @@ public class OpenSessionRegistration {
     @Column(name = "open_session_registration_id")
     private Integer openSessionRegistrationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id", nullable = false, unique = true)
     private Session session;
 
     @Column(name = "created_at")

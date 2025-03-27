@@ -1,5 +1,6 @@
 package com.jikateam.registration_course.service.session;
 
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.request.SessionFilterRequest;
 import com.jikateam.registration_course.dto.response.PageSessionInfoResponse;
@@ -24,16 +25,19 @@ public class SearchFilterSessionService {
 
     public PageSessionInfoResponse getAllSession(
             SessionFilterRequest request,
+            Integer status,
             Pageable pageable
     ) {
 
         Page<Session> page = sessionRepository.findAllSessionByFilter(
                 request.searchKey(), request.year(), request.semester()
-                , request.clazzId(), request.courseId(), request.status()
+                , request.clazzId(), request.courseId(), status
                 , pageable
         );
 
-        List<SessionInfoResponse> sessionInfoResponses = page.map(sessionConverter::mapToSessionInfoResponse)
+        List<SessionInfoResponse> sessionInfoResponses = page.map(session
+                        -> sessionConverter.mapToSessionInfoResponse(session
+                        , session.getOpenSessionRegistration().getStatus()))
                 .stream().toList();
 
         return PageSessionInfoResponse.builder()

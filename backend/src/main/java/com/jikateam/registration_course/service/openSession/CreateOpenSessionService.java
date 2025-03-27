@@ -53,9 +53,9 @@ public class CreateOpenSessionService {
                 .collect(Collectors.toSet());
 
         // Tải trước dữ liệu kèm điều kiện
-        Map<Integer, Session> sessionMap = sessionRepository.findAllInvalidSessionToOpenByIds(sessionIds).stream()
+        Map<Integer, Session> sessionMap = sessionRepository.findAllValidSessionToOpenByIds(sessionIds).stream()
                 .collect(Collectors.toMap(Session::getSessionId, s -> s));
-        Map<Integer, RegistrationPhase> phaseMap = phaseRepository.findAllInvalidPhaseToOpen(phaseIds).stream()
+        Map<Integer, RegistrationPhase> phaseMap = phaseRepository.findAllValidPhaseToOpen(phaseIds).stream()
                 .collect(Collectors.toMap(RegistrationPhase::getRegistrationPhaseId, p -> p));
         Map<String, Manager> managerMap = managerRepository.findAllActiveManagerByIds(managerIds).stream()
                 .collect(Collectors.toMap(Manager::getManagerId, m -> m));

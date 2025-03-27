@@ -78,5 +78,5 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
             "WHERE p.registrationPhaseId IN :phaseIds " +
             "AND p.openTime > CURRENT_TIMESTAMP"
     )
-    List<RegistrationPhase> findAllInvalidPhaseToOpen(@Param("phaseIds") Iterable<Integer> phaseIds);
+    List<RegistrationPhase> findAllValidPhaseToOpen(@Param("phaseIds") Iterable<Integer> phaseIds);
 }
