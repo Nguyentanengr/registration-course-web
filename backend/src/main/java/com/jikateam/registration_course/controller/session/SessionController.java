@@ -95,7 +95,7 @@ public class SessionController {
                 .getAbleOpenSessionByFilter(searchKey, classId);
 
         log.info("Response for searchKey = {}, classId = {}: {}",
-                searchKey, classId, responses.stream().map(SessionInfoResponse::sessionId));
+                searchKey, classId, responses.stream().map(SessionInfoResponse::sessionId).toList());
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
 

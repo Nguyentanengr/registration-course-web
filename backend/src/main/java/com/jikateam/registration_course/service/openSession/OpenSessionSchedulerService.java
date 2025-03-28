@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class OpenSessionSchedulerService {
 
     @Scheduled(cron = "0 * * * * *") // Chạy sau khi phút mới bắt đầu (0 giây)
     @Transactional
-    public void updateOpenSessionStatuses() {
+    public void updateOpenSessionStatusOnEachMinute() {
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -51,7 +52,42 @@ public class OpenSessionSchedulerService {
             log.info("Closed {} sessions", openingIds.size());
 
         }
+    }
 
+    @Scheduled(cron = "0 0 0 * * *") // Chạy vào 0 giây, 0 phút, 0 giờ (0h00) mỗi ngày
+    @Transactional
+    public void updateOpenSessionStatusOnEachDay() {
+        LocalDate now = LocalDate.now();
+
+
+        // 3. Dạy các lớp học phần đã được xác nhận
+        List<OpenSessionRegistration> conformSessions = openSessionRepository
+                .findConformSessionToTeach(now);
+
+        if (!conformSessions.isEmpty()) {
+            List<Integer> conformIds = conformSessions.stream()
+                    .map(OpenSessionRegistration::getOpenSessionRegistrationId)
+                    .toList();
+            openSessionRepository.updateStatusByIds(conformIds, RegistrationStatus.TEACHING);
+            log.info("Teaching {} sessions: {}", conformIds.size()
+                    , conformSessions.stream().map(c -> c.getSession().getSessionId()));
+
+        }
+
+        // 4. Hoàn thành các lớp học phần đã dạy
+
+        List<OpenSessionRegistration> taughtSessions = openSessionRepository
+                .findTaughtSessionToTeach(now);
+
+        if (!taughtSessions.isEmpty()) {
+            List<Integer> conformIds = taughtSessions.stream()
+                    .map(OpenSessionRegistration::getOpenSessionRegistrationId)
+                    .toList();
+            openSessionRepository.updateStatusByIds(conformIds, RegistrationStatus.COMPLETED);
+            log.info("Completed {} sessions: {}", conformIds.size()
+                    , conformSessions.stream().map(c -> c.getSession().getSessionId()));
+
+        }
     }
 
 }

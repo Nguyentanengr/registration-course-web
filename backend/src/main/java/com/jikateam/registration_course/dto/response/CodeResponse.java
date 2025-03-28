@@ -28,6 +28,9 @@ public enum CodeResponse {
     UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY(1000, HttpStatus.OK, "Update a open session status successfully"),
 
 
+
+    INVALID_PREVIOUS_STATUS(9103, HttpStatus.BAD_REQUEST, "Not eligible about status for update"),
+    OPEN_SESSION_NOT_FOUND(9101, HttpStatus.BAD_REQUEST, "Open session does not exist"),
     SESSIONS_NOT_PROVIDED(9099, HttpStatus.BAD_REQUEST, "Open session list is not provided"),
     OPEN_SESSIONS_CANNOT_DELETE(9099, HttpStatus.BAD_REQUEST, "One of the open sessions is not ready for deletion"),
     OPEN_SESSION_CANNOT_DELETE(9097, HttpStatus.BAD_REQUEST, "Open session cannot delete"),

@@ -35,10 +35,15 @@ public class SearchFilterSessionService {
                 , pageable
         );
 
-        List<SessionInfoResponse> sessionInfoResponses = page.map(session
-                        -> sessionConverter.mapToSessionInfoResponse(session
-                        , session.getOpenSessionRegistration().getStatus()))
-                .stream().toList();
+
+        List<SessionInfoResponse> sessionInfoResponses = page.map(session -> {
+                    RegistrationStatus rs = session.getOpenSessionRegistration() != null
+                            ? session.getOpenSessionRegistration().getStatus()
+                            : null;
+                    return sessionConverter.mapToSessionInfoResponse(session
+                            , rs);
+                })
+                .toList();
 
         return PageSessionInfoResponse.builder()
                 .sessions(sessionInfoResponses)

@@ -23,6 +23,10 @@ public interface SessionConverter {
     @Mapping(target = "status", source = "status")
     SessionInfoResponse mapToSessionInfoResponse(Session s, RegistrationStatus status);
 
+    @Mapping(source = "s.course", target = "courseInfo")
+    @Mapping(source = "s.clazz.clazzId", target = "clazzId")
+    SessionInfoResponse mapToSessionInfoResponse(Session s);
+
     SchedulesOnSessionResponse mapToSchedulesOnSessionResponse(Session session);
 
     @Mapping(source = "course", target = "courseInfo")

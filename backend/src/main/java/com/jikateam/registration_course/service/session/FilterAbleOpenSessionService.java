@@ -1,6 +1,7 @@
 package com.jikateam.registration_course.service.session;
 
 
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.entity.Clazz;
@@ -40,8 +41,15 @@ public class FilterAbleOpenSessionService {
             year += 1;
         }
 
+        log.info("Finding sessions with semester: {}, year: {}", semester, year);
+
         return sessionRepository.findAllAbleSessionByFilter(searchKey, year, semester, clazzId)
-                .stream().map(session -> sessionConverter.mapToSessionInfoResponse(session
-                        , session.getOpenSessionRegistration().getStatus())).toList();
+                .stream().map(session -> {
+                    RegistrationStatus rs = session.getOpenSessionRegistration() != null
+                            ? session.getOpenSessionRegistration().getStatus()
+                            : null;
+                    return sessionConverter.mapToSessionInfoResponse(session
+                            , rs);
+                }).toList();
     }
 }

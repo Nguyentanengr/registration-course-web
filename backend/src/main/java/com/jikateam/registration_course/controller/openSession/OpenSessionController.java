@@ -1,16 +1,14 @@
 package com.jikateam.registration_course.controller.openSession;
 
 
-import com.jikateam.registration_course.dto.request.CreateOpenSessionListRequest;
-import com.jikateam.registration_course.dto.request.DeleteOpenSessionListRequest;
-import com.jikateam.registration_course.dto.request.OpenSessionRequest;
-import com.jikateam.registration_course.dto.request.UpdateStatusOpenSessionRequest;
+import com.jikateam.registration_course.dto.request.*;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.DataResponse;
 import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
 import com.jikateam.registration_course.service.openSession.CreateOpenSessionService;
 import com.jikateam.registration_course.service.openSession.DeleteOpenSessionService;
 import com.jikateam.registration_course.service.openSession.SearchFilterOpenSessionService;
+import com.jikateam.registration_course.service.openSession.UpdateStatusOpenSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +26,7 @@ public class OpenSessionController {
     private final CreateOpenSessionService createOpenSessionService;
     private final SearchFilterOpenSessionService searchFilterOpenSessionService;
     private final DeleteOpenSessionService deleteOpenSessionService;
+    private final UpdateStatusOpenSessionService updateStatusOpenSessionService;
 
     @GetMapping
     public DataResponse<List<OpenSessionInfoResponse>> getAllOpenSessionByPhaseAndClass(
@@ -89,18 +88,35 @@ public class OpenSessionController {
                 .build();
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public DataResponse<OpenSessionInfoResponse> ConfirmOpenSession(
             @PathVariable("id") Integer openSessionId,
             @RequestBody UpdateStatusOpenSessionRequest request
     ) {
 
+        var response = updateStatusOpenSessionService.confirmOpenSession(openSessionId, request);
 
         CodeResponse codeResponse = CodeResponse.UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY;
         return DataResponse.<OpenSessionInfoResponse>builder()
                 .code(codeResponse.getCode())
                 .message(codeResponse.getMessage())
-                // THIEU
+                .data(response)
                 .build();
     }
+
+    @PutMapping("/batch")
+    public DataResponse<List<OpenSessionInfoResponse>> ConfirmOpenSession(
+            @RequestBody UpdateStatusOpenSessionListRequest request
+    ) {
+
+        var response = updateStatusOpenSessionService.confirmOpenSessionList(request);
+
+        CodeResponse codeResponse = CodeResponse.UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY;
+        return DataResponse.<List<OpenSessionInfoResponse>>builder()
+                .code(codeResponse.getCode())
+                .message(codeResponse.getMessage())
+                .data(response)
+                .build();
+    }
+
 }

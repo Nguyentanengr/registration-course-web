@@ -30,7 +30,7 @@ public class OpenSessionRegistration {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private RegistrationStatus status; // 0: pending, 1: open, 2: close, 3: cancel, 4: conform
+    private RegistrationStatus status; // 0: pending, 1: open, 2: close, 3: cancel, 4: conform, 5:teaching, 6:completed
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")

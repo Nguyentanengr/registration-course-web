@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -71,9 +72,23 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
 
     @Query("SELECT o FROM OpenSessionRegistration o " +
             "JOIN o.registrationPhase r " +
-            "WHERE o.status = 1 " +
+            "WHERE o.status = 1 " + // status = OPEN
             "AND r.closeTime <= :currentTime")
     List<OpenSessionRegistration> findOpeningSessionsToClose
             (@Param("currentTime") LocalDateTime now);
+
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN o.session s " +
+            "WHERE o.status = 4 " + // status = CONFORM
+            "AND s.startDate <= :currentDate")
+    List<OpenSessionRegistration> findConformSessionToTeach
+            (@Param("currentDate") LocalDate now);
+
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN o.session s " +
+            "WHERE o.status = 5 " + // status = TEACHING
+            "AND s.endDate <= :currentDate")
+    List<OpenSessionRegistration> findTaughtSessionToTeach
+            (@Param("currentDate") LocalDate now);
 
 }

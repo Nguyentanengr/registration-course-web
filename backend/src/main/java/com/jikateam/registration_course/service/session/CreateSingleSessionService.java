@@ -93,12 +93,10 @@ public class CreateSingleSessionService {
         scheduleRepository.saveAll(schedules);
         Session savedSession = sessionRepository.save(session);
 
-        RegistrationStatus status = sessionRepository.findStatusById(session.getSessionId());
-
         log.info("Session created: {}", savedSession.getSessionId());
 
 
-        return sessionConverter.mapToSessionInfoResponse(session, status);
+        return sessionConverter.mapToSessionInfoResponse(session);
     }
 
     private void validateSchedule(CreateSessionRequest request) {
