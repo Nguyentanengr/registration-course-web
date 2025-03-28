@@ -3,9 +3,13 @@ package com.jikateam.registration_course.service.session;
 
 import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.converter.SessionConverter;
+import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.entity.Clazz;
+import com.jikateam.registration_course.entity.RegistrationPhase;
+import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.ClassRepository;
+import com.jikateam.registration_course.repository.PhaseRepository;
 import com.jikateam.registration_course.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,27 +25,19 @@ public class FilterAbleOpenSessionService {
     private final SessionRepository sessionRepository;
     private final SessionConverter sessionConverter;
     private final ClassRepository classRepository;
+    private final PhaseRepository phaseRepository;
 
     public List<SessionInfoResponse> getAbleOpenSessionByFilter
-            (String searchKey, String clazzId) {
+            (String searchKey, Integer phaseId, String clazzId) {
 
-        Clazz clazz = classRepository.findById(clazzId)
-                .orElse(null);
-        if (clazz == null) return List.of();
+        RegistrationPhase phase = phaseRepository.findById(phaseId)
+                .orElseThrow(() -> new BusinessException(CodeResponse.PHASE_NOT_FOUND));
 
-        // Tính năm và học kì hiện tại khớp với session
-        int semester = clazz.getCurrentSemester();
-        int year = clazz.getStartYear() + clazz.getCurrentYear();
+        int semester = phase.getSemester();
+        int year = phase.getYear();
 
-        // Tính học kì kế tiếp để lọc lớp học phần.
-        if (semester == 1) {
-            semester = 2;
-        } else if (semester == 2) {
-            semester = 1;
-            year += 1;
-        }
 
-        log.info("Finding sessions with semester: {}, year: {}", semester, year);
+        log.info("Finding sessions with semester: {}, year: {}, classId: {}", semester, year, clazzId);
 
         return sessionRepository.findAllAbleSessionByFilter(searchKey, year, semester, clazzId)
                 .stream().map(session -> {

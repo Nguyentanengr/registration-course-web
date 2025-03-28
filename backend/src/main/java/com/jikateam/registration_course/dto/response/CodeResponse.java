@@ -29,8 +29,10 @@ public enum CodeResponse {
 
 
 
+    DISSATISFIED_SESSION_IN_PHASE(9107, HttpStatus.BAD_REQUEST, "Dissatisfied about session in this phase"),
+    INVALID_FILTER_TYPE(9105, HttpStatus.BAD_REQUEST, "Invalid filter type for get open session"),
     INVALID_PREVIOUS_STATUS(9103, HttpStatus.BAD_REQUEST, "Not eligible about status for update"),
-    OPEN_SESSION_NOT_FOUND(9101, HttpStatus.BAD_REQUEST, "Open session does not exist"),
+    OPEN_SESSION_NOT_FOUND(9101, HttpStatus.NOT_FOUND, "Open session does not exist"),
     SESSIONS_NOT_PROVIDED(9099, HttpStatus.BAD_REQUEST, "Open session list is not provided"),
     OPEN_SESSIONS_CANNOT_DELETE(9099, HttpStatus.BAD_REQUEST, "One of the open sessions is not ready for deletion"),
     OPEN_SESSION_CANNOT_DELETE(9097, HttpStatus.BAD_REQUEST, "Open session cannot delete"),
@@ -56,6 +58,7 @@ public enum CodeResponse {
     DISSATISFIED_TEACHER(9057, HttpStatus.CONFLICT, "Dissatisfied teacher for schedule or course"),
     NO_SESSION_DATE_PROVIDED(9054, HttpStatus.CONFLICT, "No session date provided"),
     DISSATISFIED_CAPACITY(9051, HttpStatus.CONFLICT, "Dissatisfied capacity of place"),
+    DISSATISFIED_COURSE(9051, HttpStatus.CONFLICT, "Dissatisfied course for class' study plan"),
     INVALID_TEACHER_FOR_COURSE(9049, HttpStatus.CONFLICT, "Teacher is not matches"),
     TEACHER_NOT_FOUND(9047, HttpStatus.NOT_FOUND, "Teacher does not exist"),
     PLACE_NOT_FOUND(9045, HttpStatus.NOT_FOUND, "Place does not exist"),

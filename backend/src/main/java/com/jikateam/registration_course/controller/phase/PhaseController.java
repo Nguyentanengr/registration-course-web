@@ -1,7 +1,6 @@
 package com.jikateam.registration_course.controller.phase;
 
 
-import com.jikateam.registration_course.constant.PhaseType;
 import com.jikateam.registration_course.dto.request.CreatePhaseRequest;
 import com.jikateam.registration_course.dto.request.DeletePhaseListRequest;
 import com.jikateam.registration_course.dto.request.UpdatePhaseRequest;
@@ -27,19 +26,25 @@ public class PhaseController {
 
 
     @GetMapping
-    public DataResponse<List<PhaseResponse>> getAllByFilter(
+    public DataResponse<?> getAllByFilter(
             @RequestParam(defaultValue = "") String searchKey,
-            @RequestParam(required = false) Integer type,
-            @RequestParam(required = false) Integer year
+            @RequestParam(required = false) Integer semester,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Boolean latest
     ) {
 
-        PhaseType convertType = type == null ? null
-                : type == 0 ? PhaseType.OFFICIAL
-                : type == 1 ? PhaseType.ADDITIONAL
-                : null;
+        if (Boolean.TRUE.equals(latest)) {
+            var phaseResponse = phaseService.getLatestPhase();
+
+            CodeResponse codeResponse = CodeResponse.SUCCESS;
+            return DataResponse.<PhaseResponse>builder()
+                    .code(codeResponse.getCode())
+                    .data(phaseResponse)
+                    .build();
+        }
 
         List<PhaseResponse> responses = phaseService
-                .getRegistrationPhaseByFilter(searchKey, convertType, year);
+                .getRegistrationPhaseByFilter(searchKey, semester, year);
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
         return DataResponse.<List<PhaseResponse>>builder()

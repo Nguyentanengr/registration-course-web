@@ -1,6 +1,5 @@
 package com.jikateam.registration_course.repository;
 
-import com.jikateam.registration_course.constant.PhaseType;
 import com.jikateam.registration_course.entity.RegistrationPhase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -64,13 +63,13 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
     @Query(
             "SELECT p FROM RegistrationPhase p " +
             "WHERE (%:searchKey% IS NULL OR %:searchKey% = '' OR p.registrationPhaseName LIKE %:searchKey%) " +
-            "AND (:type IS NULL OR p.type = :type) " +
+            "AND (:semester IS NULL OR p.semester = :semester) " +
             "AND (:year IS NULL OR (:year BETWEEN YEAR(p.openTime) AND YEAR(p.closeTime))) " +
             "ORDER BY p.openTime DESC"
     )
     List<RegistrationPhase> findAllByFilter(
             @Param("searchKey") String searchKey,
-            @Param("type") PhaseType type,
+            @Param("semester") Integer semester,
             @Param("year") Integer year
     );
 
@@ -79,4 +78,11 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
             "AND p.openTime > CURRENT_TIMESTAMP"
     )
     List<RegistrationPhase> findAllValidPhaseToOpen(@Param("phaseIds") Iterable<Integer> phaseIds);
+
+
+    @Query(value = "SELECT * FROM registration_phase " +
+            "WHERE open_time <= CURRENT_TIMESTAMP " +
+            "ORDER BY open_time DESC LIMIT 1", nativeQuery = true)
+    RegistrationPhase findLatest();
+
 }

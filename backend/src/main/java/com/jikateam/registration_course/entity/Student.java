@@ -30,12 +30,12 @@ public class Student {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
-    @OneToMany(mappedBy = "student")
-    private Set<ClassEnrollment> classEnrollments;
+    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY)
+    private ClassEnrollment classEnrollment;
 
     @OneToMany(mappedBy = "student")
     private Set<SupportRequirement> supportRequirements;

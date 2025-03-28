@@ -18,8 +18,8 @@ public class ClassEnrollment {
     @Column(name = "class_enrollment_id")
     private Integer classEnrollmentId;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", unique = true)
     private Student student;
 
     @ManyToOne

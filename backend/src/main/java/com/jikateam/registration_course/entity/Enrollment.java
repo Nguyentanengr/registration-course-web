@@ -31,6 +31,9 @@ public class Enrollment {
     @Column(name="enroll_time", nullable = false)
     private LocalDateTime enrollTime;
 
-    @Column(nullable = false, columnDefinition = "TINYINT")
-    private Integer status;
+    @Column(nullable = false)
+    private EnrollmentStatus status;
+
+    @Column(nullable = false, name = "is_passed")
+    Boolean isPassed;
 }

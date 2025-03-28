@@ -35,6 +35,7 @@ public class CreateSingleSessionService {
     private final TeacherRepository teacherRepository;
     private final SessionConverter sessionConverter;
     private final ScheduleConverter scheduleConverter;
+    private final StudyPlanRepository studyPlanRepository;
 
     @Transactional
     public SessionInfoResponse createSession(CreateSessionRequest request) {
@@ -62,6 +63,26 @@ public class CreateSingleSessionService {
         validateSchedule(request);
         validateCapacity(request, places);
         validateTeacher(request, teachers);
+
+        // Kiểm tra liệu môn học có đúng trong chương trình đào tạo không
+        // Nếu lớp học phần này được mở trên học kì hè năm 20xx thì có thể
+        // chọn các môn nằm ở học kì 1 và 2 năm 20xx.
+        // Nếu lớp học phần này mở trên học kì chính thức thì chỉ có thể
+        // chọn các môn theo đúng học kì của chương trình đào tạo.
+        int semester = request.semester(); // 2
+        int year = request.year() - clazz.getStartYear(); //2025 - 2022 = 3
+        boolean isValidCourse;
+        if (semester != 3) { // Học kì chính thức
+            isValidCourse = studyPlanRepository.existsCourseInStudyPlan
+                    (course.getCourseId(), clazz.getClazzId(), semester, year);
+
+        } else {
+            isValidCourse = studyPlanRepository.existsCourseInStudyPlan
+                    (course.getCourseId(), clazz.getClazzId(), year);
+
+        }
+        if (!isValidCourse) throw new BusinessException(CodeResponse.DISSATISFIED_COURSE);
+
 
         // chuyen doi tuong sang entity
 

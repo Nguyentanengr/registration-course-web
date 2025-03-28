@@ -22,4 +22,14 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     );
 
 
+    @Query("SELECT o.openSessionRegistrationId " +
+            "FROM Enrollment e " +
+            "JOIN e.openSessionRegistration o " +
+            "WHERE e.student.studentId = :studentId AND o.openSessionRegistrationId IN :openSessionIds")
+    List<Integer> getIfRegistered(
+            @Param("openSessionIds") Iterable<Integer> openSessionIds,
+            @Param("studentId") String studentId
+    );
+
+
 }

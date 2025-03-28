@@ -2,6 +2,7 @@ package com.jikateam.registration_course.converter;
 
 import com.jikateam.registration_course.dto.request.CreateSessionRequest;
 import com.jikateam.registration_course.dto.request.ScheduleRequest;
+import com.jikateam.registration_course.dto.response.ScheduleInfoResponse;
 import com.jikateam.registration_course.dto.response.ScheduleResponse;
 import com.jikateam.registration_course.entity.Schedule;
 import com.jikateam.registration_course.entity.Session;
@@ -18,6 +19,9 @@ public interface ScheduleConverter {
 
     @Mapping(target = "scheduleId", ignore = true)
     Schedule updateToScheduleEntity(ScheduleRequest request, @MappingTarget Schedule schedule);
+
+    ScheduleInfoResponse mapToScheduleInfoResponse(Schedule schedule);
+
 
 
     ScheduleResponse mapToScheduleResponse(Schedule schedule);

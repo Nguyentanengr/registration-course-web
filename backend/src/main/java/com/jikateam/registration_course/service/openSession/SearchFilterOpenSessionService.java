@@ -2,8 +2,11 @@ package com.jikateam.registration_course.service.openSession;
 
 
 import com.jikateam.registration_course.converter.OpenSessionConverter;
+import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
+import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
+import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.EnrollmentRepository;
 import com.jikateam.registration_course.repository.OpenSessionRegistrationRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,4 +53,44 @@ public class SearchFilterOpenSessionService {
                                 , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
                 .toList();
     }
+
+    public List<RegisterOpenSessionResponse> getAllForRegister
+            (Integer phaseId, String studentId, String clazzId, Integer filterType) {
+
+        var responseEntities = switch (filterType) {
+            case 0 -> { // Trường hợp lọc theo lớp sinh viên có clazzId
+                yield  openSessionRegistrationRepository.getAllByFilterTypeClass(clazzId, phaseId);
+            }
+            case 1 -> {
+                yield openSessionRegistrationRepository.getAllByFilterTypeEduProgram(clazzId, phaseId);
+            }
+            case 2 -> {
+                yield openSessionRegistrationRepository.getAllByFilterTypeCourseNotPassed(studentId, phaseId);
+            }
+            default -> throw new BusinessException(CodeResponse.INVALID_FILTER_TYPE);
+        };
+
+        // Tính isRegistered và empty
+
+        List<Integer> openSessionIds = responseEntities.stream()
+                .map(OpenSessionRegistration::getOpenSessionRegistrationId).toList();
+
+        // Lấy ra những lớp mà sinh viên đăng ký từ những lớp ở trên
+        List<Integer> registered = enrollmentRepository.getIfRegistered(openSessionIds, studentId);
+
+        // Lấy ra số lượng còn lại cho mỗi lớp ở trên
+        List<Object[]> numberOfRegisterOnSessions = enrollmentRepository
+                .getNumberOfRegisterOnOpenSessions(openSessionIds);
+
+        // Chuyển sang map để dễ lấy ra số lượng đăng ký trên id
+        Map<Integer, Long> countMap = numberOfRegisterOnSessions.stream() // map<openSessionId, count>
+                .collect(Collectors.toMap(pair -> (Integer) pair[0], pair -> (Long) pair[1]));
+
+        return responseEntities.stream()
+                .map(o -> openSessionConverter.mapToRegisterSessionInfoResponse(o
+                        , registered.contains(o.getOpenSessionRegistrationId())
+                        , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
+                .toList();
+    }
+
 }

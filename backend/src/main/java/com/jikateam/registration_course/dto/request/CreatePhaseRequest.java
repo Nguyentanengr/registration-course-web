@@ -1,10 +1,6 @@
 package com.jikateam.registration_course.dto.request;
 
-import com.jikateam.registration_course.constant.PhaseType;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -14,8 +10,13 @@ public record CreatePhaseRequest(
         @NotNull(message = "PHASE_NAME_IS_BLANK")
         String registrationPhaseName,
 
-        @NotNull(message = "PHASE_TYPE_IS_BLANK")
-        PhaseType type,
+        @Min(1)
+        @Max(3)
+        @NotNull(message = "PHASE_SEMESTER_IS_BLANK")
+        Integer semester,
+
+        @NotNull(message = "PHASE_YEAR_IS_BLANK")
+        Integer year,
 
         @Future(message = "PHASE_TIME_IN_PAST")
         LocalDateTime openTime,

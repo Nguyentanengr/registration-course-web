@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,20 @@ public class CreateOpenSessionService {
             log.info("Invalid managers: {}", managerIds.stream().filter(id -> !managerMap.containsKey(id)).toList());
             throw new BusinessException(CodeResponse.INVALID_MANAGER_TO_OPEN);
         }
+
+        // Kiểm tra đợt này cho phép mở các lớp học phần ở học kì và năm nào
+        openSessionRequests.forEach(o -> {
+            var phase = phaseMap.get(o.registrationPhaseId());
+            var session = sessionMap.get(o.sessionId());
+
+            boolean sameYear = Objects.equals(phase.getYear(), session.getYear());
+            boolean sameSemester = Objects.equals(phase.getSemester(), session.getSemester());
+
+            if (!sameYear || !sameSemester) {
+                throw new BusinessException(CodeResponse.DISSATISFIED_SESSION_IN_PHASE);
+            }
+        });
+
 
         // đổi từ request sang entity
         List<OpenSessionRegistration> openSessions = openSessionRequests.stream()

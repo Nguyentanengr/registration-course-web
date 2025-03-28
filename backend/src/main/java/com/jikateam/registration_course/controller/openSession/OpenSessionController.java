@@ -5,6 +5,7 @@ import com.jikateam.registration_course.dto.request.*;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.DataResponse;
 import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
+import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
 import com.jikateam.registration_course.service.openSession.CreateOpenSessionService;
 import com.jikateam.registration_course.service.openSession.DeleteOpenSessionService;
 import com.jikateam.registration_course.service.openSession.SearchFilterOpenSessionService;
@@ -47,6 +48,32 @@ public class OpenSessionController {
                 .code(codeResponse.getCode())
                 .data(responses)
                 .build();
+    }
+
+    @GetMapping("/for-register")
+    public DataResponse<List<RegisterOpenSessionResponse>> getAllOpenSessionForRegister(
+            @RequestParam Integer phaseId,
+            @RequestParam String studentId,
+            @RequestParam(defaultValue = "") String classId,
+            @RequestParam Integer filterType // 0: class | 1 : CTDT | 2 : pass
+    ) {
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+
+        if (filterType < 0 || filterType > 2) {
+            return DataResponse.<List<RegisterOpenSessionResponse>>builder()
+                    .code(codeResponse.getCode())
+                    .data(List.of())
+                    .build();
+        }
+
+        var responses = searchFilterOpenSessionService.getAllForRegister(phaseId, studentId, classId, filterType);
+
+        return DataResponse.<List<RegisterOpenSessionResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+
     }
 
     @PostMapping("/batch")

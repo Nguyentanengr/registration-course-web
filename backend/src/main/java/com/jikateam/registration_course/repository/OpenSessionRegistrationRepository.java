@@ -3,6 +3,7 @@ package com.jikateam.registration_course.repository;
 import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.entity.Account;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,7 +28,6 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             "JOIN FETCH s.course c " +
             "JOIN s.clazz cl " +
             "JOIN FETCH o.registrationPhase p " +
-//            "LEFT JOIN FETCH o.enrollments " +
             "WHERE (:searchKey IS NULL OR :searchKey = '' " +
             "OR c.courseId LIKE %:searchKey% " +
             "OR c.courseName LIKE %:searchKey% " +
@@ -42,11 +42,9 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
     );
 
 
-    @Query(
-            "SELECT COUNT(o) > 0 FROM OpenSessionRegistration o " +
+    @Query("SELECT COUNT(o) > 0 FROM OpenSessionRegistration o " +
                     "WHERE o.openSessionRegistrationId IN :openSessionIds " +
-                    "AND o.status != :status"
-    )
+                    "AND o.status != :status")
     boolean existOpenSessionInListViolateStatus(
             @Param("openSessionIds") Iterable<Integer> openSessionIds,
             @Param("status") RegistrationStatus status);
@@ -55,9 +53,7 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
     @Query("SELECT o FROM OpenSessionRegistration o " +
             "JOIN o.registrationPhase r " +
             "WHERE o.status = 0 " +
-            "AND r.openTime <= :currentTime"
-
-    )
+            "AND r.openTime <= :currentTime")
     List<OpenSessionRegistration> findPendingSessionsToOpen
             (@Param("currentTime") LocalDateTime now);
 
@@ -65,8 +61,7 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
     @Modifying
     @Transactional
     @Query("UPDATE OpenSessionRegistration o SET o.status = :status " +
-            "WHERE o.openSessionRegistrationId IN :pendingIds"
-    )
+            "WHERE o.openSessionRegistrationId IN :pendingIds")
     void updateStatusByIds(Iterable<Integer> pendingIds, RegistrationStatus status);
 
 
@@ -90,5 +85,38 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             "AND s.endDate <= :currentDate")
     List<OpenSessionRegistration> findTaughtSessionToTeach
             (@Param("currentDate") LocalDate now);
+
+
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN o.session s " +
+            "JOIN o.registrationPhase p " +
+            "WHERE p.registrationPhaseId = :phaseId AND s.clazz.clazzId = :clazzId")
+    List<OpenSessionRegistration> getAllByFilterTypeClass
+            (@Param("clazzId") String clazzId, @Param("phaseId") Integer phaseId);
+
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN o.session s " +
+            "JOIN o.registrationPhase p " +
+            "WHERE p.registrationPhaseId = :phaseId " +
+            "AND s.course.courseId IN " +
+            "(SELECT spd.course.courseId FROM StudyPlanDetail spd " +
+            "JOIN spd.studyPlan sp " +
+            "JOIN Clazz cl ON sp.educationProgram = cl.educationProgram AND sp.specialization = cl.specialization " +
+            "WHERE cl.clazzId = :clazzId)")
+    List<OpenSessionRegistration> getAllByFilterTypeEduProgram
+            (@Param("clazzId") String clazzId, @Param("phaseId") Integer phaseId);
+
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN o.session s " +
+            "JOIN o.registrationPhase p " +
+            "WHERE p.registrationPhaseId = :phaseId " +
+            "AND s.course.courseId IN " +
+            "(SELECT ses.course.courseId FROM Session ses " +
+            "JOIN ses.openSessionRegistration osr " +
+            "JOIN osr.enrollments erm " +
+            "WHERE erm.student.studentId = :studentId AND erm.status = 0 AND erm.isPassed = false)")
+    List<OpenSessionRegistration> getAllByFilterTypeCourseNotPassed
+            (@Param("studentId") String studentId, @Param("phaseId") Integer phaseId);
+
 
 }

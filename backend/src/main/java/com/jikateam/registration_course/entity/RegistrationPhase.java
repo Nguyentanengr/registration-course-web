@@ -1,6 +1,5 @@
 package com.jikateam.registration_course.entity;
 
-import com.jikateam.registration_course.constant.PhaseType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,14 +22,17 @@ public class RegistrationPhase {
     @Column(name = "registration_phase_name", nullable = false, length = 255)
     private String registrationPhaseName;
 
+    @Column(nullable = false)
+    private Integer semester; // 1, 2, 3
+
+    @Column(nullable = false)
+    private Integer year; // 2025,...
+
     @Column(name = "open_time", nullable = false)
     private LocalDateTime openTime;
 
     @Column(name = "close_time", nullable = false)
     private LocalDateTime closeTime;
-
-    @Column(name = "type", nullable = false)
-    private PhaseType type;
 
     @OneToMany(mappedBy = "registrationPhase")
     private Set<OpenSessionRegistration> openSessionRegistrations;

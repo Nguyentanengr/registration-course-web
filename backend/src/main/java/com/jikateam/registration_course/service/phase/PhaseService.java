@@ -1,6 +1,5 @@
 package com.jikateam.registration_course.service.phase;
 
-import com.jikateam.registration_course.constant.PhaseType;
 import com.jikateam.registration_course.converter.PhaseConverter;
 import com.jikateam.registration_course.dto.request.CreatePhaseRequest;
 import com.jikateam.registration_course.dto.request.DeletePhaseListRequest;
@@ -12,7 +11,6 @@ import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.PhaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,11 +99,19 @@ public class PhaseService {
         phaseRepository.deleteAll(phases);
     }
 
-    public List<PhaseResponse> getRegistrationPhaseByFilter(String searchKey, PhaseType type, Integer year) {
+    public List<PhaseResponse> getRegistrationPhaseByFilter(String searchKey, Integer semester, Integer year) {
 
-        List<RegistrationPhase> phases = phaseRepository.findAllByFilter(searchKey, type, year);
+        List<RegistrationPhase> phases = phaseRepository.findAllByFilter(searchKey, semester, year);
 
         return phases.stream().map(phaseConverter::mapToPhaseResponse).toList();
+    }
+
+    public PhaseResponse getLatestPhase() {
+
+        var phaseEntity = phaseRepository.findLatest();
+
+        return phaseConverter.mapToPhaseResponse(phaseEntity);
+
     }
 
 

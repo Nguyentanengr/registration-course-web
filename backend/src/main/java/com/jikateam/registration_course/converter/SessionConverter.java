@@ -3,6 +3,7 @@ package com.jikateam.registration_course.converter;
 import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.dto.request.CreateSessionRequest;
 import com.jikateam.registration_course.dto.request.UpdateSessionInfoRequest;
+import com.jikateam.registration_course.dto.response.RegisterSessionInfoResponse;
 import com.jikateam.registration_course.dto.response.SchedulesOnSessionResponse;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
 import com.jikateam.registration_course.dto.response.SessionNoStatusResponse;
@@ -32,5 +33,9 @@ public interface SessionConverter {
     @Mapping(source = "course", target = "courseInfo")
     @Mapping(source = "clazz.clazzId", target = "clazzId")
     SessionNoStatusResponse mapToSessionNoStatusResponse(Session session);
+
+    @Mapping(source = "s.clazz.clazzId", target = "classId")
+    @Mapping(source = "s.course", target = "courseInfo")
+    RegisterSessionInfoResponse mapToRegisterSessionInfoResponse(Session s, Integer empty);
 
 }
