@@ -2,14 +2,12 @@ package com.jikateam.registration_course.controller.openSession;
 
 
 import com.jikateam.registration_course.dto.request.*;
-import com.jikateam.registration_course.dto.response.CodeResponse;
-import com.jikateam.registration_course.dto.response.DataResponse;
-import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
-import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
+import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.service.openSession.CreateOpenSessionService;
 import com.jikateam.registration_course.service.openSession.DeleteOpenSessionService;
 import com.jikateam.registration_course.service.openSession.SearchFilterOpenSessionService;
 import com.jikateam.registration_course.service.openSession.UpdateStatusOpenSessionService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +72,21 @@ public class OpenSessionController {
                 .data(responses)
                 .build();
 
+    }
+
+    @GetMapping("/by-student")
+    public DataResponse<List<RegisteredByStudentResponse>> getRegisteredOpenSessionByStudent(
+            @RequestParam Integer phaseId,
+            @RequestParam String studentId
+    ) {
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+
+        var response = searchFilterOpenSessionService.getAllIsRegisteredByStudent(phaseId, studentId);
+
+        return DataResponse.<List<RegisteredByStudentResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(response)
+                .build();
     }
 
     @PostMapping("/batch")

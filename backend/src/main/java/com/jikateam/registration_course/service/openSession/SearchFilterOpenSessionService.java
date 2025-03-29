@@ -5,6 +5,7 @@ import com.jikateam.registration_course.converter.OpenSessionConverter;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
 import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
+import com.jikateam.registration_course.dto.response.RegisteredByStudentResponse;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
 import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.EnrollmentRepository;
@@ -13,8 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -91,6 +95,37 @@ public class SearchFilterOpenSessionService {
                         , registered.contains(o.getOpenSessionRegistrationId())
                         , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
                 .toList();
+    }
+
+
+    public List<RegisteredByStudentResponse> getAllIsRegisteredByStudent
+            (Integer phaseId, String studentId) {
+
+        // Lấy danh sách các lớp học phần được đăng ký bởi sinh viên trong giai đoạn hiện tại
+        List<Object[]> responses = openSessionRegistrationRepository
+                .getAllIsRegisteredByStudentId(phaseId, studentId); // List<[openSession, registerAt]>
+
+
+        log.info("Number of openSession is registered by student with id = {}: {}"
+                , studentId, responses.size());
+
+        List<RegisteredByStudentResponse> registered =  responses.stream().map(pair -> {
+            var openSession = (OpenSessionRegistration) pair[0];
+            var registerAt = (LocalDateTime) pair[1];
+
+            return openSessionConverter.mapToRegisteredByStudentResponse(openSession, registerAt);
+        }).toList();
+
+        // Lọc trùng lặp do fetch eager
+        Set<Integer> set = new HashSet<>();
+
+        return registered.stream().filter(r -> {
+            if (r != null && !set.contains(r.openSessionId())) {
+                set.add(r.openSessionId());
+                return true;
+            }
+            return false;
+        }).toList();
     }
 
 }

@@ -88,17 +88,21 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
 
 
     @Query("SELECT o FROM OpenSessionRegistration o " +
-            "JOIN o.session s " +
+            "JOIN FETCH o.session s " +
+            "JOIN FETCH s.course c " + // fetch eage
+            "JOIN FETCH s.schedules sc " + // fetch eage
             "JOIN o.registrationPhase p " +
             "WHERE p.registrationPhaseId = :phaseId AND s.clazz.clazzId = :clazzId")
     List<OpenSessionRegistration> getAllByFilterTypeClass
             (@Param("clazzId") String clazzId, @Param("phaseId") Integer phaseId);
 
     @Query("SELECT o FROM OpenSessionRegistration o " +
-            "JOIN o.session s " +
+            "JOIN FETCH o.session s " +
+            "JOIN FETCH s.course c " + // fetch eage
+            "JOIN FETCH s.schedules sc " + // fetch eage
             "JOIN o.registrationPhase p " +
             "WHERE p.registrationPhaseId = :phaseId " +
-            "AND s.course.courseId IN " +
+            "AND c.courseId IN " +
             "(SELECT spd.course.courseId FROM StudyPlanDetail spd " +
             "JOIN spd.studyPlan sp " +
             "JOIN Clazz cl ON sp.educationProgram = cl.educationProgram AND sp.specialization = cl.specialization " +
@@ -107,7 +111,9 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             (@Param("clazzId") String clazzId, @Param("phaseId") Integer phaseId);
 
     @Query("SELECT o FROM OpenSessionRegistration o " +
-            "JOIN o.session s " +
+            "JOIN FETCH o.session s " +
+            "JOIN FETCH s.course c " + // fetch eage
+            "JOIN FETCH s.schedules sc " + // fetch eage
             "JOIN o.registrationPhase p " +
             "WHERE p.registrationPhaseId = :phaseId " +
             "AND s.course.courseId IN " +
@@ -117,6 +123,20 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             "WHERE erm.student.studentId = :studentId AND erm.status = 0 AND erm.isPassed = false)")
     List<OpenSessionRegistration> getAllByFilterTypeCourseNotPassed
             (@Param("studentId") String studentId, @Param("phaseId") Integer phaseId);
+
+
+    // Lấy danh sách các lớp học phần được đăng ký bởi sinh viên trong giai đoạn hiện tại
+    @Query("SELECT o, e.enrollTime FROM OpenSessionRegistration o " +
+            "JOIN FETCH o.session s " + // fetch eager
+            "JOIN FETCH s.course c " + // fetch eager
+            "JOIN FETCH s.schedules sc " + // fetch eager
+            "JOIN o.registrationPhase p " +
+            "JOIN o.enrollments e " +
+            "WHERE p.registrationPhaseId = :phaseId " +
+            "AND e.student.studentId = :studentId " +
+            "AND e.status = 0 ") // Đã đăng ký
+    List<Object[]> getAllIsRegisteredByStudentId
+            (@Param("phaseId") Integer phaseId, @Param("studentId") String studentId);
 
 
 }
