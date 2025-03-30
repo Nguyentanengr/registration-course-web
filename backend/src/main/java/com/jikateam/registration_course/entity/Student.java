@@ -30,6 +30,12 @@ public class Student {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Column(name = "current_semester", nullable = false)
+    private Integer currentSemester;
+
+    @Column(name = "current_year", nullable = false)
+    private Integer currentYear;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", unique = true)
     private Account account;

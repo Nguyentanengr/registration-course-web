@@ -29,6 +29,7 @@ public enum CodeResponse {
 
 
 
+    STUDENT_NOT_FOUND(9109, HttpStatus.BAD_REQUEST, "Student does not exist"),
     DISSATISFIED_SESSION_IN_PHASE(9107, HttpStatus.BAD_REQUEST, "Dissatisfied about session in this phase"),
     INVALID_FILTER_TYPE(9105, HttpStatus.BAD_REQUEST, "Invalid filter type for get open session"),
     INVALID_PREVIOUS_STATUS(9103, HttpStatus.BAD_REQUEST, "Not eligible about status for update"),
