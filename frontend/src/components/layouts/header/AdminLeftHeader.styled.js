@@ -1,8 +1,9 @@
-import styled from "styled-components";
-import { Theme } from "../../../assets/styles/Theme";
+import styled from 'styled-components';
+import { Theme } from '../../../assets/styles/Theme';
 
-export const LeftHeaderContainer = styled.div`
+export const AdminLeftHeaderContainer = styled.div`
     margin-left: 50px;
+
     .logo-container {
         height: 100%;
         display: flex;

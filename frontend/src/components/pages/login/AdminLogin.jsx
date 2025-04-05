@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
-import { LoginContainer } from "./Login.styled"
-import { Icons } from "../../../assets/icons/Icon";
+import { useNavigate } from 'react-router-dom';
+import { AdminLoginContainer } from './AdminLogin.styled';
+import { useEffect, useState } from 'react';
+import { Icons } from '../../../assets/icons/Icon';
 import CircleSpinner from "../../commons/CircleSpinner"
 import Alert from "../../commons/Alert";
-import { useNavigate } from "react-router-dom";
 
-
-const Login = () => {
-
+const AdminLogin = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -86,20 +84,20 @@ const Login = () => {
     }, []);
 
     useEffect(() => {
-        if (loginState.user) navigate("/portal/register");
+        if (loginState.user) navigate("/admin/hoc-phan");
     }, [loginState.user])
 
     return (
-        <LoginContainer>
+        <AdminLoginContainer>
             { loginState.isError && <Alert message={loginState.isError}/>}
             <div className="login-container">
                 <div className="left-gap">
-                    <img src="/images/background-login.png" alt="" />
+                    <img src="/images/code2.png" alt="" />
                 </div>
                 <div className="right-gap">
                     <div className="title">
                         <div className="text">
-                            THÔNG BÁO <br /> ĐĂNG KÝ MÔN HỌC
+                            QUẢN LÝ <br /> ĐĂNG KÝ MÔN HỌC
                         </div>
                         <div className="line"></div>
                     </div>
@@ -112,7 +110,7 @@ const Login = () => {
                                 <input
                                     name="username"
                                     type="text"
-                                    placeholder="Mã sinh viên"
+                                    placeholder="Mã quản lý"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     onKeyDown={handleOnKeyDown}
@@ -162,8 +160,8 @@ const Login = () => {
                     Copyright © 2025 Học viện Công nghệ Bưu chính Viễn thông
                 </div>
             </div>
-        </LoginContainer>
+        </AdminLoginContainer>
     );
 };
 
-export default Login;
+export default AdminLogin;

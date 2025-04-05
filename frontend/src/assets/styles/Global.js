@@ -56,6 +56,21 @@ p {
 .app {
   display: block;
 }
+
+.wrap-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button, input {
+  font-family: 'Inter', system-ui, -apple-system;
+  background-color: transparent;
+  font-size: 16px;
+}
+
 `;
+
+
 
 export default GlobalStyles;

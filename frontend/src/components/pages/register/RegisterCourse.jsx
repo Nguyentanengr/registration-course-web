@@ -20,8 +20,8 @@ const RegisterCourse = () => {
             credits: 3,
             quantity: 90,
             empty: 90,
-            startDate: "21.03.2025",
-            endDate: "14.07.2025",
+            startDate: "21.03.2025 - 14.07.2025",
+            endDate: "14.07.2025 - 21.09.2025",
         },
         {
             id: "INT1210", 
@@ -133,8 +133,8 @@ const RegisterCourse = () => {
             group: "02",
             credits: 3,
             registerDate: "20.02.2025: 14:30:47",
-            startDate: "21.03.2025",
-            endDate: "14.07.2025",
+            startDate: "21.03.2025 - 14.07.2025",
+            endDate: "14.07.2025 - 21.09.2025",
             status: "confirmed",
         },
     ]

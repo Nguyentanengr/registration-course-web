@@ -1,9 +1,9 @@
 import { ContentContainer } from "./Content.styled";
 
 
-const Content = ({ children }) => {
+const Content = ({ children, status }) => {
     return (
-        <ContentContainer>
+        <ContentContainer status={status}>
             {children}
         </ContentContainer>
     );

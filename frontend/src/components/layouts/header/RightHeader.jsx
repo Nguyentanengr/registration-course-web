@@ -7,12 +7,7 @@ const RightHeader = () => {
     return (
         <RightHeaderContainer>
             <div className="menu-container">
-                <div className="menu-icon">
-                    <Icons.Menu />
-                </div>
-                <div className="expand-menu">
-
-                </div>
+                
             </div>
 
         </RightHeaderContainer>
