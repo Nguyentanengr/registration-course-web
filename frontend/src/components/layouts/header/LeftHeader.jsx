@@ -6,7 +6,7 @@ import { Icons } from "../../../assets/icons/Icon";
 const LeftHeader = () => {
     return (
         <LeftHeaderContainer>
-            <Link to="/">
+            <Link to="#">
                 <div className="logo-container">
                     <div className="logo">
                         <img src="images/logo-navbar.png" alt="" />

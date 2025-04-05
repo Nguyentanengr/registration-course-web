@@ -46,7 +46,7 @@ const SelectedArea = ({ sessionList }) => {
                                 <td>{session.group}</td>
                                 <td>{session.credits}</td>
                                 <td>{session.registerDate}</td>
-                                <td>{session.startDate + " - " + session.endDate}</td>
+                                <td className='time-box'>{session.startDate + " - " + session.endDate}</td>
                                 <td>
                                     <div className={session.status}>
                                         {session.status === "pending" ? "Chờ duyệt" : "Đã duyệt"}

@@ -39,7 +39,7 @@ const RegisterArea = ({ sessionList }) => {
                                 <td>{session.credits}</td>
                                 <td>{session.quantity}</td>
                                 <td>{session.empty}</td>
-                                <td>{session.startDate + " - " + session.endDate}</td>
+                                <td className='time-box'>{session.startDate + " - " + session.endDate}</td>
                                 <td>
                                     <div className='option-box'>
                                         <input type='checkbox' />

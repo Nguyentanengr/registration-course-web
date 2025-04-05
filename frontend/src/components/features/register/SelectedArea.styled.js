@@ -6,8 +6,8 @@ export const SelectedAreaContainer = styled.div`
    height: 500px;
 
    .title {
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 18px;
+        font-weight: 700;
 
         span {
             color: ${Theme.logo};
@@ -20,8 +20,8 @@ export const SelectedAreaContainer = styled.div`
         overflow-x: auto;
         background: white;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        font-size: 20px;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
 
         .table {
             width: 100%;
@@ -29,14 +29,18 @@ export const SelectedAreaContainer = styled.div`
         }
 
         th, td {
-            padding: 20px;
+            padding: 16px;
             text-align: left;
             border-bottom: 1px solid ${Theme.hover};
         }
 
 
         td {
-            padding: 15px;
+            padding: 14px;
+
+            &.time-box {
+                width: 230px;
+            }
         }
 
 
@@ -58,14 +62,14 @@ export const SelectedAreaContainer = styled.div`
         }
 
         .pending {
-            padding: 10px 10px;
+            padding: 8px;
             background-color:  #FFEDED;
             text-align: center;
             border-radius: 15px;
         }
 
         .confirmed {
-            padding: 12px 10px;
+            padding: 8px;
             background-color: ${Theme.lightSuccess};
             text-align: center;
             border-radius: 15px;

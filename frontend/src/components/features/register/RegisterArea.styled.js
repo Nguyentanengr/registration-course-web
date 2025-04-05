@@ -9,8 +9,8 @@ export const RegisterAreaContainer = styled.div`
         overflow-x: auto;
         background: white;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        font-size: 20px;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
 
         .table {
             width: 100%;
@@ -18,13 +18,17 @@ export const RegisterAreaContainer = styled.div`
         }
 
         th, td {
-            padding: 20px;
+            padding: 16px;
             text-align: left;
             border-bottom: 1px solid ${Theme.hover};
         }
 
         td {
-            padding: 18px;
+            padding: 14px;
+
+            &.time-box {
+                width: 230px;
+            }
         }
 
         tr.boldHighlight {
@@ -108,7 +112,7 @@ export const RegisterAreaContainer = styled.div`
             }
 
             .text {
-            font-size: 18px;
+            font-size: 16px;
             font-family: "Montserrat", sans-serif;
         }
         }

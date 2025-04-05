@@ -15,7 +15,7 @@ export const FilterAreaContainer = styled.div`
             gap: 15px;
 
             .title {
-                font-size: 20px;
+                font-size: 18px;
                 font-weight: 500;
             }
 
@@ -26,14 +26,14 @@ export const FilterAreaContainer = styled.div`
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    width: 400px;
-                    padding: 16px 20px;
+                    width: 350px;
+                    padding: 12px 20px;
                     border-radius: 10px;
-                    box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
                     cursor: pointer;
-                    
+                    font-size: 16px;
                     .text {
-                        font-size: 20px;
+                        
                         color: ${Theme.textSoft};
                     }
 
@@ -53,10 +53,10 @@ export const FilterAreaContainer = styled.div`
                     top: 120%;
                     left: 0;
                     border-radius: 10px;
-                    box-shadow: 1px 1px 7px rgba(0, 0, 0, 0.2);
-                    font-size: 20px;
+                    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+                    font-size: 16px;
                     .option-item {
-                        padding: 15px 20px;
+                        padding: 12px 20px;
                         cursor: pointer;
                         &.first {
                             border-top-left-radius: 10px;
@@ -82,19 +82,19 @@ export const FilterAreaContainer = styled.div`
             justify-content: start;
             gap: 15px;
             border: 2px solid rgba(165, 13, 13, 1);
-            padding: 10px 25px;
+            padding: 7px 25px;
             border-radius: 10px;
 
             
 
             .icon {
-                font-size: 35px;
+                font-size: 30px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
             .text {
-                font-size: 20px;
+                font-size: 16px;
                 color: ${Theme.textSoft};
                 font-family: 'Montserrat', sans-serif;
             }

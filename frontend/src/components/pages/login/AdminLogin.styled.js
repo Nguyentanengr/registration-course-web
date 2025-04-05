@@ -1,9 +1,9 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import { Theme } from "../../../assets/styles/Theme";
 
+export const AdminLoginContainer = styled.div`
 
-export const LoginContainer = styled.div`
-    background-color: ${Theme.hover};
+background-color: ${Theme.hover};
     height: calc(100% - 55px);
     position: fixed;
     top: 55px;
@@ -23,8 +23,9 @@ export const LoginContainer = styled.div`
             justify-content: center;
             
             img {
-                width: auto;
-                height: 100%;
+                width: 70%;
+                height: 50%;
+                object-fit: cover;
             }
         }
 

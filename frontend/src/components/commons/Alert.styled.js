@@ -3,7 +3,7 @@ import { Theme } from "../../assets/styles/Theme";
 
 export const AlertContainer = styled.div`
     position: fixed;
-    top: ${(props) => (props.show ? "20px" : "-100px")};
+    top: ${(props) => (props.show ? "70px" : "-100px")};
     left: 75%;
     transform: translateX(-50%);
     width: 350px;

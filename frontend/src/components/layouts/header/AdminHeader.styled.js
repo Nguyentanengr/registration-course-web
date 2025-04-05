@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { Theme } from "../../../assets/styles/Theme";
+import styled from 'styled-components';
+import { Theme } from '../../../assets/styles/Theme';
 
-
-export const HeaderContainer = styled.div`
+export const AdminHeaderContainer = styled.div`
     position: fixed;
     top: 0;
     left: 0;
@@ -16,4 +15,4 @@ export const HeaderContainer = styled.div`
     align-items: center;
     padding: 0 15px;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-`
+`;
