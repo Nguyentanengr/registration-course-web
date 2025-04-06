@@ -8,9 +8,9 @@ import { BiLogoYoutube, BiLogoTiktok, BiLogoDiscord, BiBroadcast, BiCaretRightSq
 import { BiImageAdd, BiMessageAltError, BiUserCheck, BiLogIn, BiMenu, BiSolidUser, BiSolidLockAlt  } from "react-icons/bi";
 
 import { BiAlarm, BiCalendar, BiSolidArrowFromRight, BiSolidArrowFromLeft, BiBookOpen } from "react-icons/bi";
-import { BiGroup, BiSolidDownArrow, BiSolidUpArrow, BiCalendarAlt, BiEdit } from "react-icons/bi";
-import { BiTimeFive, BiTrashAlt } from "react-icons/bi";
-import { BsXLg, BsChevronDown } from "react-icons/bs";
+import { BiGroup, BiSolidDownArrow, BiSolidUpArrow, BiCalendarAlt, BiEdit, BiFile } from "react-icons/bi";
+import { BiTimeFive, BiTrashAlt, BiHash, BiBookmarkPlus} from "react-icons/bi";
+import { BsXLg, BsChevronDown, BsEye, BsDownload, BsGeoAlt } from "react-icons/bs";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FaTimes } from "react-icons/fa";
 
@@ -75,4 +75,11 @@ export const Icons = {
     Edit: BiEdit,
     Clock: BiTimeFive,
     Trash: BiTrashAlt,
+    File: BiFile,
+    Eye: BsEye,
+    Download: BsDownload,
+    Hash: BiHash,
+    FlatUser: BiUser,
+    BookMark: BiBookmarkPlus,
+    Address: BsGeoAlt,
 }

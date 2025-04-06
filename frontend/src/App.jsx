@@ -7,6 +7,8 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import AdminLogin from "./components/pages/login/AdminLogin";
 import SectionManagement from "./components/pages/section/SectionManagement";
 import OpenSection from "./components/pages/open-section/OpenSection";
+import StudentList from "./components/pages/student-list/StudentList";
+import Schedule from "./components/pages/schedule/Schedule";
 
 const App = () => {
 
@@ -18,12 +20,14 @@ const App = () => {
           {/* Apply MainLayout */}
           <Route path="/portal" element={<MainLayout />}>
             <Route index element={<Login />} /> 
-            <Route path="register" element={<RegisterCourse />} />
+            <Route path="/portal/dang-ky" element={<RegisterCourse />} />
+            <Route path="/portal/thoi-khoa-bieu" element={<Schedule />} />
           </Route>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminLogin />} /> 
             <Route path="/admin/hoc-phan" element={<SectionManagement />} />
             <Route path="/admin/mo-lop-hoc-phan" element={<OpenSection />} />
+            <Route path="/admin/xem-danh-sach-lop" element={<StudentList />} />
           </Route>
 
           {/* Not layout applied */}

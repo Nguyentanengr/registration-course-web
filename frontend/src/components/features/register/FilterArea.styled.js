@@ -3,7 +3,42 @@ import { Theme } from "../../../assets/styles/Theme";
 
 export const FilterAreaContainer = styled.div`
     
+    .info {
+        padding: 20px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgb(255, 255, 255);
+
+        .box {
+            display: flex;
+            gap: 30%;
+        }
+
+        .item-box {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .icon {
+
+            }
+            .text {
+                font-weight: 600;
+                span {
+                    font-weight: 400;
+                    padding: 0px 10px;
+                }
+            }
+        }
+    }
+
     .header-page {
+        margin-top: 30px;
         display: flex;
         justify-content: space-between;
         align-items: end;
@@ -21,7 +56,8 @@ export const FilterAreaContainer = styled.div`
 
             .select-option {
                 position: relative;
-                font-family: 'Montserrat', sans-serif;
+                /* font-family: 'Montserrat', sans-serif; */
+                font-weight: 500;
                 .select {
                     display: flex;
                     align-items: center;
@@ -53,7 +89,7 @@ export const FilterAreaContainer = styled.div`
                     top: 120%;
                     left: 0;
                     border-radius: 10px;
-                    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+                    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
                     font-size: 16px;
                     .option-item {
                         padding: 12px 20px;
@@ -81,22 +117,22 @@ export const FilterAreaContainer = styled.div`
             align-items: center;
             justify-content: start;
             gap: 15px;
-            border: 2px solid rgba(165, 13, 13, 1);
+            border: 2px solid rgb(252, 15, 15);
             padding: 7px 25px;
             border-radius: 10px;
-
-            
+            color: rgb(252, 15, 15);
 
             .icon {
                 font-size: 30px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                
             }
             .text {
                 font-size: 16px;
-                color: ${Theme.textSoft};
-                font-family: 'Montserrat', sans-serif;
+                font-weight: 500;
+                /* font-family: 'Montserrat', sans-serif; */
             }
         }
     }

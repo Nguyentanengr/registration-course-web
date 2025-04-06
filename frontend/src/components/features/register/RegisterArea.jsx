@@ -63,6 +63,12 @@ const RegisterArea = ({ sessionList }) => {
                         Hết số lượng
                     </div>
                 </div>
+                <div className='span-container'>
+                    <div className='span dark'></div>
+                    <div className='text'>
+                        Chưa đủ điều kiện
+                    </div>
+                </div>
             </div>
         </RegisterAreaContainer>
     );

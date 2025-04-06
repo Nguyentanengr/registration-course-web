@@ -18,13 +18,13 @@ export const RegisterAreaContainer = styled.div`
         }
 
         th, td {
-            padding: 16px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid ${Theme.hover};
         }
 
         td {
-            padding: 14px;
+            padding: 10px;
 
             &.time-box {
                 width: 230px;
@@ -98,8 +98,8 @@ export const RegisterAreaContainer = styled.div`
             gap: 20px;
 
             .span {
-                height: 5vh;
-                width: 5vw;
+                height: 35px;
+                width: 80px;
                 border-radius: 17px;
             }
 
@@ -111,10 +111,14 @@ export const RegisterAreaContainer = styled.div`
                 background-color: #FFEDED;
             }
 
+            .span.dark {
+                background-color:rgb(255, 239, 187);
+            }
+
             .text {
-            font-size: 16px;
-            font-family: "Montserrat", sans-serif;
-        }
+              font-size: 16px;
+                font-weight: 700;
+            }
         }
     }
 `;

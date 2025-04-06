@@ -10,6 +10,7 @@ const RegisterCourse = () => {
     const options = [
         "Lớp sinh viên hiện tại",
         "Chương trình đào tạo kế hoạch",
+        "Các môn học không vượt qua"
     ];
     const openingSession = [
         {

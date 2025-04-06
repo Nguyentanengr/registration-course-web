@@ -29,14 +29,14 @@ export const SelectedAreaContainer = styled.div`
         }
 
         th, td {
-            padding: 16px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid ${Theme.hover};
         }
 
 
         td {
-            padding: 14px;
+            padding: 12px;
 
             &.time-box {
                 width: 230px;
@@ -62,14 +62,14 @@ export const SelectedAreaContainer = styled.div`
         }
 
         .pending {
-            padding: 8px;
+            padding: 3px;
             background-color:  #FFEDED;
             text-align: center;
             border-radius: 15px;
         }
 
         .confirmed {
-            padding: 8px;
+            padding: 3px;
             background-color: ${Theme.lightSuccess};
             text-align: center;
             border-radius: 15px;
