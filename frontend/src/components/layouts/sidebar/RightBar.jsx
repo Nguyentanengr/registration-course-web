@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { Icons } from '../../../assets/icons/Icon';
 import { RightBarContainer } from './RightBar.styled';
 
