@@ -6,14 +6,12 @@ import { Icons } from "../../../assets/icons/Icon";
 const LeftHeader = () => {
     return (
         <LeftHeaderContainer>
-            <Link to="#">
-                <div className="logo-container">
-                    <div className="logo">
-                        <img src="images/logo-navbar.png" alt="" />
-                    </div>
-                    <div className="logo-text">Sbox</div>
+            <div className="logo-container">
+                <div className="logo">
+                    <img src="/images/logo-navbar.png" alt="" />
                 </div>
-            </Link>
+                <div className="logo-text">Sbox</div>
+            </div>
         </LeftHeaderContainer>
     )
 };

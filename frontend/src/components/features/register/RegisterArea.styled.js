@@ -4,6 +4,48 @@ import { Theme } from '../../../assets/styles/Theme';
 export const RegisterAreaContainer = styled.div`
     margin-top: 20px;
 
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+
+        input {
+            display: none;
+        }
+
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid ${Theme.logo};
+            border-radius: 4px;
+            margin-right: 8px;
+            position: relative;
+            transition: 0.2s;
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 6px;
+                top: 1px;
+                width: 5px;
+                height: 10px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+        }
+
+        input:checked + .checkmark {
+            background-color: ${Theme.logo};
+
+            &::after {
+            opacity: 1;
+            }
+        }
+    }
     .table-container {
         width: 100%;
         overflow-x: auto;
@@ -40,7 +82,6 @@ export const RegisterAreaContainer = styled.div`
         }
 
         tr.body-row {
-            cursor: pointer;
             transition: 0.05s;
             
             &:hover {

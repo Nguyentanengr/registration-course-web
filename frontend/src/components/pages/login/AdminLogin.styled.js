@@ -6,6 +6,7 @@ export const AdminLoginContainer = styled.div`
 background-color: ${Theme.hover};
     height: calc(100% - 55px);
     position: fixed;
+    z-index: 15;
     top: 55px;
     left: 0;
     right: 0;

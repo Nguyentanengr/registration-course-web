@@ -7,9 +7,9 @@ const AdminLeftHeader = () => {
             <Link to="#">
                 <div className="logo-container">
                     <div className="logo">
-                        <img src="images/logo-navbar.png" alt="" />
+                        <img src="/images/logo-navbar.png" alt="" />
                     </div>
-                    <div className="logo-text">Sbox - Admin</div>
+                    <div className="logo-text">A-Sbox</div>
                 </div>
             </Link>
         </AdminLeftHeaderContainer>

@@ -86,7 +86,7 @@ const Login = () => {
     }, []);
 
     useEffect(() => {
-        if (loginState.user) navigate("/portal/register");
+        if (loginState.user) navigate("/portal/dang-ky");
     }, [loginState.user])
 
     return (

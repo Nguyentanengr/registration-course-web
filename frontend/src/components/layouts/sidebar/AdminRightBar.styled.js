@@ -3,6 +3,7 @@ import { Theme } from '../../../assets/styles/Theme';
 
 export const AdminRightBarContainer = styled.div`
     position: fixed;
+    z-index: 15;
     top: 55px;
     right: 0;
     bottom: 0;
@@ -25,6 +26,10 @@ export const AdminRightBarContainer = styled.div`
         &:hover {
             background-color: ${Theme.hover};
         }
+
+        &.highlight {
+            background-color: ${Theme.hover};
+        }
     }
 
     .item-box span {
@@ -40,6 +45,17 @@ export const AdminRightBarContainer = styled.div`
         background-color: transparent;
         opacity: 0.7;
     }
+
+    .pop-up-container {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: ${Theme.boldShadow};
+    }
+
 
 
 `;

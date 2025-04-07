@@ -149,11 +149,11 @@ export const FilterAreaContainer = styled.div`
                     padding: 10px;
 
                     &.light {
-                        background-color:rgb(243, 252, 255);
+                        background-color:rgb(212, 244, 255);
                     }
 
                     &.dark {
-                        background-color:rgb(255, 244, 252);
+                        background-color:rgb(255, 228, 248);
                     }
                     .title {
                         display: flex;

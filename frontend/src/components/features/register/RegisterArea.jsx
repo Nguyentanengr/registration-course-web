@@ -41,9 +41,10 @@ const RegisterArea = ({ sessionList }) => {
                                 <td>{session.empty}</td>
                                 <td className='time-box'>{session.startDate + " - " + session.endDate}</td>
                                 <td>
-                                    <div className='option-box'>
-                                        <input type='checkbox' />
-                                    </div>
+                                    <label className="custom-checkbox">
+                                        <input type="checkbox" />
+                                        <span className="checkmark"></span>
+                                    </label>
                                 </td>
                             </tr>
                         ))}
