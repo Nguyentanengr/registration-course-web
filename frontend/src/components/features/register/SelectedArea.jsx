@@ -38,8 +38,8 @@ const SelectedArea = ({ sessionList }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sessionList.map((session) => (
-                            <tr>
+                        {sessionList.map((session, index) => (
+                            <tr key={index}>
                                 <td>{session.id}</td>
                                 <td>{session.nameCourse}</td>
                                 <td>{session.class}</td>

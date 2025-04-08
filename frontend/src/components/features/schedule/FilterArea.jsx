@@ -4,7 +4,7 @@ import { FilterAreaContainer } from './FilterArea.styled';
 import SelectOption from '../../commons/SelectOption';
 
 
-const timeMap = {
+export const timeMap = {
     1: { start: "7:00", end: "7:45" },
     2: { start: "7:50", end: "8:35" },
     3: { start: "8:40", end: "9:25" },
@@ -355,7 +355,7 @@ const FilterArea = () => {
             </div>
             <div className="timetable-container">
                 {days.map((day, index) => {
-                    return (<div className='day-col'>
+                    return (<div className='day-col' key={index}>
                         <div className="info-day">
                             <h4>{toVieDay[day]}</h4>
                             <span>{dayOfWeek[day]}</span>

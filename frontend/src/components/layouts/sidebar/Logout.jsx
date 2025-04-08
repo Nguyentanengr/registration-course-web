@@ -2,9 +2,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Icons } from '../../../assets/icons/Icon';
 import { LogoutContainer } from './Logout.styled';
 import { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../../apis/authApi';
 
 const Logout = ({ setIsLogout, reset }) => {
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
     const thisRef = useRef();
@@ -14,14 +17,25 @@ const Logout = ({ setIsLogout, reset }) => {
     };
 
     const handleClickLogout = () => {
+        // Tắt form logout
         setIsLogout(false);
+        // reset state ở thẻ cha
         reset();
-        if (location.pathname.includes('portal')) {
-            navigate('/portal');
-        }
-        else {
-            navigate('/admin');
-        }
+
+        // Đăng xuất ở server & client
+        dispatch(logoutUser())
+            .then(() => {
+                // Điều hướng về trang đăng nhập
+                if (location.pathname.includes('portal')) {
+                    navigate('/portal');
+                    console.log("Navigating login page ...");
+                }
+                else {
+                    navigate('/admin');
+                    console.log("Navigating login page ...");
+                }
+                window.location.reload(); // load lại page.
+            });
     };
 
     useEffect(() => {
@@ -32,7 +46,7 @@ const Logout = ({ setIsLogout, reset }) => {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    },[])
+    }, [])
 
     return (
         <LogoutContainer ref={thisRef}>

@@ -1,14 +1,16 @@
 import { FilterAreaContainer } from './FilterArea.styled';
 import { Icons } from '../../../assets/icons/Icon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFilter } from '../../../stores/slices/sectionSlice';
+import { setFilter, setSearchKey } from '../../../stores/slices/sectionSlice';
 import AddSection from './AddSection';
+import { fetchSections } from '../../../apis/sectionApi';
+import CircleSpinner from '../../commons/CircleSpinner';
 
 const FilterArea = () => {
 
     const dispatch = useDispatch();
-    const { filter, filters, sections, currentPage, totalPage, searchKey }
+    const { loading, filters, filter, currentPage, itemPerPage, searchKey }
         = useSelector((state) => state.section);
 
     const [isAdding, setIsAdding] = useState(false);
@@ -20,7 +22,20 @@ const FilterArea = () => {
     }
 
 
+    // khi nhấn enter để search
+    const handleOnEnter = (e) => {
+        if (e.key === 'Enter') {
+            console.log("on enter");
+            
+            dispatch(fetchSections({ filter, searchKey, currentPage, itemPerPage }));
+        }
+    };
 
+    // Khi filter, seachkey, currentPage, itemPerPage thay đổi -> fetch API.
+    useEffect(() => {
+        // Fetch api
+        dispatch(fetchSections({ filter, searchKey, currentPage, itemPerPage }));
+    }, [filter, currentPage, itemPerPage]);
 
     return (
         <FilterAreaContainer>
@@ -48,9 +63,16 @@ const FilterArea = () => {
                     <div className="search-container wrap-center">
                         <div className="input-container wrap-center">
                             <div className="icon wrap-center">
-                                <Icons.SearchIcon />
+                                { loading ? <CircleSpinner size={15} color='#777777'/> : <Icons.SearchIcon /> }
                             </div>
-                            <input type="text" placeholder='Tìm kiếm lớp học phần ...' spellCheck={false} />
+                            <input
+                                value={searchKey}
+                                type="text"
+                                placeholder='Tìm kiếm lớp học phần ...'
+                                spellCheck={false}
+                                onChange={(e) => { dispatch(setSearchKey(e.target.value)) }}
+                                onKeyDown={handleOnEnter}
+                            />
                         </div>
                     </div>
                     <button className='wrap-center highlight' onClick={() => { setIsAdding(!isAdding) }}>
@@ -60,7 +82,7 @@ const FilterArea = () => {
                         <p>Thêm lớp</p>
                     </button>
                     {isAdding && <div className='pop-up-container wrap-center'>
-                        <AddSection setIsAdding={setIsAdding}/>
+                        <AddSection setIsAdding={setIsAdding} />
                     </div>}
                 </div>
             </div>

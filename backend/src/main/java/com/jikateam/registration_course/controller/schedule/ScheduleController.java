@@ -4,6 +4,7 @@ package com.jikateam.registration_course.controller.schedule;
 import com.jikateam.registration_course.controller.session.SessionController;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.DataResponse;
+import com.jikateam.registration_course.dto.response.ScheduleOnSessionResponse;
 import com.jikateam.registration_course.dto.response.SchedulesOnWeekResponse;
 import com.jikateam.registration_course.service.schedule.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,20 @@ public class ScheduleController {
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
         return DataResponse.<List<SchedulesOnWeekResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(response)
+                .build();
+    }
+
+    @GetMapping("/on-session")
+    public DataResponse<List<ScheduleOnSessionResponse>> getSchedulesSession(
+            @RequestParam String sessionId
+    ) {
+
+        var response = scheduleService.getSchedulesOnSession(sessionId);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<ScheduleOnSessionResponse>>builder()
                 .code(codeResponse.getCode())
                 .data(response)
                 .build();

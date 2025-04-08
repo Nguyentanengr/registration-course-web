@@ -12,12 +12,20 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface SessionConverter {
 
     Session mapToSessionEntity(CreateSessionRequest request);
 
     Session updateToSessionEntity(UpdateSessionInfoRequest request, @MappingTarget Session session);
+
+    @Mapping(source = "s.course", target = "courseInfo")
+    @Mapping(source = "s.clazz.clazzId", target = "clazzId")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "scheduleIds", source = "scheduleIds")
+    SessionInfoResponse mapToSessionInfoResponse(Session s, RegistrationStatus status, List<Integer> scheduleIds);
 
     @Mapping(source = "s.course", target = "courseInfo")
     @Mapping(source = "s.clazz.clazzId", target = "clazzId")

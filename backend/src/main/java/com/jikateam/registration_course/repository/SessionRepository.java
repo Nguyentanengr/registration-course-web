@@ -40,10 +40,12 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     @Query(
             "SELECT s FROM Session s " +
                     "LEFT JOIN FETCH OpenSessionRegistration osr ON s.sessionId = osr.session.sessionId " +
+                    "JOIN FETCH s.schedules " +
                     "WHERE " +
-                    "(:searchKey IS NULL OR s.clazz.clazzId LIKE %:searchKey% OR " +
-                    "s.course.courseId LIKE %:searchKey% OR " +
-                    "s.course.courseName LIKE %:searchKey%) AND " +
+                    "(:searchKey IS NULL OR " +
+                    "s.clazz.clazzId LIKE CONCAT('%', :searchKey, '%') OR " +
+                    "s.course.courseId LIKE CONCAT('%', :searchKey, '%') OR " +
+                    "s.course.courseName LIKE CONCAT('%', :searchKey, '%')) AND " +
                     "(:year IS NULL OR s.year = :year) AND " +
                     "(:semester IS NULL OR s.semester = :semester) AND " +
                     "(:clazzId IS NULL OR s.clazz.clazzId = :clazzId) AND " +

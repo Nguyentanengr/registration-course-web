@@ -3,71 +3,63 @@
 import { useEffect, useRef, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import { SectionAreaContainer } from './SectionArea.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentPage, setItemPerPage } from '../../../stores/slices/sectionSlice';
+import CircleSpinner from "../../commons/CircleSpinner";
+import ScheduleDialog from './ScheduleDialog';
 
-const data = [
-    {
-        id: '10001',
-        subject: 'INT1339',
-        name: 'Lập trình C++',
-        class: 'D22CQCNO2-N',
-        group: 1,
-        year: 2025,
-        semester: 2,
-        studentRange: '20 - 100',
-        sessions: '2 buổi'
-    },
-    {
-        id: '10002',
-        subject: 'INT1340',
-        name: 'Cơ sở dữ liệu',
-        class: 'D22CQCNO1-N',
-        group: 2,
-        year: 2025,
-        semester: 2,
-        studentRange: '15 - 80',
-        sessions: '1 buổi'
-    },
-    {
-        id: '10003',
-        subject: 'INT1341',
-        name: 'Lập trình web',
-        class: 'D22CQCNO3-N',
-        group: 1,
-        year: 2025,
-        semester: 1,
-        studentRange: '25 - 90',
-        sessions: '1 buổi'
-    },
-    // thêm nhiều dòng nữa nếu cần...
-];
+
+const convertStatus = (status) => {
+    switch (status) {
+        case 'PENDING':
+            return 'Đang chờ';
+        case 'OPEN':
+            return 'Đang mở';
+        case 'CLOSE':
+            return 'Đã đóng';
+        case 'CANCEL':
+            return 'Đã hủy';
+        case 'CONFIRM':
+            return 'Đã xác nhận';
+        case 'TEACHING':
+            return 'Đang dạy';
+        case 'COMPLETED':
+            return 'Đã hoàn thành';
+    }
+}
 
 const SectionArea = () => {
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
-    const [activePopupId, setActivePopupId] = useState(null);
     const popupRefs = useRef({});
+    const dispatch = useDispatch();
+    const { loading, error, currentPage, totalPage, itemPerPage, itemPerPages, sections } = useSelector((state) => state.section);
+    const [activePopupId, setActivePopupId] = useState(null);
+    const [isSchedule, setIsSchedule] = useState(false);
+    const [selectedSection, setSelectedSection] = useState(null);
 
-    const totalPages = Math.ceil(data.length / itemsPerPage);
-
-    const currentData = data.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
-
+    // Khi tăng giảm page 
     const handlePageChange = (page) => {
-        if (page >= 1 && page <= totalPages) setCurrentPage(page);
+        if (page >= 1 && page <= totalPage) {
+            dispatch(setCurrentPage(page));
+        }
     };
 
+    // Khi thay đổi số lượng trên một page
     const handleChangePerPage = (e) => {
-        setItemsPerPage(parseInt(e.target.value));
-        setCurrentPage(1); // reset về page 1 khi đổi size
+        dispatch(setItemPerPage(parseInt(e.target.value)));
+        dispatch(setCurrentPage(1));
     };
 
-    // Toggle popup cho từng hàng
+    // Toggle thao tác cho từng hàng
     const togglePopup = (id) => {
         setActivePopupId(activePopupId === id ? null : id); // Nếu popup đang mở thì đóng, nếu không thì mở
     };
+
+    // Xử lý khi xem lịch hoc 
+    const handeClickSchedule = ( section ) => {
+        setSelectedSection(section);
+        setIsSchedule(!isSchedule);
+    }
 
     // Xử lý click ra ngoài để đóng popup
     useEffect(() => {
@@ -81,86 +73,26 @@ const SectionArea = () => {
                 setActivePopupId(null); // Đóng tất cả popup
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
-    const sectionList = [
-        {
-            id: '10001',
-            courseId: 'INT1339',
-            nameCourse: 'Thực tập cơ sở',
-            class: 'D22CQCN02-N',
-            group: '01',
-            credits: 3,
-            year: 2025,
-            semester: 1,
-            quantity: '20-100',
-            lessons: '2 Buổi',
-            status: 'Đang mở',
-        },
-        {
-            id: '10002',
-            courseId: 'INT1229',
-            nameCourse: 'Nhập môn trí tuệ nhân tạo',
-            class: 'D22CQCN02-N',
-            group: '01',
-            credits: 3,
-            year: 2025,
-            semester: 1,
-            quantity: '20-100',
-            lessons: '2 Buổi',
-            status: 'Chưa mở',
-        },
-        {
-            id: '10003',
-            courseId: 'INT1367',
-            nameCourse: 'An toàn bảo mật hệ thống thông tin',
-            class: 'D22CQCN02-N',
-            group: '01',
-            credits: 3,
-            year: 2025,
-            semester: 1,
-            quantity: '20-100',
-            lessons: '2 Buổi',
-            status: 'Đang dạy',
-        },
-        {
-            id: '10004',
-            courseId: 'INT2139',
-            nameCourse: 'Lập trình web',
-            class: 'D22CQCN02-N',
-            group: '01',
-            credits: 3,
-            year: 2025,
-            semester: 1,
-            quantity: '20-100',
-            lessons: '2 Buổi',
-            status: 'Đang mở',
-        },
-        {
-            id: '10005',
-            courseId: 'INT1309',
-            nameCourse: 'Cơ sở dữ liệu',
-            class: 'D22CQCN02-N',
-            group: '01',
-            credits: 3,
-            year: 2025,
-            semester: 1,
-            quantity: '20-100',
-            lessons: '2 Buổi',
-            status: 'Đang dạy',
-        },
-    ];
-
 
 
     return (
         <SectionAreaContainer>
-            <div className="table-container">
+            {sections.length == 0 && <div className='not-found'>
+                <div className="icon wrap-center">
+                    <Icons.Info />
+                </div>
+                <div className="note">
+                    <div className="h4">Không tìm thấy kết quả</div>
+                    <small>Không có lớp học phần nào được tìm thấy.</small>
+                </div>
+            </div>}
+            {sections.length > 0 && <div className="table-container">
                 <table className='table'>
                     <thead>
                         <tr className='head-row'>
@@ -178,24 +110,23 @@ const SectionArea = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sectionList.map((section) => (
+
+                        {sections.map((section) => (
                             <tr
                                 className='body-row'
-                                key={section.id}
+                                key={section.sessionId}
                             >
-                                <td>{section.id}</td>
-                                <td>{section.courseId} <br /> <span>{section.nameCourse}</span></td>
-                                <td>{section.class}</td>
-                                <td>{section.group}</td>
-                                <td>{section.credits}</td>
+                                <td>{section.sessionId}</td>
+                                <td>{section.courseInfo.courseId} <br /> <span>{section.courseInfo.nameCourse}</span></td>
+                                <td>{section.clazzId}</td>
+                                <td>{section.groupNumber}</td>
+                                <td>{section.courseInfo.credits}</td>
                                 <td>{section.year}</td>
                                 <td>{section.semester}</td>
-                                <td>{section.quantity}</td>
-                                <td>{<span className="lessons">{section.lessons}</span>}</td>
-                                <td>{<span
-                                    className={`status ${section.status === 'Đang mở' ? 'open' : section.status === 'Chưa mở' ? 'not-open' : 'active'}`}
-                                >{section.status}
-                                </span>}
+                                <td>{section.minStudents} - {section.maxStudents}</td>
+                                <td>{<span className="lessons" onClick={() => handeClickSchedule(section)}>{section.scheduleIds.length} buổi</span>}</td>
+                                <td>
+                                    {convertStatus(section.status)}
                                 </td>
                                 <td>
                                     <div className="box" ref={(el) => (popupRefs.current[section.id] = el)}>
@@ -232,27 +163,31 @@ const SectionArea = () => {
                         ))}
                     </tbody>
                 </table>
-                <div className="pagination">
-                    <span>
-                        Hiển thị {Math.min((currentPage - 1) * itemsPerPage + 1, data.length)} đến{" "}
-                        {Math.min(currentPage * itemsPerPage, data.length)} trong tổng số {data.length} lớp học phần
-                    </span>
 
-                    <div className="controls">
-                        <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}>«</button>
-                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>‹</button>
-                        <button className="current">{currentPage}</button>
-                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>›</button>
-                        <button onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages}>»</button>
+            </div>}
+            {sections.length > 0 && <div className="pagination">
+                <span>
+                    Hiển thị trang {currentPage} trong tổng số {totalPage} trang
+                </span>
 
-                        <select value={itemsPerPage} onChange={handleChangePerPage}>
-                            {[5, 10, 20].map(size => (
-                                <option key={size} value={size}>{size}</option>
-                            ))}
-                        </select>
-                    </div>
+                <div className="controls">
+                    <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}>«</button>
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>‹</button>
+                    <button className="current">{currentPage}</button>
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPage}>›</button>
+                    <button onClick={() => handlePageChange(totalPage)} disabled={currentPage === totalPage}>»</button>
+
+                    <select value={itemPerPage} onChange={handleChangePerPage}>
+                        {itemPerPages.map(size => (
+                            <option key={size} value={size}>{size}</option>
+                        ))}
+                    </select>
                 </div>
-            </div>
+            </div>}
+
+            {isSchedule && <div className='pop-up-container wrap-center'>
+                <ScheduleDialog setIsSchedule={setIsSchedule} section={selectedSection} />
+            </div>}
         </SectionAreaContainer>
     );
 };

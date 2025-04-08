@@ -9,8 +9,8 @@ import { BiImageAdd, BiMessageAltError, BiUserCheck, BiLogIn, BiMenu, BiSolidUse
 
 import { BiAlarm, BiCalendar, BiSolidArrowFromRight, BiSolidArrowFromLeft, BiBookOpen } from "react-icons/bi";
 import { BiGroup, BiSolidDownArrow, BiSolidUpArrow, BiCalendarAlt, BiEdit, BiFile } from "react-icons/bi";
-import { BiTimeFive, BiTrashAlt, BiHash, BiBookmarkPlus} from "react-icons/bi";
-import { BsXLg, BsChevronDown, BsEye, BsDownload, BsGeoAlt } from "react-icons/bs";
+import { BiTimeFive, BiTrashAlt, BiHash, BiBookmarkPlus, BiBuildings} from "react-icons/bi";
+import { BsXLg, BsChevronDown, BsEye, BsDownload, BsGeoAlt, BsInfoCircle} from "react-icons/bs";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FaTimes } from "react-icons/fa";
 
@@ -82,4 +82,6 @@ export const Icons = {
     FlatUser: BiUser,
     BookMark: BiBookmarkPlus,
     Address: BsGeoAlt,
+    Info: BsInfoCircle,
+    House: BiBuildings,
 }

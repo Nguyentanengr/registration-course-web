@@ -1,9 +1,9 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import { RightBarContainer } from './RightBar.styled';
 import Logout from './Logout';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const urls = [
     "/portal/dang-ky",
@@ -12,6 +12,7 @@ const urls = [
 
 const RightBar = ({ status, setStatus }) => {
 
+    const location = useLocation();
     const navigate = useNavigate();
     const [isLogout, setIsLogout] = useState(false);
     const [selected, setSelected] = useState(0);
@@ -29,6 +30,15 @@ const RightBar = ({ status, setStatus }) => {
         setIsLogout(false);
         setSelected(0);
     }
+
+    useEffect(() => {
+        for (let i = 0; i < urls.length; i++) {
+            if (urls[i] === location.pathname) {
+                setSelected(i);
+                break;
+            }
+        } 
+    }, [location])
 
     return (
         <RightBarContainer status={status}>

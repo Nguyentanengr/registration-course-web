@@ -4,6 +4,7 @@ import com.jikateam.registration_course.constant.RegistrationStatus;
 import org.springframework.web.bind.support.SessionStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record SessionInfoResponse (
         Integer sessionId,
@@ -16,6 +17,7 @@ public record SessionInfoResponse (
         Integer maxStudents,
         LocalDate startDate,
         LocalDate endDate,
-        RegistrationStatus status
+        RegistrationStatus status,
+        List<Integer> scheduleIds
 ) {
 }

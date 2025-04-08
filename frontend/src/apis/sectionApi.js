@@ -1,0 +1,55 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+
+const GET_SECTION_API = "http://localhost:8080/api/v1/sessions?";
+
+const getStatusSection = (string) => {
+    switch (string) {
+        case 'Tất cả học phần':
+            return '';
+        case 'Đang hoạt động':
+            return '&status=6';
+        case 'Đang mở':
+            return '&status=2';
+        case 'Sắp tới':
+            return '&status=1';
+        default:
+            return '';
+    }
+}
+
+export const fetchSections = createAsyncThunk('sections/filter',
+    async ({ filter, searchKey, currentPage, itemPerPage }, { rejectWithValue }) => {
+        console.log(filter, searchKey, currentPage, itemPerPage);
+        
+        try {
+            const TARGET_API = GET_SECTION_API + "searchKey=" + searchKey + "&page=" + (currentPage - 1) + "&size=" + itemPerPage + getStatusSection(filter);
+            console.log(TARGET_API);
+
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorized": "Bearer" + TOKEN,
+                }
+            });
+
+            
+            const objectResponse = await response.json();
+            console.log(objectResponse);
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message || "Lỗi khi lấy dữ liệu"
+                });
+            };
+            return objectResponse;
+
+        } catch (error) {
+            // lỗi mạng hoặc lỗi sự cố khi truyền mạng
+            return rejectWithValue({
+                code: 9900,
+                message: error.message || "Lỗi kết nối tới server"
+            });
+        }
+    });

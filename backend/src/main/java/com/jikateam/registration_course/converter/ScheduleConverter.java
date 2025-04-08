@@ -3,7 +3,9 @@ package com.jikateam.registration_course.converter;
 import com.jikateam.registration_course.dto.request.CreateSessionRequest;
 import com.jikateam.registration_course.dto.request.ScheduleRequest;
 import com.jikateam.registration_course.dto.response.ScheduleInfoResponse;
+import com.jikateam.registration_course.dto.response.ScheduleOnSessionResponse;
 import com.jikateam.registration_course.dto.response.ScheduleResponse;
+import com.jikateam.registration_course.dto.response.SchedulesOnSessionResponse;
 import com.jikateam.registration_course.entity.Schedule;
 import com.jikateam.registration_course.entity.Session;
 import org.mapstruct.Mapper;
@@ -22,7 +24,10 @@ public interface ScheduleConverter {
 
     ScheduleInfoResponse mapToScheduleInfoResponse(Schedule schedule);
 
-
-
     ScheduleResponse mapToScheduleResponse(Schedule schedule);
+
+
+    @Mapping(target = "teacherName", source = "teacher.fullname")
+    @Mapping(target = "placeId", source = "place.placeId")
+    ScheduleOnSessionResponse mapToScheduleOnSessionResponse(Schedule schedule);
 }

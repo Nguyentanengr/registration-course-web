@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchScheduleOnSection } from "../../apis/scheduleApi";
 
-const dowVieToEng = {
+export const dowVieToEng = {
     "Thứ 2": "MONDAY",
     "Thứ 3": "TUESDAY",
     "Thứ 4": "WEDNESDAY",
@@ -10,7 +11,7 @@ const dowVieToEng = {
     "Chủ nhật": "SUNDAY"
 };
 
-const dowEngToVie = {
+export const dowEngToVie = {
     "MONDAY": "Thứ 2",
     "TUESDAY": "Thứ 3",
     "WEDNESDAY": "Thứ 4",
@@ -35,6 +36,10 @@ const scheduleSlice = createSlice({
             teacherId: null,
             placeId: null,
         },
+        errorScheduleOnSection: null,
+        loadingScheduleOnSection: false,
+        schedulesOnSection: [
+        ],
     },
     reducers: {
         addDayOfWeek: (state, action) => {
@@ -58,10 +63,30 @@ const scheduleSlice = createSlice({
         addPlaceId: (state, action) => {
             state.addScheduleForm.placeId = action.payload;
         },
+        resetScheduleOnSection: (state) => {
+            state.errorScheduleOnSection = null;
+            state.loadingScheduleOnSection = false;
+            state.schedulesOnSection = [];
+        }
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchScheduleOnSection.pending, (state) => {
+                state.loadingScheduleOnSection = true;
+            })
+            .addCase(fetchScheduleOnSection.fulfilled, (state, {payload}) => {
+                console.log("Result: ", payload);
+                state.loadingScheduleOnSection = false;
+                state.schedulesOnSection = payload.data;
+            })
+            .addCase(fetchScheduleOnSection.rejected, (state, { payload }) => {
+                state.loadingScheduleOnSection = false;
+                state.errorScheduleOnSection = payload;
+            })
+    }
 });
 
 export const { addDayOfWeek, addEndDate, addStartDate, addEndPeriod
-    , addStartPeriod, addTeacherId, addPlaceId } = scheduleSlice.actions;
+    , addStartPeriod, addTeacherId, addPlaceId, resetScheduleOnSection } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

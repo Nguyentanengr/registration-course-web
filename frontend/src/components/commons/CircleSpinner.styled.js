@@ -14,7 +14,7 @@ export const CircleSpinnerContainer = styled.div`
     .circle {
         width: ${({ size }) => size}px;
         height: ${({ size }) => size}px;
-        border: ${({ size }) => size / 6}px solid ${Theme.header};
+        border: ${({ size }) => size / 6}px solid ${(props) => props.color};
         border-top-color: transparent;
         border-radius: 50%;
         animation: ${spin} 0.8s linear infinite;

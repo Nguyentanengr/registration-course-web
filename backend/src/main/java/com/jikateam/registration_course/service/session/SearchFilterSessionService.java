@@ -5,6 +5,7 @@ import com.jikateam.registration_course.converter.SessionConverter;
 import com.jikateam.registration_course.dto.request.SessionFilterRequest;
 import com.jikateam.registration_course.dto.response.PageSessionInfoResponse;
 import com.jikateam.registration_course.dto.response.SessionInfoResponse;
+import com.jikateam.registration_course.entity.Schedule;
 import com.jikateam.registration_course.entity.Session;
 import com.jikateam.registration_course.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,10 @@ public class SearchFilterSessionService {
                     RegistrationStatus rs = session.getOpenSessionRegistration() != null
                             ? session.getOpenSessionRegistration().getStatus()
                             : null;
+                    List<Integer> scheduleIds = session.getSchedules().stream()
+                            .map(Schedule::getScheduleId).toList();
                     return sessionConverter.mapToSessionInfoResponse(session
-                            , rs);
+                            , rs, scheduleIds);
                 })
                 .toList();
 

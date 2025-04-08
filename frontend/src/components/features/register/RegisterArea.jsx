@@ -26,10 +26,10 @@ const RegisterArea = ({ sessionList }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sessionList.map((session) => (
+                        {sessionList.map((session, index) => (
                             <tr
                                 className='body-row'
-                                key={session.id}
+                                key={index}
                                 onClick={handleOnClickRow}
                             >
                                 <td>{session.id}</td>

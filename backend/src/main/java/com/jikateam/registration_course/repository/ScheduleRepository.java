@@ -52,5 +52,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     );
 
 
+    @Query("SELECT s FROM Schedule s " +
+            "JOIN FETCH s.place p " +
+            "JOIN FETCH s.teacher t " +
+            "WHERE s.session.id = :sessionId"
+    )
+    List<Schedule> fetchBySessionId(
+            @Param("sessionId") String sessionId
+    );
+
 
 }

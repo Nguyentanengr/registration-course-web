@@ -1,6 +1,8 @@
 package com.jikateam.registration_course.service.schedule;
 
 
+import com.jikateam.registration_course.converter.ScheduleConverter;
+import com.jikateam.registration_course.dto.response.ScheduleOnSessionResponse;
 import com.jikateam.registration_course.dto.response.SchedulesOnWeekResponse;
 import com.jikateam.registration_course.dto.response.TimetableResponse;
 import com.jikateam.registration_course.entity.Schedule;
@@ -22,7 +24,7 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-
+    private final ScheduleConverter scheduleConverter;
 
     private boolean isOverlapping(LocalDate weekStart, LocalDate weekEnd
             , LocalDate scheduleStart, LocalDate scheduleEnd) {
@@ -83,6 +85,16 @@ public class ScheduleService {
             return schedulesOnWeeks;
         }
         return List.of();
+    }
+
+    public List<ScheduleOnSessionResponse> getSchedulesOnSession(String sessionId) {
+
+        var schedules = scheduleRepository.fetchBySessionId(sessionId);
+
+        log.info("Total schedules for sessionId {} is {}", sessionId, schedules.size());
+        return schedules.stream()
+                .map(scheduleConverter::mapToScheduleOnSessionResponse)
+                .toList();
     }
 
     private TimetableResponse mapToTimetableResponse(Schedule schedule) {

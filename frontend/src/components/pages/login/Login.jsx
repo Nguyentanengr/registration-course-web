@@ -4,61 +4,48 @@ import { Icons } from "../../../assets/icons/Icon";
 import CircleSpinner from "../../commons/CircleSpinner"
 import Alert from "../../commons/Alert";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../stores/slices/authSlice";
+import { loginUser } from "../../../apis/authApi";
 
 
 const Login = () => {
 
+
+    // khai báo biến
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [loginState, setLoginState] = useState({
-        isError: null,
-        isSuccess: null,
-        isLoading: false,
-        user: null,
-    });
-
     const [validate, setValidate] = useState({
         username: "",
         password: "",
     });
 
+    const { loading, error, user } = useSelector((state) => state.auth);
+
+    // Nếu người dùng đã đăng nhập -> điều hướng
+    // useEffect(() => {
+    //     console.log("user trong redux", user);
+    //     if (user) {
+    //         navigate("/portal/dang-ky");
+    //     }
+    // }, [user]);
+
+    // khi nhấn login
     const handlOnSubmitLogin = (e) => {
         e.preventDefault();
-
         if (handleValidateInput()) {
-            // fake call api
-            setLoginState((prev) => ({
-                ...prev,
-                isLoading: true,
-                isError: null,
-                isSuccess: null
-            }))
-            setTimeout(() => {
-                
-                if (username === "username" && password === "password") {
-                    console.log("login success");
-                    setLoginState((prev) => ({
-                        ...prev,
-                        isLoading: false,
-                        isError: null,
-                        isSuccess: "Đăng nhập thành công",
-                        user: {id: "N22DCCN156", fullname: "Phạm Tấn Nguyên"}
-                    }));
-                } else {
-                    console.log("login error");
-                    
-                    setLoginState((prev) => ({
-                        ...prev,
-                        isLoading: false,
-                        isError: "Username hoặc mật khẩu chưa đúng",
-                        isSuccess: null,
-                    }));
-                }
-            }, 1000);
+            dispatch(loginUser({ username, password }))
+                .then(({ payload }) => {
+                    if (payload.data.user) {
+                        navigate("/portal/dang-ky", { replace: true });
+                    }
+                });
         }
-    }
+    };
 
+    // xử lý dữ liệu đầu vào
     const handleValidateInput = () => {
         if (!username) {
             setValidate((prev) => ({ ...prev, username: "Vui lòng nhập mã sinh viên" }));
@@ -70,28 +57,36 @@ const Login = () => {
         return true;
     }
 
+    // Xóa bỏ validate khi nhấn phím
     const handleOnKeyDown = (e) => {
         setValidate((prev) => ({
             ...prev,
             [e.target.name]: ""
-        }))
+        }));
     };
 
-    useEffect(() => {
-        setLoginState({
-            isError: null,
-            isSuccess: null,
-            isLoading: false,
-        });
-    }, []);
+    const getMessageError = (error) => {
+        console.log(error);
 
-    useEffect(() => {
-        if (loginState.user) navigate("/portal/dang-ky");
-    }, [loginState.user])
+        switch (error.code) {
+            case 9015: {
+                return "Tài khoản đã bị khóa";
+            };
+            case 9017: {
+                return "Tài khoản hoặc mật khẩu không đúng";
+            }
+            case 9039: {
+                return "Tài khoản hoặc mật khẩu không đúng";
+            }
+            default: {
+                return "Đăng nhập thất bại";
+            }
+        };
+    };
 
     return (
         <LoginContainer>
-            { loginState.isError && <Alert message={loginState.isError}/>}
+            {error && <Alert message={getMessageError(error)} />}
             <div className="login-container">
                 <div className="left-gap">
                     <img src="/images/background-login.png" alt="" />
@@ -143,7 +138,7 @@ const Login = () => {
                         </div>
 
                         <button className="login-btn" type="submit">
-                            {loginState.isLoading ? <CircleSpinner size={25}/> : "Đăng nhập ngay"}
+                            {loading ? <CircleSpinner size={15} /> : "Đăng nhập ngay"}
                         </button>
                     </form>
                 </div>

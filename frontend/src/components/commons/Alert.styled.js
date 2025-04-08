@@ -4,7 +4,7 @@ import { Theme } from "../../assets/styles/Theme";
 export const AlertContainer = styled.div`
     position: fixed;
     top: ${(props) => (props.show ? "70px" : "-100px")};
-    left: 75%;
+    left: 82%;
     transform: translateX(-50%);
     width: 350px;
     background:${(props) => (props.type === "error" ? Theme.hotRed : Theme.success)};

@@ -4,23 +4,80 @@ import { Theme } from '../../../assets/styles/Theme'
 export const SectionAreaContainer = styled.div`
     margin-top: 25px;
 
+    .finding {
+        width: 100%;
+        padding: 20px 50px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        color: ${Theme.mediumSoft};
+        gap: 20px;
+        align-items: center;
+    }
+
+    .not-found {
+        padding: 20px 50px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        display: flex;
+        gap: 20px;
+        align-items: start;
+
+        .icon {
+            padding-top: 2px;
+            font-size: 18px;
+        }
+
+        .note {
+
+            .h4 {
+                font-weight: 600;
+            }
+        }
+    }
+
     .table-container {
         width: 100%;
         overflow-x: auto;
+        height: 480px; 
+        overflow-y: auto;
         background: white;
         border-radius: 8px;
         box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
         font-size: 16px;
 
+        &::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1); 
+            border-radius: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
         .table {
             width: 100%;
+            min-width: 800px;
             border-collapse: collapse;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1;
         }
 
         th, td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid ${Theme.hover};
+            height: 50px;
         }
 
         td {
@@ -120,33 +177,60 @@ export const SectionAreaContainer = styled.div`
         }
 
         
-        .pagination {
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
+        
+    }
 
-        .controls button,
-        .controls select {
-            margin-left: 6px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid ${Theme.hover};
-            background: white;
-            cursor: pointer;
-        }
 
-        .controls button.current {
-            background: #d61f1f;
-            color: white;
-            font-weight: bold;
-        }
+    .pagination {
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+    }
 
-        .controls button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+    .controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .controls button {
+        margin-left: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid ${Theme.hover};
+        background: white;
+        cursor: pointer;
+    }
+    .controls select {
+        margin-left: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid ${Theme.hover};
+        background: white;
+        cursor: pointer;
+        height: 28px;
+    }
+
+    .controls button.current {
+        background: #d61f1f;
+        color: white;
+        font-weight: bold;
+    }
+
+    .controls button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .pop-up-container {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: ${Theme.boldShadow};
     }
 `;

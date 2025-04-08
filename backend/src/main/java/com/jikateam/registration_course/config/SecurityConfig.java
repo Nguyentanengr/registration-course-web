@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/api/v1/courses", "/api/v1/courses/*", "/api/v1/phases",
             "/api/v1/phases/*", "/api/v1/classes", "/api/v1/classes/*",
             "/api/v1/open-sessions", "/api/v1/open-sessions/*",
-            "/api/v1/schedules"
+            "/api/v1/schedules", "/api/v1/auth/gen-pass",
+            "/api/v1/schedules/*",
 
 
     };
@@ -95,10 +96,10 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*"); // only the given localhost
+        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // only the given localhost (Bắt buộc)
         corsConfiguration.addAllowedHeader("*"); // allowed any header
         corsConfiguration.addAllowedMethod("*"); // allowed any method: GET, POST, ...
-//        corsConfiguration.setAllowCredentials(true); // to send refresh token into Http-Only (Cookie)
+        corsConfiguration.setAllowCredentials(true); // to send refresh token into Http-Only (Cookie)
 
         UrlBasedCorsConfigurationSource urls = new UrlBasedCorsConfigurationSource();
         urls.registerCorsConfiguration("/**", corsConfiguration);

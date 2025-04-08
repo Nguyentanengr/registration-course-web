@@ -40,7 +40,6 @@ export const FilterAreaContainer = styled.div`
                 cursor: pointer;
                 font-weight: 500;
                 color: ${Theme.textMediumSoft};
-                transition: 0.1s;
 
                 &.active {
                     background-color: ${Theme.header};
@@ -66,13 +65,18 @@ export const FilterAreaContainer = styled.div`
             justify-content: start;
 
             .input-container {
+                width: 100%;
                 gap: 5px;
+                justify-content: start;
+
                 .icon {
+                    width: 40px;
+                    height: 40px;
                     font-size: 22px;
                     color: ${Theme.soft};
-
                 }
                 input {
+                    width: 100%;
                     &::placeholder {
                         color: ${Theme.textMediumSoft};
                     }

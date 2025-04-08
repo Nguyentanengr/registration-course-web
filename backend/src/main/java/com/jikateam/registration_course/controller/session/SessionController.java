@@ -76,7 +76,7 @@ public class SessionController {
                         : Sort.by(request.fieldSorted()).descending()
         );
 
-        log.info("Param: {}", request);
+        log.info("Param: {}, status = {}", request, status);
         CodeResponse codeResponse = CodeResponse.SUCCESS;
 
         return DataResponse.<PageSessionInfoResponse>builder()

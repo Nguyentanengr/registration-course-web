@@ -1,8 +1,8 @@
 import { AdminRightBarContainer } from './AdminRightBar.styled';
 import { Icons } from '../../../assets/icons/Icon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Logout from './Logout';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const urls = [
     "/admin/hoc-phan",
@@ -12,6 +12,7 @@ const urls = [
 
 const AdminRightBar = ({ status, setStatus }) => {
 
+    const location = useLocation();
     const navigate = useNavigate();
     const [isLogout, setIsLogout] = useState(false);
     const [selected, setSelected] = useState(0);
@@ -20,7 +21,7 @@ const AdminRightBar = ({ status, setStatus }) => {
         setStatus(status === "close" ? "open" : "close");
     }
 
-    const handleOnClickItem = ( urlIndex ) => {
+    const handleOnClickItem = (urlIndex) => {
         navigate(urls[urlIndex]);
         setSelected(urlIndex);
     }
@@ -29,6 +30,15 @@ const AdminRightBar = ({ status, setStatus }) => {
         setIsLogout(false);
         setSelected(0);
     }
+
+    useEffect(() => {
+        for (let i = 0; i < urls.length; i++) {
+            if (urls[i] === location.pathname) {
+                setSelected(i);
+                break;
+            }
+        };
+    }, [location]);
 
     return (
         <AdminRightBarContainer status={status}>
@@ -63,8 +73,8 @@ const AdminRightBar = ({ status, setStatus }) => {
                 {status === "open" && <span>Đăng xuất</span>}
             </div>
             {isLogout && <div className='pop-up-container wrap-center'>
-                <Logout setIsLogout={setIsLogout} reset={reset}/>
-            </div>}  
+                <Logout setIsLogout={setIsLogout} reset={reset} />
+            </div>}
         </AdminRightBarContainer>
     );
 };
