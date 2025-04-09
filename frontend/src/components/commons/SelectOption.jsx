@@ -2,20 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import { SelectOptionContainer } from './SelectOption.styled';
 import { Icons } from '../../assets/icons/Icon';
 
-const SelectOption = ({ options = [], placeholder = '', width='100%', onSelect }) => {
+const SelectOption = ({ options = [], placeholder = '', width = '100%', onSelect }) => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState(null);
     const selectRef = useRef();
 
     useEffect(() => {
-        if (!placeholder || placeholder === '') {
-            if (options.length > 0 && selected === null) {
-                setSelected(options[0]);
-                if (onSelect) onSelect(options[0]);
-            }
+        // Nếu options rỗng, đặt selected thành null
+        if (options.length === 0) {
+            setSelected(null);
+            if (onSelect) onSelect(null);
+            return;
         }
-    }, [options]);
+
+        // Nếu selected không có trong options mới, chọn phần tử đầu tiên
+        if (!options.includes(selected)) {
+            setSelected(options[0]);
+            if (onSelect) onSelect(options[0]);
+        }
+    }, [options, onSelect]);
 
     useEffect(() => {
         const handleClickOutSide = (e) => {

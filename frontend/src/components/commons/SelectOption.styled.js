@@ -20,6 +20,9 @@ export const SelectOptionContainer = styled.div`
         align-items: center;
         transition: 0.2s;
         color: ${Theme.dark};
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .btn-select:hover {

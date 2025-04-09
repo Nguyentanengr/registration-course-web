@@ -48,6 +48,16 @@ const days = [
     "SUNDAY"
 ]
 
+export const convertToDayMonthYear = (dateStr) => {
+    const [year, month, day] = dateStr.split("-");
+    return `${day}/${month}/${year}`;
+};
+
+export const convertToYearMonthDay = (dateStr) => {
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month}-${day}`;
+}
+
 
 
 const FilterArea = () => {
@@ -229,14 +239,11 @@ const FilterArea = () => {
         }
     };
 
-    const convertDate = (dateStr) => {
-        const [year, month, day] = dateStr.split("-");
-        return `${day}/${month}/${year}`;
-    }
+    
 
     const getTimeTable = (id) => {
         if (schedules.length != 0) {
-            return convertDate(schedules[id].startDate) + " - " + convertDate(schedules[id].endDate);
+            return convertToDayMonthYear(schedules[id].startDate) + " - " + convertToDayMonthYear(schedules[id].endDate);
         }
     };
 

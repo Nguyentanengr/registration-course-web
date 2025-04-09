@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import { SectionAreaContainer } from './SectionArea.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentPage, setItemPerPage } from '../../../stores/slices/sectionSlice';
-import CircleSpinner from "../../commons/CircleSpinner";
+import { removeSection, setCurrentPage, setItemPerPage } from '../../../stores/slices/sectionSlice';
+import Alert from "../../commons/Alert";
 import ScheduleDialog from './ScheduleDialog';
+import { deleteSection } from '../../../apis/sectionApi';
+import ConfirmDelete from './ConfirmDelete';
 
 
 const convertStatus = (status) => {
@@ -25,6 +27,8 @@ const convertStatus = (status) => {
             return 'Đang dạy';
         case 'COMPLETED':
             return 'Đã hoàn thành';
+        case 'CREATED':
+            return 'Đã tạo';
     }
 }
 
@@ -32,10 +36,13 @@ const SectionArea = () => {
 
     const popupRefs = useRef({});
     const dispatch = useDispatch();
-    const { loading, error, currentPage, totalPage, itemPerPage, itemPerPages, sections } = useSelector((state) => state.section);
+    const { loading, error, currentPage, totalPage
+        , itemPerPage, itemPerPages, sections, deleteError } = useSelector((state) => state.section);
     const [activePopupId, setActivePopupId] = useState(null);
     const [isSchedule, setIsSchedule] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
     const [selectedSection, setSelectedSection] = useState(null);
+    const [deletedSection, setDeletedSection] = useState(null);
 
     // Khi tăng giảm page 
     const handlePageChange = (page) => {
@@ -52,37 +59,77 @@ const SectionArea = () => {
 
     // Toggle thao tác cho từng hàng
     const togglePopup = (id) => {
+        console.log(id);
         setActivePopupId(activePopupId === id ? null : id); // Nếu popup đang mở thì đóng, nếu không thì mở
     };
 
     // Xử lý khi xem lịch hoc 
-    const handeClickSchedule = ( section ) => {
+    const handeClickSchedule = (section) => {
         setSelectedSection(section);
         setIsSchedule(!isSchedule);
+    };
+
+    // Xử lý khi xóa hàng
+
+    const handleClickDelete = (sectionId) => {
+        setDeletedSection(sectionId);
+        setIsDelete(!isDelete);
     }
+
+    const handleOnDelete = () => {
+        console.log(deletedSection);
+        dispatch(deleteSection({ sessionId: deletedSection }))
+            // sau khi xóa thành công thì xóa ở client
+            .unwrap()
+            .then((action) => {
+                dispatch(removeSection(deletedSection))
+            })
+            .catch((error) => {
+                setActivePopupId(null);
+            })
+    };
+
+    useEffect(() => {
+        console.log("Sections data:", sections);
+        // Kiểm tra xem có section nào thiếu sessionId không
+        const invalidSections = sections.filter(section => !section.sessionId);
+        if (invalidSections.length > 0) {
+            console.warn("Found sections with missing sessionId:", invalidSections);
+        }
+    }, [sections]);
 
     // Xử lý click ra ngoài để đóng popup
     useEffect(() => {
         const handleClickOutside = (e) => {
-            // Kiểm tra nếu click ra ngoài tất cả các popup
-            const isClickOutsideAllPopups = Object.values(popupRefs.current).every(
-                (ref) => ref && !ref.contains(e.target)
-            );
+            // Nếu không có popup nào đang mở, không cần kiểm tra
+            if (!activePopupId) return;
+
+            // const isClickOutsideAllPopups = Object.values(popupRefs.current).every(
+            //     (ref) => ref && !ref.contains(e.target)
+            // );
+            const isClickOutsideAllPopups = popupRefs.current[activePopupId] &&
+                !popupRefs.current[activePopupId].contains(e.target);
+
+            console.log("Click target:", e.target);
+            console.log("popupRefs.current:", popupRefs.current);
+            console.log("Is click outside all popups?", isClickOutsideAllPopups);
 
             if (isClickOutsideAllPopups) {
-                setActivePopupId(null); // Đóng tất cả popup
+                setActivePopupId(null); // Đóng popup nếu nhấp ra ngoài
             }
         };
+
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [activePopupId]);
 
 
 
     return (
         <SectionAreaContainer>
+            {deleteError != null && <Alert message='Đã có lỗi xảy ra' />}
             {sections.length == 0 && <div className='not-found'>
                 <div className="icon wrap-center">
                     <Icons.Info />
@@ -129,34 +176,46 @@ const SectionArea = () => {
                                     {convertStatus(section.status)}
                                 </td>
                                 <td>
-                                    <div className="box" ref={(el) => (popupRefs.current[section.id] = el)}>
-                                        <div className="wrap-center" onClick={() => togglePopup(section.id)}><Icons.More /></div>
-                                        {activePopupId === section.id && <div className="popup">
-                                            <div className="item">
-                                                <div className="icon">
-                                                    <Icons.Edit />
-                                                </div>
-                                                <div className="action-name">
-                                                    Chỉnh sửa
-                                                </div>
+                                    <div className="box">
+                                        <div className="wrap" ref={(el) => (popupRefs.current[section.sessionId] = el)}>
+                                            <div
+                                                className="wrap-center"
+                                                onClick={() => togglePopup(section.sessionId)}
+
+                                            >
+                                                <Icons.More />
                                             </div>
-                                            <div className="item">
-                                                <div className="icon">
-                                                    <Icons.Clock />
+                                            {activePopupId === section.sessionId && <div className="popup">
+
+                                                <div className={`item ${section.status === 'PENDING' ? '' : 'disable'}`}>
+                                                    <div className="icon">
+                                                        <Icons.Edit />
+                                                    </div>
+                                                    <div className="action-name">
+                                                        Chỉnh sửa
+                                                    </div>
                                                 </div>
-                                                <div className="action-name">
-                                                    Cập nhật lịch học
+                                                <div className="item">
+                                                    <div className="icon">
+                                                        <Icons.Clock />
+                                                    </div>
+                                                    <div className="action-name">
+                                                        Cập nhật lịch học
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="item">
-                                                <div className="icon">
-                                                    <Icons.Trash />
+                                                <div
+                                                    className={`item ${section.status === 'PENDING' || section.status === 'CREATED' ? '' : 'disable'}`}
+                                                    onClick={() => handleClickDelete(section.sessionId)}
+                                                >
+                                                    <div className="icon">
+                                                        <Icons.Trash />
+                                                    </div>
+                                                    <div className="action-name">
+                                                        Xóa
+                                                    </div>
                                                 </div>
-                                                <div className="action-name">
-                                                    Xóa
-                                                </div>
-                                            </div>
-                                        </div>}
+                                            </div>}
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -187,6 +246,13 @@ const SectionArea = () => {
 
             {isSchedule && <div className='pop-up-container wrap-center'>
                 <ScheduleDialog setIsSchedule={setIsSchedule} section={selectedSection} />
+            </div>}
+            {isDelete && <div className='pop-up-container wrap-center'>
+                <ConfirmDelete
+                    setIsDelete={setIsDelete}
+                    message="Bạn có chắc chắn muốn xóa lớp học phần này? Hành động này không thể hoàn tác."
+                    onDelete={handleOnDelete}
+                />
             </div>}
         </SectionAreaContainer>
     );

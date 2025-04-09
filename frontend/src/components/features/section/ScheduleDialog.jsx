@@ -82,7 +82,7 @@ const ScheduleDialog = ({ setIsSchedule, section }) => {
                                     <Icons.Clock />
                                 </div>
                                 <small>
-                                    Thời gian: {timeMap[sc.startPeriod].start} - {timeMap[sc.startPeriod].end} đến {timeMap[sc.startPeriod].start} - {timeMap[sc.startPeriod].end}
+                                    Thời gian: {timeMap[sc.startPeriod].start} đến {timeMap[sc.endPeriod].end}
                                 </small>
                             </div>
                             <div className="group">
@@ -108,7 +108,8 @@ const ScheduleDialog = ({ setIsSchedule, section }) => {
                                     <Icons.Registration />
                                 </div>
                                 <small>
-                                   Môn học: {section.courseInfo.courseName}
+                                                                       
+                                    Từ ngày: {sc.startDate} đến {sc.endDate}
                                 </small>
                             </div>
                         </div>

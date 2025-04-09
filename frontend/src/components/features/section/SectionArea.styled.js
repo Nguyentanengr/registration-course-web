@@ -159,6 +159,12 @@ export const SectionAreaContainer = styled.div`
                         background-color: transparent;
                         color: ${Theme.dark};
 
+                        &.disable {
+                            pointer-events: none;  
+                            opacity: 0.5;          
+                            user-select: none;    
+                        }
+
                         &:hover {
                             background-color: ${Theme.hover};
                         }
@@ -197,7 +203,8 @@ export const SectionAreaContainer = styled.div`
 
     .controls button {
         margin-left: 6px;
-        padding: 4px 10px;
+        width: 28px;
+        height: 28px;
         border-radius: 6px;
         border: 1px solid ${Theme.hover};
         background: white;
@@ -205,7 +212,9 @@ export const SectionAreaContainer = styled.div`
     }
     .controls select {
         margin-left: 6px;
-        padding: 4px 10px;
+        width: 58px;
+        padding: 0 10px;
+        height: 28px;
         border-radius: 6px;
         border: 1px solid ${Theme.hover};
         background: white;

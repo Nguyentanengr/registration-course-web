@@ -1,5 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchSections } from "../../apis/sectionApi";
+import { deleteSection, fetchSections } from "../../apis/sectionApi";
+import { fetchActiveClassIds } from "../../apis/classApi";
+import { fetchCourseBySemester } from "../../apis/courseApi";
+import { fetchAllPlaces } from "../../apis/placeApi";
+import { fetchTeacherForCourse } from "../../apis/teacherApi";
 
 
 
@@ -10,90 +14,43 @@ const sectionSlice = createSlice({
         error: null,
         filter: 'Tất cả học phần',
         filters: ['Tất cả học phần', 'Đang hoạt động', 'Đang mở', 'Sắp tới'],
-        sections: [
-            // {
-            //     id: '10001',
-            //     courseId: 'INT1339',
-            //     nameCourse: 'Thực tập cơ sở',
-            //     class: 'D22CQCN02-N',
-            //     group: '01',
-            //     credits: 3,
-            //     year: 2025,
-            //     semester: 1,
-            //     quantity: '20-100',
-            //     lessons: '2 Buổi',
-            //     status: 'Đang mở',
-            // },
-            // {
-            //     id: '10002',
-            //     courseId: 'INT1229',
-            //     nameCourse: 'Nhập môn trí tuệ nhân tạo',
-            //     class: 'D22CQCN02-N',
-            //     group: '01',
-            //     credits: 3,
-            //     year: 2025,
-            //     semester: 1,
-            //     quantity: '20-100',
-            //     lessons: '2 Buổi',
-            //     status: 'Chưa mở',
-            // },
-            // {
-            //     id: '10003',
-            //     courseId: 'INT1367',
-            //     nameCourse: 'An toàn bảo mật hệ thống thông tin',
-            //     class: 'D22CQCN02-N',
-            //     group: '01',
-            //     credits: 3,
-            //     year: 2025,
-            //     semester: 1,
-            //     quantity: '20-100',
-            //     lessons: '2 Buổi',
-            //     status: 'Đang dạy',
-            // },
-            // {
-            //     id: '10004',
-            //     courseId: 'INT2139',
-            //     nameCourse: 'Lập trình web',
-            //     class: 'D22CQCN02-N',
-            //     group: '01',
-            //     credits: 3,
-            //     year: 2025,
-            //     semester: 1,
-            //     quantity: '20-100',
-            //     lessons: '2 Buổi',
-            //     status: 'Đang mở',
-            // },
-            // {
-            //     id: '10005',
-            //     courseId: 'INT1309',
-            //     nameCourse: 'Cơ sở dữ liệu',
-            //     class: 'D22CQCN02-N',
-            //     group: '01',
-            //     credits: 3,
-            //     year: 2025,
-            //     semester: 1,
-            //     quantity: '20-100',
-            //     lessons: '2 Buổi',
-            //     status: 'Đang dạy',
-            // },
-        ],
+        sections: [],
         currentPage: 1,
         totalPage: 1,
         itemPerPage: 10,
         itemPerPages: [10, 20, 50],
         searchKey: '',
+
+        // add
+        classIds: [],
+        years: [],
+        semesters: [1, 2, 3],
+        courses: [],
+        dayOfWeeks: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'],
+        periods: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        teachers: [],
+        places: [],
+
         addSectionForm: {
             classId: '',
             year: 2025,
             semester: 1,
             courseId: '',
-            group: 1,
+            groupNumber: 1,
             minStudents: 20,
             maxStudents: 100,
-            schedules: []
-        }
+            schedules: [],
+        },
+
+        // delete
+        deleteLoading: false,
+        deleteError: null,
+
     },
     reducers: {
+        setYears: (state, action) => {
+            state.years = action.payload;
+        },
         setFilter: (state, action) => {
             state.filter = action.payload;
             state.currentPage = 1;
@@ -104,7 +61,7 @@ const sectionSlice = createSlice({
         },
         setCurrentPage: (state, action) => {
             console.log("toi dang o day");
-            
+
             state.currentPage = action.payload;
         },
         setItemPerPage: (state, action) => {
@@ -114,6 +71,7 @@ const sectionSlice = createSlice({
             state.addSectionForm.classId = action.payload;
         },
         setYear: (state, action) => {
+            console.log(action.payload);
             state.addSectionForm.year = action.payload;
         },
         setSemester: (state, action) => {
@@ -123,7 +81,7 @@ const sectionSlice = createSlice({
             state.addSectionForm.courseId = action.payload;
         },
         setGroup: (state, action) => {
-            state.addSectionForm.group = action.payload;
+            state.addSectionForm.groupNumber = action.payload;
         },
         setMinStudents: (state, action) => {
             state.addSectionForm.minStudents = action.payload;
@@ -139,6 +97,27 @@ const sectionSlice = createSlice({
             state.addSectionForm.schedules = state.addSectionForm.schedules
                 .filter((s) => !(s.scheduleId === action.payload));
         },
+        resetSectionForm: (state) => {
+            state.addSectionForm = {
+                classId: '',
+                year: 2025,
+                semester: 1,
+                courseId: '',
+                groupNumber: 1,
+                minStudents: 20,
+                maxStudents: 100,
+                schedules: [],
+            }
+        },
+        resetScheduleState: (state) => {
+            state.dayOfWeeks= ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+            state.periods= [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            state.teachers= [];
+            state.places= [];
+        },
+        removeSection: (state, action) => {
+            state.sections = state.sections.filter((s) => !(s.sessionId == action.payload));
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -146,19 +125,46 @@ const sectionSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchSections.fulfilled, (state, {payload}) => {
+            .addCase(fetchSections.fulfilled, (state, { payload }) => {
                 state.loading = false;
-                state.error = null;                
+                state.error = null;
                 state.totalPage = payload.data.totalPages;
                 state.sections = payload.data.sessions;
             })
-            .addCase(fetchSections.rejected, (state, {payload}) => {
+            .addCase(fetchSections.rejected, (state, { payload }) => {
                 state.loading = false;
                 state.error = payload;
             })
+            .addCase(deleteSection.pending, (state) => {
+                state.deleteLoading = true;
+                state.deleteError = null;
+            })
+            .addCase(deleteSection.fulfilled, (state) => {
+                state.deleteLoading = false;
+                state.deleteError = null;
+            })
+            .addCase(deleteSection.rejected, (state, { payload }) => {
+                console.log(payload);
+                state.deleteLoading = false;
+                state.deleteError = payload;
+            })
+            .addCase(fetchActiveClassIds.fulfilled, (state, { payload }) => {
+                state.classIds = payload.data;
+            })
+            .addCase(fetchCourseBySemester.fulfilled, (state, { payload }) => {
+                state.courses = payload.data;
+            } )
+            .addCase(fetchTeacherForCourse.fulfilled, (state, { payload }) => {
+                console.log(payload);
+                state.teachers = payload.data;
+            })
+            .addCase(fetchAllPlaces.fulfilled, (state, { payload }) => {
+                console.log(payload);
+                state.places = payload.data;
+            });
     }
 });
 
 export const { setFilter, setCurrentPage, setSearchKey, setClassId, setYear, setSemester,
-    setCourseId, setGroup, setMinStudents, setMaxStudents, addSchedule, removeSchedule, setItemPerPage } = sectionSlice.actions;
+    setCourseId, setGroup, setMinStudents, setMaxStudents, addSchedule, removeSchedule, setItemPerPage, removeSection,resetScheduleState, setYears } = sectionSlice.actions;
 export default sectionSlice.reducer;

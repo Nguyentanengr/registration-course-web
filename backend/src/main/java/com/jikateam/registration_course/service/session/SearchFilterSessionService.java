@@ -30,17 +30,21 @@ public class SearchFilterSessionService {
             Pageable pageable
     ) {
 
+        log.info("content");
         Page<Session> page = sessionRepository.findAllSessionByFilter(
                 request.searchKey(), request.year(), request.semester()
                 , request.clazzId(), request.courseId(), status
                 , pageable
         );
 
+        log.info("content");
+
 
         List<SessionInfoResponse> sessionInfoResponses = page.map(session -> {
                     RegistrationStatus rs = session.getOpenSessionRegistration() != null
                             ? session.getOpenSessionRegistration().getStatus()
-                            : null;
+                            : RegistrationStatus.CREATED;
+                    log.info("status for sessionId {}: {}",session.getSessionId(), rs);
                     List<Integer> scheduleIds = session.getSchedules().stream()
                             .map(Schedule::getScheduleId).toList();
                     return sessionConverter.mapToSessionInfoResponse(session

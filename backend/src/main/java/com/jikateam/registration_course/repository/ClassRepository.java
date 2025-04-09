@@ -17,4 +17,9 @@ public interface ClassRepository extends JpaRepository<Clazz, String> {
             "ORDER BY c.startYear DESC"
     )
     List<Clazz> findAllByFilter(@Param("searchKey") String searchKey, @Param("year") Integer year);
+
+    @Query("SELECT c.clazzId FROM Clazz c " +
+            "WHERE c.endYear >= :currentYear"
+    )
+    List<String> getAllClassIdIsActive(@Param("currentYear") int currentYear);
 }

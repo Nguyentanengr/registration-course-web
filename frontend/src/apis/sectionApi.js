@@ -1,17 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const GET_SECTION_API = "http://localhost:8080/api/v1/sessions?";
+const DELETE_SECTION_API = "http://localhost:8080/api/v1/sessions/";
 
 const getStatusSection = (string) => {
     switch (string) {
         case 'Tất cả học phần':
             return '';
         case 'Đang hoạt động':
-            return '&status=6';
+            return '&status=4';
         case 'Đang mở':
-            return '&status=2';
+            return '&status=0';
         case 'Sắp tới':
-            return '&status=1';
+            return '&status=7';
         default:
             return '';
     }
@@ -53,3 +54,37 @@ export const fetchSections = createAsyncThunk('sections/filter',
             });
         }
     });
+
+export const deleteSection = createAsyncThunk('sections/delete'
+    , async ({ sessionId }, { rejectWithValue }) => {
+        
+        try {
+            const TARGET_API = DELETE_SECTION_API + sessionId;
+            console.log(TARGET_API);
+            
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorized": "Bearer" + TOKEN,
+                }
+            });
+
+            const objectResponse = await response.json();
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message
+                });
+            }
+            return objectResponse;
+        } catch (error) {
+            console.log("reject");
+            
+            return rejectWithValue({
+                code: 9090,
+                message: error.message || 'Lỗi kết nối đến server'
+            });
+        }
+});

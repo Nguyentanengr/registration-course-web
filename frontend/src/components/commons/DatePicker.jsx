@@ -127,7 +127,7 @@ const DatePicker = ({ value, onChange }) => {
         const newDate = new Date(currentYear, currentMonth, day);
         setSelectedDate(newDate);
         setIsOpen(false);
-        if (onChange) onChange(newDate);
+        if (onChange) onChange(newDate.toLocaleDateString('en-GB'));
     };
 
     const renderDays = () => {
@@ -175,7 +175,8 @@ const DatePicker = ({ value, onChange }) => {
     }, []);
 
     useEffect(() => {
-        onChange(selectedDate);
+        console.log(selectedDate.toLocaleDateString('en-GB'));
+        onChange(selectedDate.toLocaleDateString('en-GB'));
     }, [])
 
 return (

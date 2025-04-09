@@ -42,4 +42,20 @@ public class ClazzController {
                 .build();
     }
 
+    @GetMapping("/active")
+    public DataResponse<List<String>> getAllClazzIdActive(
+    ) {
+
+
+        List<String> responses = clazzService.getAllClazzIdActive();
+
+        log.info("Response: {}", responses);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<String>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+    }
+
 }

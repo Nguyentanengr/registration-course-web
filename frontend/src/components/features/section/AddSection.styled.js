@@ -10,6 +10,30 @@ export const AddSectionContainer = styled.div`
     padding: 30px 25px;
     border-radius: 10px;
     overflow-y: scroll;
+    animation: fadeIn 0.2s ease-in-out;
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    &::-webkit-scrollbar {
+            width: 8px;
+            height: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1); 
+            border-radius: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
 
     .o-title, .c-title {
         font-weight: 500;

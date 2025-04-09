@@ -7,6 +7,16 @@ export const ScheduleDialogContainer = styled.div`
     background-color: ${Theme.header};
     padding: 30px 25px;
     border-radius: 10px;
+    animation: fadeIn 0.1s ease-in-out;
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
     .header {
         .title {
             display: flex;
@@ -57,6 +67,16 @@ export const ScheduleDialogContainer = styled.div`
         flex-direction: column;
         gap: 20px;
         width: 100%;
+        animation: fadeIn 0.2s ease-in-out;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
 
         .lesson {
             border: 1px solid ${Theme.logo};

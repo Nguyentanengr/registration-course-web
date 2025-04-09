@@ -40,7 +40,7 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     @Query(
             "SELECT s FROM Session s " +
                     "LEFT JOIN FETCH OpenSessionRegistration osr ON s.sessionId = osr.session.sessionId " +
-                    "JOIN FETCH s.schedules " +
+                    "LEFT JOIN FETCH s.schedules " +
                     "WHERE " +
                     "(:searchKey IS NULL OR " +
                     "s.clazz.clazzId LIKE CONCAT('%', :searchKey, '%') OR " +
@@ -51,8 +51,8 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
                     "(:clazzId IS NULL OR s.clazz.clazzId = :clazzId) AND " +
                     "(:courseId IS NULL OR s.course.courseId = :courseId) AND " +
                     "(:status IS NULL OR " +
-                    "(:status = 0 AND osr IS NULL) OR " +
-                    "(:status != 0 AND osr.status = :status - 1))"
+                    "(:status = 7 AND osr IS NULL) OR " +
+                    "(:status != 7 AND CAST(osr.status AS integer) = :status))"
     )
     Page<Session> findAllSessionByFilter(
             @Param("searchKey") String searchKey,

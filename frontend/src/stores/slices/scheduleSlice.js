@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchScheduleOnSection } from "../../apis/scheduleApi";
+import { fetchTeacherForCourse } from "../../apis/teacherApi";
 
 export const dowVieToEng = {
     "Thứ 2": "MONDAY",
@@ -67,7 +68,18 @@ const scheduleSlice = createSlice({
             state.errorScheduleOnSection = null;
             state.loadingScheduleOnSection = false;
             state.schedulesOnSection = [];
-        }
+        },
+        resetScheduleForm: (state) => {
+            state.addScheduleForm = {
+                dayOfWeek: null,
+                startPeriod: 1,
+                endPeriod: 4,
+                startDate: null,
+                endDate: null,
+                teacherId: null,
+                placeId: null,
+            };
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -87,6 +99,6 @@ const scheduleSlice = createSlice({
 });
 
 export const { addDayOfWeek, addEndDate, addStartDate, addEndPeriod
-    , addStartPeriod, addTeacherId, addPlaceId, resetScheduleOnSection } = scheduleSlice.actions;
+    , addStartPeriod, addTeacherId, addPlaceId, resetScheduleOnSection, resetScheduleForm } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

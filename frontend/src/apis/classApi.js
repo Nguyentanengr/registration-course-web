@@ -1,0 +1,30 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+
+export const GET_CLASS_ACTIVE_API = 'http://localhost:8080/api/v1/classes/active';
+
+export const fetchActiveClassIds = createAsyncThunk('classs/getActiveClassIds',
+    async (_, { rejectWithValue }) => {
+        try {
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(GET_CLASS_ACTIVE_API, {
+                method: "GET",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorized": "Bearer " + TOKEN,
+                },
+            });
+            const objectResponse = await response.json();
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message,
+                });
+            }
+            return objectResponse;
+        } catch (error) {
+            return rejectWithValue({
+                code: 9090,
+                message: error.message || 'Lỗi kết nối đến server'
+            });
+        }
+    });

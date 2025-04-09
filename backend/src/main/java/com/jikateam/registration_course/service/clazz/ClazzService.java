@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -24,5 +25,13 @@ public class ClazzService {
         List<Clazz> responses = classRepository.findAllByFilter(searchKey, year);
 
         return responses.stream().map(clazzConverter::mapToClazzInfoResponse).toList();
+    }
+
+    public List<String> getAllClazzIdActive() {
+
+        var clazzIds = classRepository.getAllClassIdIsActive(LocalDate.now().getYear());
+
+        log.info("List class id is Active: {}", clazzIds);
+        return clazzIds;
     }
 }

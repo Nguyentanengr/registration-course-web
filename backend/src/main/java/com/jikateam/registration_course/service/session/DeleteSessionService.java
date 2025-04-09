@@ -1,5 +1,6 @@
 package com.jikateam.registration_course.service.session;
 
+import com.jikateam.registration_course.constant.RegistrationStatus;
 import com.jikateam.registration_course.dto.request.DeleteSessionListRequest;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.entity.Session;
@@ -26,10 +27,11 @@ public class DeleteSessionService {
         Session session = sessionRepository.findSessionWithOpenSession(id)
                 .orElseThrow(() -> new BusinessException(CodeResponse.DELETE_SESSION_SUCCESSFULLY));
 
-        // Session chưa được mở bao giờ thì mới được xóa
-        boolean isOpening = session.getOpenSessionRegistration() != null;
+        // Session chưa được mở bao giờ thì mới được xóa hoặc đưojc thêm vafo danh sach mo
+        boolean canDelete = session.getOpenSessionRegistration() == null
+                || session.getOpenSessionRegistration().getStatus() == RegistrationStatus.PENDING;
 
-        if (isOpening) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
+        if (!canDelete) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
         sessionRepository.delete(session);
     }
@@ -40,8 +42,9 @@ public class DeleteSessionService {
                 .findAllSessionWithOpenSessionByIds(request.sessionIds());
 
         sessions.forEach(session -> {
-            boolean isOpening = session.getOpenSessionRegistration() != null;
-            if (isOpening) {
+            boolean canDelete = session.getOpenSessionRegistration() == null
+                    || session.getOpenSessionRegistration().getStatus() == RegistrationStatus.PENDING;
+            if (!canDelete) {
                 log.info("Exist conflicted session: {}", session.getSessionId());
                 throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
             }
