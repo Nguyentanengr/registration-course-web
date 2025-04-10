@@ -360,6 +360,40 @@ export const FilterAreaContainer = styled.div`
                 }  
             }
 
+            .action-box {
+                gap: 30px;
+                width: 60%;
+                justify-content: end;
+                
+                .search-container {
+                    width: 35%;
+                    border-radius: 10px;
+                    height: 40px;
+                    border: 1px solid ${Theme.hover};
+                    padding: 0 15px;
+                    justify-content: start;
+
+                    .input-container {
+                        width: 100%;
+                        gap: 5px;
+                        justify-content: start;
+
+                        .icon {
+                            width: 40px;
+                            height: 40px;
+                            font-size: 22px;
+                            color: ${Theme.soft};
+                        }
+                        input {
+                            width: 100%;
+                            &::placeholder {
+                                color: ${Theme.textMediumSoft};
+                            }
+                        }
+                    }
+                }
+            }
+
             .pop-up-container {
                 position: fixed;
                 z-index: 20;
@@ -372,18 +406,42 @@ export const FilterAreaContainer = styled.div`
         }
     }
 
-    .table-container {
+    .table-period .table-container {
         margin-top: 20px;
         width: 100%;
-        overflow-x: auto;
+        height: 480px; 
+        overflow-y: auto;
         background: white;
         border-radius: 8px;
         box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
         font-size: 14px;
 
+        &::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1); 
+            border-radius: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
         .table {
             width: 100%;
+            min-width: 800px;
             border-collapse: collapse;
+        }
+
+        
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1;
         }
 
         th, td {

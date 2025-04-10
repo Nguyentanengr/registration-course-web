@@ -23,6 +23,13 @@ export const AddPeriodContainer = styled.div`
 
     .input-container {
 
+        .wrap {
+            width: 100%;
+            gap: 20px;
+            .box {
+                flex: 1;
+            }
+        }
         margin-top: 25px;
         input.p-i {
             height: 40px;
@@ -38,6 +45,25 @@ export const AddPeriodContainer = styled.div`
         .i-box {
             margin-top: 5px;
         }
+    }
+
+    span.error {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: ${Theme.logo};
+        opacity: 0; 
+        transform: translateY(-10px); 
+        transition: opacity 0.3s ease, transform 0.3s ease; 
+        height: 0; 
+        overflow: hidden;
+    }
+
+    span.error.visible {
+        opacity: 1;
+        transform: translateY(0); 
+        height: auto; 
     }
 
     .confirm-box {
@@ -73,6 +99,11 @@ export const AddPeriodContainer = styled.div`
             color: ${Theme.header};
             &:hover {
                 background-color:rgb(223, 53, 53);
+            }
+
+            &.disable {
+                pointer-events: none;
+                opacity: 0.5;
             }
         }
     }

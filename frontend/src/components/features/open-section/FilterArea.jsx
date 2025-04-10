@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FilterAreaContainer } from './FilterArea.styled';
 import { Icons } from '../../../assets/icons/Icon';
 import SelectOption from '../../commons/SelectOption';
 import AddPeriod from './AddPeriod';
+import CircleSpinner from '../../commons/CircleSpinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
+import { fetchAllPhase } from '../../../apis/phaseApi';
 
 const sectionList = [
     {
@@ -75,44 +79,59 @@ const openList = [
     }
 ];
 
-const phases = [
-    {
-        id: 'REG001',
-        name: 'Giai đoạn đăng ký kỳ 1 năm 2024',
-        semester: 'Kỳ chính thức',
-        startTime: '15/07/2024 08:00',
-        endTime: '30/07/2024 23:59',
-        status: 'Đang hoạt động',
-    },
-    {
-        id: 'REG002',
-        name: 'Giai đoạn đăng ký kỳ 2 năm 2024',
-        semester: 'Kỳ chính thức',
-        startTime: '01/12/2024 08:00',
-        endTime: '15/12/2024 23:59',
-        status: 'Không hoạt động',
-    },
-    {
-        id: 'REG003',
-        name: 'Giai đoạn đăng ký kỳ hè năm 2024',
-        semester: 'Kỳ hè',
-        startTime: '01/05/2025 08:00',
-        endTime: '15/05/2025 23:59',
-        status: 'Không hoạt động',
-    },
-];
 
-console.log(phases);
+export const cvertDateTimeJson = (string) => {
+    if (string && string !== '') {
+        const [date, time] = string.split('T');
+        const [year, month, day] = date.split('-');
+        const targetDate = `${day}/${month}/${year}`;
+        return `${targetDate} ${time}`;
+    }
+    return '';
+};
 
 
 const FilterArea = () => {
+
+    const dispatch = useDispatch();
     const filters = ['Mở lớp học phần', 'Đợt đăng ký'];
     const [filter, setFilter] = useState(filters[0]);
     const [isAdding, setIsAdding] = useState(false);
+    const { getLoading, searchKey, phases } = useSelector((state) => state.phase);
 
     const handleOnClickOption = (option) => {
         setFilter(option);
     };
+
+
+    // Gọi api sau khi nhấn enter trong input
+    const handleOnEnterPhase = (e) => {
+        if (e.key == "Enter") {
+            dispatch(fetchAllPhase({ searchKey: searchKey}));
+        }
+    };
+
+    const generateYears = () => {
+        const currentYear = new Date().getFullYear() - 10;
+        const yearArray = Array.from({ length: 20 }, (_, i) => currentYear + i);
+        return yearArray;
+    }
+
+    const isActive = (phase) => {
+        const open = new Date(phase.openTime);
+        const close = new Date(phase.closeTime);
+        const now = new Date();
+        return now >= open && now <= close;
+    }
+
+    // trang được render - call api
+    useEffect(() => {
+        dispatch(fetchAllPhase({ searchKey: searchKey}));
+    }, [dispatch]);
+
+    useEffect(() => {
+        console.log('searchKey: ',searchKey);
+    }, [searchKey]);
 
     return (
         <FilterAreaContainer>
@@ -309,16 +328,34 @@ const FilterArea = () => {
                 <div className="create-period">
                     <div className="header-period">
                         <h2>Danh sách đợt đăng ký</h2>
-                        <div className="box">
-                            <button className='add-box wrap-center' onClick={() => { setIsAdding(!isAdding) }}>
-                                <div className="icon-container wrap-center">
-                                    <Icons.FollowPlus />
+                        <div className="action-box wrap-center">
+
+                            <div className="search-container wrap-center">
+                                <div className="input-container wrap-center">
+                                    <div className="icon wrap-center">
+                                        {getLoading ? <CircleSpinner size={15} color='#777777' /> : <Icons.SearchIcon />}
+                                    </div>
+                                    <input
+                                        value={searchKey}
+                                        type="text"
+                                        placeholder='Tìm kiếm đợt đăng ký ...'
+                                        spellCheck={false}
+                                        onChange={(e) => { dispatch(setSearchKey(e.target.value)) }}
+                                        onKeyDown={handleOnEnterPhase}
+                                    />
                                 </div>
-                                <p>Tạo đợt đăng ký mới</p>
-                            </button>
-                            {isAdding && <div className='pop-up-container wrap-center'>
-                                <AddPeriod setIsAdding={setIsAdding} />
-                            </div>}
+                            </div>
+                            <div className="box">
+                                <button className='add-box wrap-center' onClick={() => { setIsAdding(!isAdding) }}>
+                                    <div className="icon-container wrap-center">
+                                        <Icons.FollowPlus />
+                                    </div>
+                                    <p>Tạo đợt đăng ký mới</p>
+                                </button>
+                                {isAdding && <div className='pop-up-container wrap-center'>
+                                    <AddPeriod setIsAdding={setIsAdding} />
+                                </div>}
+                            </div>
                         </div>
                     </div>
 
@@ -331,7 +368,8 @@ const FilterArea = () => {
                                 <tr className='head-row'>
                                     <th>Mã đợt</th>
                                     <th>Tên đợt đăng ký</th>
-                                    <th>Hình thức</th>
+                                    <th>Học kì</th>
+                                    <th>Năm học</th>
                                     <th>Thời gian mở</th>
                                     <th>Thời gian đóng</th>
                                     <th>Trạng thái</th>
@@ -344,13 +382,18 @@ const FilterArea = () => {
                                         className='body-row'
                                         key={index}
                                     >
-                                        <td>{phase.id}</td>
-                                        <td>{phase.name}</td>
+                                        <td>{phase.phaseId}</td>
+                                        <td>{phase.phaseName}</td>
                                         <td>{phase.semester}</td>
-                                        <td>{phase.startTime}</td>
-                                        <td>{phase.endTime}</td>
+                                        <td>{phase.year}</td>
+                                        <td>{cvertDateTimeJson(phase.openTime)}</td>
+                                        <td>{cvertDateTimeJson(phase.closeTime)}</td>
                                         <td><div className="box">
-                                            <span className={`status ${phase.status === 'Đang hoạt động' ? "" : "inactive"}`}>{phase.status}</span>
+                                            <span
+                                                className={`status ${isActive(phase) ? '' : 'inactive'}`}
+                                            >
+                                                {isActive(phase) ? 'Đang hoạt động' : 'Không hoạt động'}
+                                            </span>
                                         </div></td>
                                         <td><Icons.More /></td>
 

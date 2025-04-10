@@ -303,21 +303,21 @@ export const AddSectionContainer = styled.div`
     }
 
     span.error {
-    display: block;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    color: ${Theme.logo};
-    opacity: 0; /* Mặc định ẩn */
-    transform: translateY(-10px); /* Dịch chuyển lên trên một chút khi ẩn */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà cho opacity và transform */
-    height: 0; /* Đảm bảo không chiếm không gian khi ẩn */
-    overflow: hidden; /* Ẩn nội dung khi height là 0 */
-}
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: ${Theme.logo};
+        opacity: 0; /* Mặc định ẩn */
+        transform: translateY(-10px); /* Dịch chuyển lên trên một chút khi ẩn */
+        transition: opacity 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà cho opacity và transform */
+        height: 0; /* Đảm bảo không chiếm không gian khi ẩn */
+        overflow: hidden; /* Ẩn nội dung khi height là 0 */
+    }
 
-span.error.visible {
-    opacity: 1; /* Hiển thị */
-    transform: translateY(0); /* Dịch chuyển về vị trí ban đầu */
-    height: auto; /* Hiển thị đầy đủ chiều cao */
-}
+    span.error.visible {
+        opacity: 1; /* Hiển thị */
+        transform: translateY(0); /* Dịch chuyển về vị trí ban đầu */
+        height: auto; /* Hiển thị đầy đủ chiều cao */
+    }
 `;

@@ -6,6 +6,7 @@ import com.jikateam.registration_course.dto.response.PhaseResponse;
 import com.jikateam.registration_course.entity.RegistrationPhase;
 import jakarta.servlet.Registration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.lang.annotation.Target;
@@ -15,6 +16,8 @@ public interface PhaseConverter {
 
     RegistrationPhase mapToRegistrationPhaseEntity(CreatePhaseRequest createPhaseRequest);
 
+    @Mapping(target = "phaseId", source = "registrationPhaseId")
+    @Mapping(target = "phaseName", source = "registrationPhaseName")
     PhaseResponse mapToPhaseResponse(RegistrationPhase registrationPhase);
 
     RegistrationPhase updateToRegistrationPhaseEntity(UpdatePhaseRequest request

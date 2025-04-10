@@ -65,7 +65,7 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
             "WHERE (%:searchKey% IS NULL OR %:searchKey% = '' OR p.registrationPhaseName LIKE %:searchKey%) " +
             "AND (:semester IS NULL OR p.semester = :semester) " +
             "AND (:year IS NULL OR (:year BETWEEN YEAR(p.openTime) AND YEAR(p.closeTime))) " +
-            "ORDER BY p.openTime DESC"
+            "ORDER BY p.registrationPhaseId ASC"
     )
     List<RegistrationPhase> findAllByFilter(
             @Param("searchKey") String searchKey,

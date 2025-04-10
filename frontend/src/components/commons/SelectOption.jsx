@@ -21,7 +21,7 @@ const SelectOption = ({ options = [], width = '100%', onSelect, value = '' }) =>
         if (options.length > 0 && !value && onSelect) {
             onSelect(options[0]);
         }
-    }, [options, value, onSelect]);
+    }, [options, value, onSelect]);    
 
     useEffect(() => {
         const handleClickOutSide = (e) => {
