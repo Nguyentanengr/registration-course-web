@@ -94,13 +94,25 @@ const Day = styled.div`
   }
 `;
 
-const DatePicker = ({ value, onChange }) => {
-
+const DatePicker = ({ value = '', onChange }) => {
     const thisRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : new Date());
-    const [currentMonth, setCurrentMonth] = useState(selectedDate.getMonth());
-    const [currentYear, setCurrentYear] = useState(selectedDate.getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+    // Initialize with current date if no value is provided
+    useEffect(() => {
+        if (!value && onChange) {
+            console.log("re-render");
+            const today = new Date();
+            const todayStr = today.toLocaleDateString('en-GB');
+            if (value !== todayStr) { // Chỉ gọi onChange nếu value không phải là ngày hiện tại
+                onChange(todayStr);
+            }
+        }
+    }, [value, onChange]);
+
+    const selectedDate = value ? new Date(value) : new Date();
 
     const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
@@ -125,7 +137,6 @@ const DatePicker = ({ value, onChange }) => {
 
     const handleDateClick = (day) => {
         const newDate = new Date(currentYear, currentMonth, day);
-        setSelectedDate(newDate);
         setIsOpen(false);
         if (onChange) onChange(newDate.toLocaleDateString('en-GB'));
     };
@@ -135,14 +146,13 @@ const DatePicker = ({ value, onChange }) => {
         const firstDay = firstDayOfMonth(currentMonth, currentYear);
         const days = [];
 
-        // Thêm các ô trống trước ngày đầu tiên của tháng
         for (let i = 0; i < firstDay; i++) {
             days.push(<Day key={`empty-${i}`} disabled />);
         }
 
-        // Thêm các ngày trong tháng
         for (let day = 1; day <= totalDays; day++) {
-            const isSelected = selectedDate.getDate() === day &&
+            const isSelected = selectedDate && 
+                selectedDate.getDate() === day &&
                 selectedDate.getMonth() === currentMonth &&
                 selectedDate.getFullYear() === currentYear;
             days.push(
@@ -174,42 +184,37 @@ const DatePicker = ({ value, onChange }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    useEffect(() => {
-        console.log(selectedDate.toLocaleDateString('en-GB'));
-        onChange(selectedDate.toLocaleDateString('en-GB'));
-    }, [])
-
-return (
-    <DatePickerContainer ref={thisRef}>
-        <InputWrapper onClick={() => setIsOpen(!isOpen)}>
-            <Input
-                type="text"
-                value={selectedDate.toLocaleDateString('en-GB')}
-                readOnly
-            />
-            <Icon><Icons.Calendar /></Icon>
-        </InputWrapper>
-        {isOpen && (
-            <Calendar>
-                <Header>
-                    <NavButton onClick={handlePrevMonth}>←</NavButton>
-                    <MonthYear>{monthNames[currentMonth]} {currentYear}</MonthYear>
-                    <NavButton onClick={handleNextMonth}>→</NavButton>
-                </Header>
-                <DaysGrid>
-                    <DayLabel>Su</DayLabel>
-                    <DayLabel>Mo</DayLabel>
-                    <DayLabel>Tu</DayLabel>
-                    <DayLabel>We</DayLabel>
-                    <DayLabel>Th</DayLabel>
-                    <DayLabel>Fr</DayLabel>
-                    <DayLabel>Sa</DayLabel>
-                    {renderDays()}
-                </DaysGrid>
-            </Calendar>
-        )}
-    </DatePickerContainer>
-);
+    return (
+        <DatePickerContainer ref={thisRef}>
+            <InputWrapper onClick={() => setIsOpen(!isOpen)}>
+                <Input
+                    type="text"
+                    value={value || selectedDate.toLocaleDateString('en-GB')}
+                    readOnly
+                />
+                <Icon><Icons.Calendar /></Icon>
+            </InputWrapper>
+            {isOpen && (
+                <Calendar>
+                    <Header>
+                        <NavButton onClick={handlePrevMonth}>←</NavButton>
+                        <MonthYear>{monthNames[currentMonth]} {currentYear}</MonthYear>
+                        <NavButton onClick={handleNextMonth}>→</NavButton>
+                    </Header>
+                    <DaysGrid>
+                        <DayLabel>Su</DayLabel>
+                        <DayLabel>Mo</DayLabel>
+                        <DayLabel>Tu</DayLabel>
+                        <DayLabel>We</DayLabel>
+                        <DayLabel>Th</DayLabel>
+                        <DayLabel>Fr</DayLabel>
+                        <DayLabel>Sa</DayLabel>
+                        {renderDays()}
+                    </DaysGrid>
+                </Calendar>
+            )}
+        </DatePickerContainer>
+    );
 };
 
 export default DatePicker;

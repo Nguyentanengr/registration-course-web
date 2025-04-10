@@ -197,6 +197,13 @@ export const AddSectionContainer = styled.div`
                 width: 100%;
                 cursor: pointer;
                 color: ${Theme.header};
+
+                &.disable {
+                    pointer-events: none;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
                 &:hover {
                     background-color:rgb(223, 53, 53);
                 }
@@ -241,6 +248,16 @@ export const AddSectionContainer = styled.div`
         }
     }
 
+    .trash {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: ${Theme.hover};
+        }
+    }
+
     .footer {
         margin-top: 35px;
         display: flex;
@@ -272,9 +289,35 @@ export const AddSectionContainer = styled.div`
             padding: 0 20px;
             cursor: pointer;
             color: ${Theme.header};
+
+            &.disable {
+                pointer-events: none;
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
             &:hover {
                 background-color:rgb(223, 53, 53);
             }
         }
     }
+
+    span.error {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: ${Theme.logo};
+    opacity: 0; /* Mặc định ẩn */
+    transform: translateY(-10px); /* Dịch chuyển lên trên một chút khi ẩn */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Hiệu ứng mượt mà cho opacity và transform */
+    height: 0; /* Đảm bảo không chiếm không gian khi ẩn */
+    overflow: hidden; /* Ẩn nội dung khi height là 0 */
+}
+
+span.error.visible {
+    opacity: 1; /* Hiển thị */
+    transform: translateY(0); /* Dịch chuyển về vị trí ban đầu */
+    height: auto; /* Hiển thị đầy đủ chiều cao */
+}
 `;

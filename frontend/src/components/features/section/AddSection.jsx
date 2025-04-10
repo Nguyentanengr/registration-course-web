@@ -1,10 +1,8 @@
-
-
 import { useEffect, useRef, useState } from 'react';
 import { AddSectionContainer } from './AddSection.styled';
 import SelectOption from '../../commons/SelectOption';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSchedule, resetScheduleState, setClassId, setCourseId, setGroup, setMaxStudents, setMinStudents, setSemester, setYear, setYears } from '../../../stores/slices/sectionSlice';
+import { addSchedule, resetScheduleState, setClassId, setCourseId, setGroup, setMinStudents, setMaxStudents, setSemester, setYear, setYears, setSchedules, removeSchedule, resetSectionForm, resetAddSectionState, resetTeacherAndPlace } from '../../../stores/slices/sectionSlice';
 import CounterBox from '../../commons/CounterBox';
 import { Icons } from '../../../assets/icons/Icon';
 import DatePicker from '../../commons/DatePicker';
@@ -14,30 +12,59 @@ import { addDayOfWeek, addEndDate, addEndPeriod, addPlaceId, addStartDate, addSt
 import { fetchTeacherForCourse } from '../../../apis/teacherApi';
 import { fetchAllPlaces } from '../../../apis/placeApi';
 import { convertToDayMonthYear, convertToYearMonthDay } from '../schedule/FilterArea';
+import { createSection, fetchSections } from '../../../apis/sectionApi';
+import Alert from '../../commons/Alert';
+
 
 const AddSection = ({ setIsAdding }) => {
 
     // Variable
     const thisRef = useRef();
     const dispatch = useDispatch();
-    const { courses, years, semesters, classIds, dayOfWeeks, periods, teachers, places } = useSelector((state) => state.section);
+    const { postLoading, postError, courses, years, semesters, classIds, dayOfWeeks, periods, teachers, places } = useSelector((state) => state.section);
     const { classId, year, semester, courseId, groupNumber, minStudents, maxStudents, schedules }
         = useSelector((state) => state.section.addSectionForm);
+    const { loading, filters, filter, currentPage, itemPerPage, searchKey }
+        = useSelector((state) => state.section);
     const { addScheduleForm } = useSelector((state) => state.schedule);
     const { addSectionForm } = useSelector((state) => state.section);
+    const [canAddSchedule, setCanAddSchedule] = useState(false);
+    const [canAddSection, setCanAddSection] = useState(false);
+    const [errors, setErrors] = useState({
+        students: '',
+        periods: '',
+        dates: '',
+        overlap: '',
+    });
 
     // Function 
 
     const handleClickCancel = () => {
         setIsAdding(false);
+        resetAllState();
     };
     const handleClickConfirm = () => {
-        setIsAdding(false);
+        if(validateAddSection()) {
+            console.log("dispatch section");
+            dispatch(createSection({section: addSectionForm}))
+                .unwrap()
+                .then((action) => {
+                    // Xóa state, đóng form.
+                    resetAllState();
+                    setIsAdding(false);
+                    dispatch(fetchSections({ filter, searchKey, currentPage, itemPerPage }));
+                })
+                .catch((error) => {
+
+                });
+        }
     };
 
-    // const handleAddSchedule = () => {
-    //     setListSchedule([...listSchedule, schedule]);
-    // };
+    const resetAllState = () => {
+        dispatch(resetSectionForm());
+        dispatch(resetAddSectionState());
+        dispatch(resetScheduleForm());
+    }
 
     const mapToSelectCourseItem = (courses) => {
         const targets = courses.map((course) => {
@@ -47,33 +74,171 @@ const AddSection = ({ setIsAdding }) => {
     };
 
     const convertCourseId = (string) => {
-        return string && string != '' ? string.split(" ")[0] : null; 
+        return string && string != '' ? string.split(" ")[0] : null;
         // lấy chuỗi đầu tiên 'INT1423' trong 'INT1423 - Lập trình C++'
     };
     const convertTeacherId = (string) => {
-        return string && string != '' ? string.split(" ")[0] : null; 
+        return string && string != '' ? string.split(" ")[0] : null;
         // lấy chuỗi đầu tiên 'T30GVCN138' trong 'T30GVCN138 - Đặng Thị Ngọc'
     };
 
     // Kiểm tra thông tin đầu vào
-    const validateSchedule = () => {
-        return true;
-    }
+    // Hàm validate số sinh viên
+    const validateStudents = () => {
+        if (minStudents <= 0) {
+            return 'Số sinh viên tối thiểu phải lớn hơn 0';
+        }
+        if (maxStudents > 200) {
+            return 'Số sinh viên tối đa không được vượt quá 200';
+        }
+        if (minStudents > maxStudents) {
+            return 'Số sinh viên tối thiểu phải nhỏ hơn hoặc bằng số sinh viên tối đa';
+        }
+        return '';
+    };
+
+    // Hàm validate tiết học
+    const validatePeriods = () => {
+        if (addScheduleForm.startPeriod > addScheduleForm.endPeriod) {
+            return 'Tiết bắt đầu phải nhỏ hơn hoặc bằng tiết kết thúc';
+        }
+        if (addScheduleForm.startPeriod < 1 || addScheduleForm.startPeriod > 12) {
+            return 'Tiết bắt đầu phải nằm trong khoảng từ 1 đến 12';
+        }
+        if (addScheduleForm.endPeriod < 1 || addScheduleForm.endPeriod > 12) {
+            return 'Tiết kết thúc phải nằm trong khoảng từ 1 đến 12';
+        }
+        return '';
+    };
+
+    // Hàm validate ngày
+    const validateDates = () => {
+        if (!addScheduleForm.startDate || !addScheduleForm.endDate) {
+            return 'Ngày bắt đầu và ngày kết thúc không được để trống';
+        }
+        const startDate = new Date(addScheduleForm.startDate);
+        const endDate = new Date(addScheduleForm.endDate);
+        if (startDate > endDate) {
+            return 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc';
+        }
+        return '';
+    };
+
+    // Hàm validate chồng lịch
+    const validateOverlap = () => {
+        if (addScheduleForm.dayOfWeek && addScheduleForm.startDate && addScheduleForm.endDate) {
+            const newStartDate = new Date(addScheduleForm.startDate);
+            const newEndDate = new Date(addScheduleForm.endDate);
+            const newStartPeriod = addScheduleForm.startPeriod;
+            const newEndPeriod = addScheduleForm.endPeriod;
+            const newDayOfWeek = addScheduleForm.dayOfWeek;
+
+            for (const schedule of schedules) {
+                const existingStartDate = new Date(schedule.startDate);
+                const existingEndDate = new Date(schedule.endDate);
+                const existingStartPeriod = schedule.startPeriod;
+                const existingEndPeriod = schedule.endPeriod;
+                const existingDayOfWeek = schedule.dayOfWeek;
+
+                if (newDayOfWeek === existingDayOfWeek) {
+                    const datesOverlap = newStartDate <= existingEndDate && newEndDate >= existingStartDate;
+                    const periodsOverlap = newStartPeriod <= existingEndPeriod && newEndPeriod >= existingStartPeriod;
+
+                    if (datesOverlap && periodsOverlap) {
+                        return `Đã có buổi học khác trong khung giờ này`;
+                    }
+                }
+            }
+        }
+        return '';
+    };
+
+
+    // Hàm validate input
+    const validateInput = () => {
+        const studentsError = validateStudents();
+        const periodsError = validatePeriods();
+        const datesError = validateDates();
+        setErrors({
+            ...errors,
+            students: studentsError,
+            periods: periodsError,
+            dates: datesError,
+        });
+        return !studentsError && !periodsError && !datesError;
+    };
+    const validateAddSchedule = () => {
+        const periodsError = validatePeriods();
+        const datesError = validateDates();
+        const overlapError = validateOverlap();
+
+        setErrors({
+            ...errors,
+            periods: periodsError,
+            dates: datesError,
+            overlap: overlapError,
+
+        });
+
+        return !periodsError && !datesError && !overlapError;
+    };
+
+
+    const validateAddSection = () => {
+        const studentError = validateStudents();
+        setErrors({
+            ...errors,
+            students: studentError,
+        });
+        return !studentError;
+    };
+
+    // useEffect để validate real-time
+    useEffect(() => {
+        validateInput();
+    }, [
+        minStudents,
+        maxStudents,
+        addScheduleForm.startPeriod,
+        addScheduleForm.endPeriod,
+        addScheduleForm.startDate,
+        addScheduleForm.endDate,
+    ]);
+
     // Thêm lịch vào học phần
     const handleClickAddSchedule = () => {
-        if (validateSchedule()) {
+        if (validateAddSchedule()) {
             // Thêm vào section form
             dispatch(addSchedule(addScheduleForm));
-            // Xóa state
-            dispatch(resetScheduleForm);
-            // xóa state
-            dispatch(resetScheduleState);
+            setErrors({ ...errors, periods: '', dates: '', overlap: ''});
         }
+    };
+
+    const handleDeleteSchedule = (id) => {
+        dispatch(removeSchedule(id));
     }
+
+    useEffect(() => {
+        if (courseId && schedules.length > 0 && !errors.students) {
+            setCanAddSection(true);
+        }
+        else {
+            setCanAddSection(false);
+        }
+    }, [courseId, schedules, errors.students]);
+
+    useEffect(() => {
+        if (addScheduleForm.teacherId && addScheduleForm.placeId
+            && !errors.periods && !errors.dates
+        ) {
+            setCanAddSchedule(true);
+        } else {
+            setCanAddSchedule(false);
+        }
+    }, [addScheduleForm.teacherId, addScheduleForm.placeId, errors]);
 
     // Tải các thông tin khi giao diện bật lên
     useEffect(() => {
-
         // Lấy danh sách năm tính từ năm hiện tại
         const currentYear = new Date().getFullYear();
         const yearArray = Array.from({ length: 10 }, (_, i) => currentYear + i);
@@ -81,7 +246,12 @@ const AddSection = ({ setIsAdding }) => {
         // Lấy danh sách lớp - còn nằm trong niên khóa
         dispatch(fetchActiveClassIds());
         console.log("useEffect 1 : fetchActiveClassIds");
-        
+
+        // Initialize default dates in Redux
+        const today = new Date();
+        const todayStr = today.toLocaleDateString('en-GB');
+        dispatch(addStartDate(convertToYearMonthDay(todayStr)));
+        dispatch(addEndDate(convertToYearMonthDay(todayStr)));
     }, [])
 
     // Tìm môn học khi thông tin lớp - năm học - học kì thay đổi
@@ -96,16 +266,30 @@ const AddSection = ({ setIsAdding }) => {
         if (courseId && courseId != '') {
             console.log("useEffect 2 : fetchTeacherForCourse");
             console.log("useEffect 2 : fetchAllPlaces");
-            dispatch(fetchTeacherForCourse({courseId}));
+            dispatch(fetchTeacherForCourse({ courseId }));
             dispatch(fetchAllPlaces());
+            // Clear existing schedules when course changes
+            // Clear schedules in section form
+            dispatch(setSchedules([]));
+        } else {
+            console.log("reset teacher & place");
+            dispatch(resetTeacherAndPlace());
         }
     }, [courseId, dispatch]);
+
+    // Reset courseId khi courses rỗng
+    useEffect(() => {
+        if (courses.length === 0 && courseId) {
+            dispatch(setCourseId('')); // Reset courseId
+        }
+    }, [courses, courseId, dispatch]);
 
     // Xử lý khi click ra ngoài
     useEffect(() => {
         const handleClickOutSide = (e) => {
             if (thisRef.current && !thisRef.current.contains(e.target)) {
                 setIsAdding(false);
+                resetAllState();
             }
         };
 
@@ -130,7 +314,11 @@ const AddSection = ({ setIsAdding }) => {
                         Lớp sinh viên
                     </div>
                     <div className="select-option">
-                        <SelectOption options={classIds} onSelect={(value) => dispatch(setClassId(value))}/>
+                        <SelectOption
+                            options={classIds}
+                            value={classId}
+                            onSelect={(value) => dispatch(setClassId(value))}
+                        />
                     </div>
                 </div>
                 <div className="option-box">
@@ -138,7 +326,11 @@ const AddSection = ({ setIsAdding }) => {
                         Năm học
                     </div>
                     <div className="select-option">
-                        <SelectOption options={years} onSelect={(value) => dispatch(setYear(value))}/>
+                        <SelectOption
+                            options={years}
+                            value={year?.toString()}
+                            onSelect={(value) => dispatch(setYear(parseInt(value)))}
+                        />
                     </div>
                 </div>
                 <div className="option-box">
@@ -146,7 +338,11 @@ const AddSection = ({ setIsAdding }) => {
                         Học kì
                     </div>
                     <div className="select-option">
-                        <SelectOption options={semesters} onSelect={(value) => dispatch(setSemester(value))} />
+                        <SelectOption
+                            options={semesters}
+                            value={semester?.toString()}
+                            onSelect={(value) => dispatch(setSemester(parseInt(value)))}
+                        />
                     </div>
                 </div>
             </div>
@@ -156,17 +352,22 @@ const AddSection = ({ setIsAdding }) => {
                         Môn học
                     </div>
                     <div className="select-option">
-                        <SelectOption options={mapToSelectCourseItem(courses)} onSelect={(value) => dispatch(setCourseId(convertCourseId(value)))}/> {/* value: INT1423 - Lập trình C++ */}
+                        <SelectOption
+                            options={mapToSelectCourseItem(courses)}
+                            value={courseId ? courses.find(c => c.courseId === courseId) ? `${courseId} - ${courses.find(c => c.courseId === courseId).courseName}` : '' : ''}
+                            onSelect={(value) => dispatch(setCourseId(convertCourseId(value)))}
+                        />
                     </div>
                 </div>
             </div>
+            { <span className={`error ${errors.course ? 'visible' : ''}`}>{errors.course}</span>}
             <div className="section-3">
                 <div className="counter-box">
                     <div className="c-title">
                         Số thứ tự nhóm
                     </div>
                     <div className="counter">
-                        <CounterBox init={1} min={0} onChange={(value) => {dispatch(setGroup(value))}} />
+                        <CounterBox value={groupNumber} onChange={(value) => { dispatch(setGroup(value)) }} />
                     </div>
                 </div>
                 <div className="counter-box">
@@ -174,7 +375,7 @@ const AddSection = ({ setIsAdding }) => {
                         Số sinh viên tối thiểu
                     </div>
                     <div className="counter">
-                        <CounterBox init={20} min={20} onChange={(value) => {dispatch(setMinStudents(value))}} />
+                        <CounterBox value={minStudents} onChange={(value) => { dispatch(setMinStudents(value)) }} />
                     </div>
                 </div>
                 <div className="counter-box">
@@ -182,10 +383,11 @@ const AddSection = ({ setIsAdding }) => {
                         Số sinh viên tối đa
                     </div>
                     <div className="counter">
-                        <CounterBox init={20} min={20} onChange={(value) => {dispatch(setMaxStudents(value))}}/>
+                        <CounterBox value={maxStudents} onChange={(value) => { dispatch(setMaxStudents(value)) }} />
                     </div>
                 </div>
             </div>
+            { <span className={`error ${errors.students ? 'visible' : ''}`}>{errors.students}</span>}
             <div className="section-4">
                 <div className="header">
                     <div className="h-title">Lịch học</div>
@@ -208,7 +410,11 @@ const AddSection = ({ setIsAdding }) => {
                                 Ngày trong tuần
                             </div>
                             <div className="select-option">
-                                <SelectOption options={dayOfWeeks} placeholder='Chọn ngày' onSelect={(value) => dispatch(addDayOfWeek(value))} />
+                                <SelectOption
+                                    options={dayOfWeeks}
+                                    value={addScheduleForm.dayOfWeek ? dowEngToVie[addScheduleForm.dayOfWeek] : null}
+                                    onSelect={(value) => dispatch(addDayOfWeek(value))}
+                                />
                             </div>
                         </div>
                         <div className="box">
@@ -219,6 +425,7 @@ const AddSection = ({ setIsAdding }) => {
                                 <div className="select-option">
                                     <SelectOption
                                         options={periods}
+                                        value={addScheduleForm.startPeriod}
                                         onSelect={(value) => dispatch(addStartPeriod(value))}
                                     />
                                 </div>
@@ -230,19 +437,24 @@ const AddSection = ({ setIsAdding }) => {
                                 <div className="select-option">
                                     <SelectOption
                                         options={periods}
+                                        value={addScheduleForm.endPeriod}
                                         onSelect={(value) => dispatch(addEndPeriod(value))}
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
+                    { <span className={`error ${errors.periods ? 'visible' : ''}`}>{errors.periods}</span>}
                     <div className="form-2">
                         <div className="sd-option-box">
                             <div className="f-title">
                                 Ngày bắt đầu
                             </div>
                             <div className='select-option'>
-                                <DatePicker onChange={(value) => dispatch(addStartDate(convertToYearMonthDay(value)))} />
+                                <DatePicker
+                                    value={addScheduleForm.startDate ? convertToDayMonthYear(addScheduleForm.startDate) : ''}
+                                    onChange={(value) => dispatch(addStartDate(convertToYearMonthDay(value)))}
+                                />
                             </div>
                         </div>
                         <div className="ed-option-box">
@@ -250,11 +462,14 @@ const AddSection = ({ setIsAdding }) => {
                                 Ngày kết thúc
                             </div>
                             <div className='select-option'>
-                                <DatePicker onChange={(value) => dispatch(addEndDate(convertToYearMonthDay(value)))} />
+                                <DatePicker
+                                    value={addScheduleForm.endDate ? convertToDayMonthYear(addScheduleForm.endDate) : ''}
+                                    onChange={(value) => dispatch(addEndDate(convertToYearMonthDay(value)))}
+                                />
                             </div>
                         </div>
-
                     </div>
+                    { <span className={`error ${errors.dates ? 'visible' : ''}`}>{errors.dates}</span>}
                     <div className="form-3">
                         <div className="te-option-box">
                             <div className="f-title">
@@ -263,6 +478,7 @@ const AddSection = ({ setIsAdding }) => {
                             <div className="select-option">
                                 <SelectOption
                                     options={teachers.map((t) => (`${t.teacherId} - ${t.fullname}`))}
+                                    value={addScheduleForm.teacherId ? teachers.find(t => t.teacherId === addScheduleForm.teacherId)?.fullname : null}
                                     onSelect={(value) => dispatch(addTeacherId(convertTeacherId(value)))}
                                 />
                             </div>
@@ -274,12 +490,14 @@ const AddSection = ({ setIsAdding }) => {
                             <div className="select-option">
                                 <SelectOption
                                     options={places.map((p) => (p.placeId))}
+                                    value={addScheduleForm.placeId}
                                     onSelect={(value) => dispatch(addPlaceId(value))}
                                 />
                             </div>
                         </div>
                     </div>
-                    <button className="add-btn" onClick={handleClickAddSchedule} >Thêm vào lịch học</button>
+                    {<span className={`error ${errors.overlap || errors.empty ? 'visible' : ''}`}>{errors.overlap ||  errors.empty}</span>}
+                    <button className={`add-btn ${canAddSchedule ? '' : 'disable'}`} onClick={handleClickAddSchedule} >Thêm vào lịch học</button>
                 </div>
             </div>
             <div className="section-5">
@@ -309,7 +527,7 @@ const AddSection = ({ setIsAdding }) => {
                                     <td>{convertToDayMonthYear(sc.startDate) + ' - '} <br /> {convertToDayMonthYear(sc.endDate)}</td>
                                     <td>{sc.teacherId}</td>
                                     <td>{sc.placeId}</td>
-                                    <td><div className='trash'><Icons.Trash /></div></td>
+                                    <td><div className='trash wrap-center' onClick={() => handleDeleteSchedule(sc.scheduleId)}><Icons.Trash /></div></td>
 
                                 </tr>
                             ))}
@@ -320,8 +538,10 @@ const AddSection = ({ setIsAdding }) => {
 
             <div className="footer">
                 <button className="cancel-btn" onClick={handleClickCancel}>Hủy</button>
-                <button className="confirm-btn" onClick={handleClickConfirm}>Xác nhận</button>
+                <button className={`confirm-btn ${canAddSection ? '' : 'disable'}`} onClick={handleClickConfirm}>{postLoading ? 'Đang tạo..' : 'Xác nhận'}</button>
+                {postError && <Alert message={postError.message} />}
             </div>
+
         </AddSectionContainer>
     );
 };

@@ -49,10 +49,11 @@ public class SessionController {
         mapFieldSorted.put("classId", "clazz.clazzId");
         mapFieldSorted.put("courseId", "course.courseId");
         mapFieldSorted.put("year", "year");
+        mapFieldSorted.put("sessionId", "sessionId");
         mapFieldSorted.put("semester", "semester");
 
         String convertFieldSorted = mapFieldSorted.get(fieldSorted) == null
-                ? mapFieldSorted.get("classId")
+                ? mapFieldSorted.get("sessionId")
                 : mapFieldSorted.get(fieldSorted);
 
         String convertSorter = sorter != null

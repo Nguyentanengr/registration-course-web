@@ -43,7 +43,7 @@ public record CreateSessionRequest(
 
         @AssertTrue(message = "INVALID_SESSION_YEAR")
         public boolean isFutureYear() {
-               return year > LocalDate.now().getYear();
+               return year >= LocalDate.now().getYear();
         }
 
 }

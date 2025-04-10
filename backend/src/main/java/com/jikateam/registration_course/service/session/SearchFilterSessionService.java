@@ -30,14 +30,11 @@ public class SearchFilterSessionService {
             Pageable pageable
     ) {
 
-        log.info("content");
         Page<Session> page = sessionRepository.findAllSessionByFilter(
                 request.searchKey(), request.year(), request.semester()
                 , request.clazzId(), request.courseId(), status
                 , pageable
         );
-
-        log.info("content");
 
 
         List<SessionInfoResponse> sessionInfoResponses = page.map(session -> {
@@ -52,9 +49,18 @@ public class SearchFilterSessionService {
                 })
                 .toList();
 
+        // Truy vấn phụ vì truy vấn ở trên không trả về total page chính xác : thông cảm
+        var totalElements = sessionRepository.countSessionsByFilter(
+                request.searchKey(), request.year(), request.semester()
+                , request.clazzId(), request.courseId(), status
+        );
+
+        log.info("Current your page size {}", pageable.getPageSize());
+        var totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
+
         return PageSessionInfoResponse.builder()
                 .sessions(sessionInfoResponses)
-                .totalPages(page.getTotalPages())
+                .totalPages(totalPages)
                 .build();
     }
 }

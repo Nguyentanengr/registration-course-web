@@ -64,6 +64,31 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
             Pageable pageable
     );
 
+    @Query(
+            "SELECT COUNT(s) FROM Session s " +
+                    "LEFT JOIN OpenSessionRegistration osr ON s.sessionId = osr.session.sessionId " +
+                    "WHERE " +
+                    "(:searchKey IS NULL OR " +
+                    "s.clazz.clazzId LIKE CONCAT('%', :searchKey, '%') OR " +
+                    "s.course.courseId LIKE CONCAT('%', :searchKey, '%') OR " +
+                    "s.course.courseName LIKE CONCAT('%', :searchKey, '%')) AND " +
+                    "(:year IS NULL OR s.year = :year) AND " +
+                    "(:semester IS NULL OR s.semester = :semester) AND " +
+                    "(:clazzId IS NULL OR s.clazz.clazzId = :clazzId) AND " +
+                    "(:courseId IS NULL OR s.course.courseId = :courseId) AND " +
+                    "(:status IS NULL OR " +
+                    "(:status = 7 AND osr IS NULL) OR " +
+                    "(:status != 7 AND CAST(osr.status AS integer) = :status))"
+    )
+    long countSessionsByFilter(
+            @Param("searchKey") String searchKey,
+            @Param("year") Integer year,
+            @Param("semester") Integer semester,
+            @Param("clazzId") String clazzId,
+            @Param("courseId") String courseId,
+            @Param("status") Integer status
+    );
+
 
     @Query("SELECT s FROM Session s " +
             "LEFT JOIN FETCH s.openSessionRegistration osr " +

@@ -70,9 +70,12 @@ public class CreateSingleSessionService {
         // Nếu lớp học phần này mở trên học kì chính thức thì chỉ có thể
         // chọn các môn theo đúng học kì của chương trình đào tạo.
         int semester = request.semester(); // 2
-        int year = request.year() - clazz.getStartYear(); //2025 - 2022 = 3
+        int year = request.year() - clazz.getStartYear() + 1; //2025 - 2022 + 1 = 4
         boolean isValidCourse;
         if (semester != 3) { // Học kì chính thức
+            log.info("Checking exist course {} in class {}'s study plan with semester {}, year {}"
+                    , course.getCourseId(), clazz.getClazzId(), semester, year);
+
             isValidCourse = studyPlanRepository.existsCourseInStudyPlan
                     (course.getCourseId(), clazz.getClazzId(), semester, year);
 
