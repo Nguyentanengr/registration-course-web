@@ -28,14 +28,7 @@ public class FilterAbleOpenSessionService {
     private final PhaseRepository phaseRepository;
 
     public List<SessionInfoResponse> getAbleOpenSessionByFilter
-            (String searchKey, Integer phaseId, String clazzId) {
-
-        RegistrationPhase phase = phaseRepository.findById(phaseId)
-                .orElseThrow(() -> new BusinessException(CodeResponse.PHASE_NOT_FOUND));
-
-        int semester = phase.getSemester();
-        int year = phase.getYear();
-
+            (String searchKey, Integer year, Integer semester, String clazzId) {
 
         log.info("Finding sessions with semester: {}, year: {}, classId: {}", semester, year, clazzId);
 

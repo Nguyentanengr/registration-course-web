@@ -1,8 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const GET_SECTION_API = "http://localhost:8080/api/v1/sessions?";
+const GET_SECTION_API = "http://localhost:8080/api/v1/sessions";
 const DELETE_SECTION_API = "http://localhost:8080/api/v1/sessions/";
 const POST_SECTION_API = "http://localhost:8080/api/v1/sessions";
+const GET_ABLE_SECTION_API = "http://localhost:8080/api/v1/sessions/able-open"
+
 const getStatusSection = (string) => {
     switch (string) {
         case 'Tất cả học phần':
@@ -47,7 +49,7 @@ export const fetchSections = createAsyncThunk('sections/filter',
         console.log(filter, searchKey, currentPage, itemPerPage);
         
         try {
-            const TARGET_API = GET_SECTION_API + "searchKey=" + searchKey + "&page=" + (currentPage - 1) + "&size=" + itemPerPage + getStatusSection(filter);
+            const TARGET_API = GET_SECTION_API + "?searchKey=" + searchKey + "&page=" + (currentPage - 1) + "&size=" + itemPerPage + getStatusSection(filter);
             console.log(TARGET_API);
 
             const TOKEN = localStorage.getItem('token');
@@ -148,3 +150,40 @@ export const createSection = createAsyncThunk('sections/createSection'
             });
         }
 });
+
+
+export const fetchSectionsBySemester = createAsyncThunk('sections/getAllBySemester',
+    async ({ classId, year, semester }, { rejectWithValue }) => {
+        
+        try {
+            const TARGET_API = GET_ABLE_SECTION_API + `?classId=${classId}&year=${year}&semester=${semester}`
+            console.log(TARGET_API);
+
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorized": "Bearer" + TOKEN,
+                }
+            });
+
+            
+            const objectResponse = await response.json();
+            console.log(objectResponse);
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message || "Lỗi khi lấy dữ liệu"
+                });
+            };
+            return objectResponse;
+
+        } catch (error) {
+            // lỗi mạng hoặc lỗi sự cố khi truyền mạng
+            return rejectWithValue({
+                code: 9900,
+                message: error.message || "Lỗi kết nối tới server"
+            });
+        }
+    });

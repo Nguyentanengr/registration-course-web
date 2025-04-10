@@ -1,5 +1,6 @@
 package com.jikateam.registration_course.controller.clazz;
 
+import com.jikateam.registration_course.dto.response.ClazzActiveInfoResponse;
 import com.jikateam.registration_course.dto.response.ClazzInfoResponse;
 import com.jikateam.registration_course.dto.response.CodeResponse;
 import com.jikateam.registration_course.dto.response.DataResponse;
@@ -58,4 +59,18 @@ public class ClazzController {
                 .build();
     }
 
+
+    @GetMapping("/active-info")
+    public DataResponse<List<ClazzActiveInfoResponse>> getAllClazzActiveInfo(
+    ) {
+        List<ClazzActiveInfoResponse> responses = clazzService.getAllActiveInfoClazz();
+
+        log.info("Response: {}", responses);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<ClazzActiveInfoResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+    }
 }

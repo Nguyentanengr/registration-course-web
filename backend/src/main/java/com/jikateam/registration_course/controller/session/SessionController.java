@@ -90,14 +90,15 @@ public class SessionController {
     public DataResponse<List<SessionInfoResponse>> getAbleSessionByFilter(
             @RequestParam(defaultValue = "") String searchKey,
             @RequestParam(defaultValue = "") String classId,
-            @RequestParam Integer phaseId
+            @RequestParam Integer year,
+            @RequestParam Integer semester
     ) {
 
         List<SessionInfoResponse> responses = filterAbleOpenSessionService
-                .getAbleOpenSessionByFilter(searchKey, phaseId, classId);
+                .getAbleOpenSessionByFilter(searchKey, year, semester, classId);
 
-        log.info("Response for searchKey = {}, classId = {}, phaseId = {}: {}",
-                searchKey, classId, phaseId, responses.stream().map(SessionInfoResponse::sessionId).toList());
+        log.info("Response for searchKey = {}, classId = {}, year = {}, semester = {}: {}",
+                searchKey, classId, year, semester, responses.stream().map(SessionInfoResponse::sessionId).toList());
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
 

@@ -22,4 +22,11 @@ public interface ClassRepository extends JpaRepository<Clazz, String> {
             "WHERE c.endYear >= :currentYear"
     )
     List<String> getAllClassIdIsActive(@Param("currentYear") int currentYear);
+
+
+    // Chỉ lấy các lớp còn hoạt động được
+    @Query("SELECT c FROM Clazz c " +
+            "WHERE c.endYear >= :currentYear"
+    )
+    List<Clazz> getAllActiveClazzInfo(@Param("currentYear") int currentYear);
 }

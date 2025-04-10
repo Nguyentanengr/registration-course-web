@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FilterAreaContainer } from './FilterArea.styled';
 import { Icons } from '../../../assets/icons/Icon';
 import SelectOption from '../../commons/SelectOption';
@@ -6,40 +6,13 @@ import AddPeriod from './AddPeriod';
 import CircleSpinner from '../../commons/CircleSpinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
-import { fetchAllPhase } from '../../../apis/phaseApi';
+import { fetchAllPhase, fetchAllPhaseBySemester } from '../../../apis/phaseApi';
+import { addOpenSection, removeOpenSection, resetOpenSection, resetSections, setClassId, setOpenSection, setPhaseId, setSemester, setSemesters, setYear, setYears } from '../../../stores/slices/openSectionSlice';
+import { fetchActiveClassInfos } from '../../../apis/classApi';
+import { fetchSectionsBySemester } from '../../../apis/sectionApi';
+import Alert from '../../commons/Alert';
+import { createOpenSections } from '../../../apis/openSectionApi';
 
-const sectionList = [
-    {
-        sectionId: "10001",
-        courseId: "INT1339",
-        courseName: "Lập trình C++",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "20 - 100"
-    },
-    {
-        sectionId: "10004",
-        courseId: "INT1342",
-        courseName: "Trí tuệ nhân tạo",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "30 - 70"
-    },
-    {
-        sectionId: "10005",
-        courseId: "INT1343",
-        courseName: "Công nghệ phần mềm",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "20 - 60"
-    }
-];
 const openList = [
     {
         sectionId: "10001",
@@ -97,7 +70,13 @@ const FilterArea = () => {
     const filters = ['Mở lớp học phần', 'Đợt đăng ký'];
     const [filter, setFilter] = useState(filters[0]);
     const [isAdding, setIsAdding] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const checkBoxRefs = useRef([]);
+    const checkBoxAllRefs = useRef(null);
     const { getLoading, searchKey, phases } = useSelector((state) => state.phase);
+    const { classes, classId, year, semester
+        , years, semesters, openPhases, phaseId
+        , sections, openSections, postLoading, postError } = useSelector((state) => state.openSection);
 
     const handleOnClickOption = (option) => {
         setFilter(option);
@@ -107,7 +86,7 @@ const FilterArea = () => {
     // Gọi api sau khi nhấn enter trong input
     const handleOnEnterPhase = (e) => {
         if (e.key == "Enter") {
-            dispatch(fetchAllPhase({ searchKey: searchKey}));
+            dispatch(fetchAllPhase({ searchKey: searchKey }));
         }
     };
 
@@ -124,14 +103,112 @@ const FilterArea = () => {
         return now >= open && now <= close;
     }
 
-    // trang được render - call api
+    const getPhaseIdByName = (name, phases) => {
+        const finded = phases.find((p) => p.phaseName === name);
+        return finded.phaseId;
+    };
+
+    // Khi click mở tất cả
+    const handleClickOpenAll = () => {
+        dispatch(createOpenSections({ openSections: openSections}))
+            .unwrap()
+            .then((action) => {      
+                // fetch lại các sections
+                dispatch(fetchSectionsBySemester({ classId: classId, year: year, semester: semester }));
+                // reset lại openSection (những section được chọn)
+                dispatch(resetOpenSection());
+
+                // Tắt checkbox chọn tất cả
+                checkBoxAllRefs.current.checked = false;
+                checkBoxRefs.current.forEach((el) => { if (el) el.checked = false });
+                
+            })
+            .catch((error) => {
+
+            })
+    };
+
+    // Khi chọn từng lớp để mở
+    const handleChangeCheckBox = (e, sectionId) => {
+        if (e.target.checked) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const openSection = {
+                openSectionId: openSections.length + 1,
+                sectionId: sectionId,
+                managerId: user.username.toUpperCase(),
+                phaseId: getPhaseIdByName(phaseId, openPhases),
+            }
+            dispatch(addOpenSection(openSection));
+        } else {
+            dispatch(removeOpenSection(sectionId));
+            checkBoxAllRefs.current.checked = false;
+        }
+    }
+
+    // Khi chọn tất cả để mở
+
+    const handeChangeAllCheckBox = (e) => {
+        if (e.target.checked) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const openSections = sections.map((s, index) => {
+                const openSection = {
+                    openSectionId: index,
+                    sectionId: s.sessionId,
+                    managerId: user.username.toUpperCase(),
+                    phaseId: getPhaseIdByName(phaseId, openPhases),
+                }
+                return openSection;
+            });
+            dispatch(setOpenSection(openSections));
+
+            // Bật tất cả các checkbox phần tử
+            checkBoxRefs.current.forEach((el) => { if (el) el.checked = true });
+
+        } else {
+            // Tắt tất cả các checkbox phần tử
+            dispatch(resetOpenSection());
+            checkBoxRefs.current.forEach((el) => { if (el) el.checked = false });
+        }
+    }
+
+    // Nếu không có openSections nào được chọn disable button mở
     useEffect(() => {
-        dispatch(fetchAllPhase({ searchKey: searchKey}));
+        console.log(openSections);
+        if (openSections.length == 0) {
+            setIsOpen(false);
+        } else {
+            setIsOpen(true);
+        }
+    }, [openSections]);
+
+    // trang được render - call get phase, get class
+    useEffect(() => {
+        dispatch(fetchAllPhase({ searchKey: searchKey }));
+        dispatch(fetchActiveClassInfos());
     }, [dispatch]);
 
+    // Khi classId thay đổi -> set mặc định giá trị tương ứng cho year và semester
     useEffect(() => {
-        console.log('searchKey: ',searchKey);
-    }, [searchKey]);
+        if (classId) {
+            const cl = classes.find((c) => c.clazzId === classId);
+            console.log(cl);
+            dispatch(setSemesters([cl.nextSemester]));
+            dispatch(setYears([cl.nextYear]));
+        }
+    }, [classId]);
+
+
+    // Khi lớp - năm - học kì thay đổi -> fetch Đợt, fetch Học phần
+    useEffect(() => {
+        if (year && semester) {
+            dispatch(fetchAllPhaseBySemester({ year: year, semester: semester }));
+        }
+    }, [year, semester]);
+    useEffect(() => {
+        if (classId && year && semester) {
+            dispatch(fetchSectionsBySemester({ classId: classId, year: year, semester: semester }));
+        }
+    }, [classId, year, semester]);
 
     return (
         <FilterAreaContainer>
@@ -169,7 +246,12 @@ const FilterArea = () => {
                                 Lớp sinh viên
                             </div>
                             <div className="select-option">
-                                <SelectOption options={["D22CQCN01-N", "D18CQCN02-N", "D22CQCN03-N"]} />
+                                <SelectOption
+                                    options={classes.map((c) => c.clazzId)}
+                                    placeHolder='Chọn lớp'
+                                    value={classId}
+                                    onSelect={(value) => { dispatch(setClassId(value)) }}
+                                />
                             </div>
                         </div>
                         <div className="option-box">
@@ -177,7 +259,11 @@ const FilterArea = () => {
                                 Năm học
                             </div>
                             <div className="select-option">
-                                <SelectOption options={["2024", "2025", "2026", "2027"]} />
+                                <SelectOption
+                                    options={years}
+                                    value={year}
+                                    onSelect={(value) => { dispatch(setYear(value)) }}
+                                />
                             </div>
                         </div>
                         <div className="option-box">
@@ -185,7 +271,11 @@ const FilterArea = () => {
                                 Học kì
                             </div>
                             <div className="select-option">
-                                <SelectOption options={["1", "2", "3"]} />
+                                <SelectOption
+                                    options={semesters}
+                                    value={semester}
+                                    onSelect={(value) => { dispatch(setSemester(value)) }}
+                                />
                             </div>
                         </div>
                         <div className="search-btn">
@@ -201,7 +291,7 @@ const FilterArea = () => {
                         <div className="left">
                             <div className="select-all wrap-center">
                                 <label className="custom-checkbox">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" onChange={handeChangeAllCheckBox} ref={checkBoxAllRefs}/>
                                     <span className="checkmark"></span>
                                     Chọn tất cả
                                 </label>
@@ -210,19 +300,36 @@ const FilterArea = () => {
                         <div className="right wrap-center">
                             <p>Đợt đăng ký:</p>
                             <div className="select-option">
-                                <SelectOption options={["Giai đoạn đăng ký kỳ hè năm 2024", "Giai đoạn đăng ký kỳ 2 năm 2024", "Giai đoạn đăng ký kỳ 1 năm 2024"]} width='320px' />
+                                <SelectOption
+                                    options={openPhases.map((o) => o.phaseName)}
+                                    value={phaseId}
+                                    onSelect={(value) => dispatch(setPhaseId(value))}
+                                    width='340px'
+                                />
                             </div>
-                            <div className="search-btn">
+                            <div
+                                className={`search-btn ${isOpen ? '' : 'disable'}`}
+                                onClick={handleClickOpenAll}
+                            >
                                 <button className='search wrap-center'>
                                     <div className="icon wrap-center">
-                                        <Icons.FollowPlus />
+                                        { postLoading ? <CircleSpinner size={15} color='#ffffff' /> : <Icons.FollowPlus />}
                                     </div>
                                     <p>Mở tất cả</p>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div className="selected">
+                    {sections.length == 0 && <div className='not-found'>
+                        <div className="icon wrap-center">
+                            <Icons.Info />
+                        </div>
+                        <div className="note">
+                            <div className="h4">Không tìm thấy kết quả</div>
+                            <small>Chưa có lớp học phần nào được tạo cho lớp {classId} trong năm học {year} và học kì {semester}.</small>
+                        </div>
+                    </div>}
+                    {sections.length != 0 && <div className="selected">
                         <div className="table-container">
                             <table className='table'>
                                 <thead>
@@ -238,32 +345,36 @@ const FilterArea = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {sectionList.map((section, index) => (
+                                    {sections.map((section, index) => (
                                         <tr
                                             className='body-row'
                                             key={index}
                                         >
                                             <td>
                                                 <label className="custom-checkbox">
-                                                    <input type="checkbox" />
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={(e) => { handleChangeCheckBox(e, section.sessionId) }}
+                                                        ref={(el) => checkBoxRefs.current[index] = el}
+                                                    />
                                                     <span className="checkmark"></span>
                                                 </label>
                                             </td>
-                                            <td>{section.sectionId}</td>
-                                            <td>{section.courseId} <br /> <span>
-                                                {section.courseName}
+                                            <td>{section.sessionId}</td>
+                                            <td>{section.courseInfo.courseId} <br /> <span>
+                                                {section.courseInfo.courseName}
                                             </span></td>
-                                            <td>{section.classId}</td>
-                                            <td>{section.group}</td>
+                                            <td>{section.clazzId}</td>
+                                            <td>{section.groupNumber}</td>
                                             <td>{section.year}</td>
                                             <td>{section.semester}</td>
-                                            <td>{section.students}</td>
+                                            <td>{section.minStudents} - {section.maxStudents}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div>}
                 </div>
                 <div className="opened">
                     <div className="header-opened">
@@ -403,9 +514,8 @@ const FilterArea = () => {
                         </table>
                     </div>
                 </div>
-
-
             </div>}
+            {postError && <Alert message={postError.massage || 'Đã có lỗi xảy ra'} />}
         </FilterAreaContainer>
     )
 }

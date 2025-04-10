@@ -190,6 +190,11 @@ export const FilterAreaContainer = styled.div`
                     cursor: pointer;
                     transition: background-color 0.2s;
 
+                    &.disable {
+                        pointer-events: none;
+                        opacity: 0.5;
+                    }
+
                     &:hover {
                         background-color:rgb(223, 53, 53);
                     }
@@ -210,6 +215,28 @@ export const FilterAreaContainer = styled.div`
                             font-weight: 500;
                         }
                     }
+                }
+            }
+        }
+
+        .not-found {
+            margin-top: 20px;
+            padding: 20px 50px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 20px;
+            align-items: start;
+
+            .icon {
+                padding-top: 2px;
+                font-size: 18px;
+            }
+
+            .note {
+
+                .h4 {
+                    font-weight: 600;
                 }
             }
         }

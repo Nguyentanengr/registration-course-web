@@ -1,4 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchActiveClassInfos } from "../../apis/classApi";
+import { fetchAllPhaseBySemester } from "../../apis/phaseApi";
+import { fetchSectionsBySemester } from "../../apis/sectionApi";
+import { createOpenSections } from "../../apis/openSectionApi";
+import { SiTicketmaster } from "react-icons/si";
 
 
 const openSectionSlice = createSlice({
@@ -6,55 +11,87 @@ const openSectionSlice = createSlice({
     initialState: {
 
         // search section to choose
-        classes: [],
         years: [],
         semesters: [],
-        phases: [],
-        sections: [
-            {
-                sessionId: 10020,
-                courseInfo: {
-                    courseId: "INT4105",
-                    courseName: "IOT và ứng dụng",
-                    credits: 3
-                },
-                clazzId: "D22CQCN02-N",
-                year: 2025,
-                semester: 1,
-                groupNumber: 1,
-                minStudents: 20,
-                maxStudents: 100,
-                startDate: "2025-08-11",
-                endDate: "2025-10-21",
-                status: null,
-                scheduleIds: null
-            }
+        classId: '',
+        phaseId: null,
+        year: null,
+        semester: null,
+        classes: [],
+        openPhases: [
         ],
+        sections: [],
+
+        // Chọn & mở học phần
+        openSections: [],
+        postLoading: false,
+        postError: null,
     },
     reducers: {
-        setClasses: (state, action) => {
-            state.classes = [...state.classes, action.payload];
-        },
         setYears: (state, action) => {
-            state.years = [...state.years, action.payload];
+            state.years = action.payload;
+        },
+        setSemesters: (state, action) => {
+            state.semesters = action.payload;
+        },
+        setClassId: (state, action) => {
+            state.classId = action.payload;
+        },
+        setYear: (state, action) => {
+            state.year = action.payload;
         },
         setSemester: (state, action) => {
-            state.semesters = [...state.semesters, action.payload];
+            state.semester = action.payload;
         },
-        setSemester: (state, action) => {
-            state.phases = [...state.phases, action.payload];
+        setPhaseId: (state, action) => {
+            state.phaseId = action.payload;
         },
-
-
+        resetSections: (state) => {
+            state.sections = [];
+        },
+        addOpenSection: (state, action) => {
+            state.openSections = [...state.openSections, action.payload];
+        },
+        removeOpenSection: (state, action) => {
+            state.openSections = state.openSections.filter((o) => o.sectionId !== action.payload);
+        },
+        setOpenSection: (state, action) => {
+            state.openSections = action.payload;
+        },
+        resetOpenSection: (state) => {
+            state.openSections = [];
+        }
     },
-    // extraReducers: (builder) => {
-    //     builder
-    //         .addCase(fetchAllPhase.pending, (state) => {
-    //             state.getLoading = true;
-    //         })
-    // }
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchActiveClassInfos.fulfilled, (state, { payload }) => {
+                state.classes = payload.data;
+            })
+            .addCase(fetchAllPhaseBySemester.fulfilled, (state, { payload }) => {
+                state.openPhases = payload.data;
+            })
+            .addCase(fetchSectionsBySemester.fulfilled, (state, { payload }) => {
+                console.log("Result for sections");
+                console.log(payload);
+                state.sections = payload.data;
+            })
+            .addCase(createOpenSections.pending, (state) => {
+                state.postLoading = true;
+                state.postError = null;
+            })
+            .addCase(createOpenSections.fulfilled, (state) => {
+                state.postLoading = false;
+                state.postError = null;
+            })
+            .addCase(createOpenSections.rejected, (state, { payload }) => {
+                state.postLoading = false;
+                state.postError = payload;
+            })
+    }
 
 });
 
-export const { } = openSectionSlice.actions;
+export const { setYears, setSemesters, setPhaseId, resetSections
+    , setSemester, setClassId, setYear, resetOpenSection
+    , addOpenSection, removeOpenSection, setOpenSection } = openSectionSlice.actions;
 export default openSectionSlice.reducer;

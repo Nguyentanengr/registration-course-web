@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SelectOptionContainer } from './SelectOption.styled';
 import { Icons } from '../../assets/icons/Icon';
 
-const SelectOption = ({ options = [], width = '100%', onSelect, value = '' }) => {
+const SelectOption = ({ options = [], width = '100%', onSelect, value = '', placeHolder = '' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectRef = useRef();
 
@@ -18,8 +18,8 @@ const SelectOption = ({ options = [], width = '100%', onSelect, value = '' }) =>
     // Set default value when options change and no value is selected
     useEffect(() => {
         console.log("select option ",value);
-        if (options.length > 0 && !value && onSelect) {
-            onSelect(options[0]);
+        if (options.length > 0 && !value && onSelect && !placeHolder) {
+            onSelect(options[0]); // Khi không có placeHolder mới set mặc định phần tử đầu tiên
         }
     }, [options, value, onSelect]);    
 
@@ -41,7 +41,7 @@ const SelectOption = ({ options = [], width = '100%', onSelect, value = '' }) =>
     return (
         <SelectOptionContainer ref={selectRef} width={width}>
             <button className='btn-select' onClick={() => setIsOpen(!isOpen)}>
-                {value}
+                {value ? value : placeHolder} {/* Nếu ph có thì hiện ra, còn không thì thể hiện value */}
                 <div className="wrap-center">
                     <Icons.ShowMore />
                 </div>
