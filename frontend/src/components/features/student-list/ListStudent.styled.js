@@ -3,7 +3,7 @@ import { Theme } from '../../../assets/styles/Theme';
 
 export const ListStudentContainer = styled.div`
     width: 70vw;
-    height: 90vh;
+    height: 93vh;
     background-color: ${Theme.header};
     border-radius: 15px;
     padding: 25px 30px;
@@ -33,16 +33,40 @@ export const ListStudentContainer = styled.div`
         .table-container {
             margin-top: 20px;
             width: 100%;
-            overflow-x: auto;
+            height: 553px;
+            overflow-y: auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
             font-size: 14px;
 
+            &::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.1); 
+                border-radius: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+
             .table {
                 width: 100%;
+                min-width: 800px;
                 border-collapse: collapse;
             }
+
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 1;
+            }
+
 
             th, td {
                 padding: 8px;
@@ -59,7 +83,7 @@ export const ListStudentContainer = styled.div`
     }
 
     .confirm-box {
-        margin-top: 35px;
+        margin-top: 18px;
         display: flex;
         align-items: center;
         justify-content: end;

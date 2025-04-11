@@ -1,10 +1,7 @@
 package com.jikateam.registration_course.converter;
 
 
-import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
-import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
-import com.jikateam.registration_course.dto.response.RegisterSessionInfoResponse;
-import com.jikateam.registration_course.dto.response.RegisteredByStudentResponse;
+import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,6 +35,17 @@ public interface OpenSessionConverter {
     @Mapping(source = "o.session", target = "sessionInfo")
     RegisteredByStudentResponse mapToRegisteredByStudentResponse
             (OpenSessionRegistration o, LocalDateTime registerAt);
+
+
+    @Mapping(source = "o.openSessionRegistrationId", target = "openSessionId")
+    @Mapping(source = "o.session.clazz.clazzId", target = "classId")
+    @Mapping(source = "o.session.course.courseId", target = "courseId")
+    @Mapping(source = "o.session.course.courseName", target = "courseName")
+    @Mapping(source = "o.session.groupNumber", target = "groupNumber")
+    @Mapping(source = "o.session.year", target = "year")
+    @Mapping(source = "o.session.semester", target = "semester")
+    @Mapping(source = "o.session.sessionId", target = "sessionId")
+    ConformOpenSessionResponse mapToConformOpenSessionResponse(OpenSessionRegistration o, Long students);
 
 
 

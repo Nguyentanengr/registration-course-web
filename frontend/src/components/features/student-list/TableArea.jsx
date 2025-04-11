@@ -5,40 +5,7 @@ import { TableAreaContainer } from './TableArea.styled';
 import ListStudent from './ListStudent';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCheckedSectionId, removeCheckedSectionId, setCheckedSectionId, setSearchKey } from '../../../stores/slices/studentListSlice';
-
-
-const sectionList = [
-    {
-        sectionId: "10001",
-        courseId: "INT1339",
-        courseName: "Lập trình C++",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "65"
-    },
-    {
-        sectionId: "10004",
-        courseId: "INT1342",
-        courseName: "Trí tuệ nhân tạo",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "70"
-    },
-    {
-        sectionId: "10005",
-        courseId: "INT1343",
-        courseName: "Công nghệ phần mềm",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: "88"
-    }
-];
+import { fetchComformOpenSection } from '../../../apis/openSectionApi';
 
 const TableArea = () => {
     const [onSee, setOnSee] = useState(false);
@@ -51,18 +18,18 @@ const TableArea = () => {
         filterYear,
         filterSemester,
         searchKey,
-        sections,
+        openSections,
         checkedSectionIds,
     } = useSelector((state) => state.studentList);
 
-    const handleSingleCheckBox = (sectionId) => {
-        const isChecked = singleCBoxRefs.current[sectionId].checked;
+    const handleSingleCheckBox = (openSectionId) => {
+        const isChecked = singleCBoxRefs.current[openSectionId].checked;
         if (isChecked) {
             // Thêm sectionId vào danh sách chọn
-            dispatch(addCheckedSectionId(sectionId));
+            dispatch(addCheckedSectionId(openSectionId));
         } else {
             // Xóa sectionId khỏi danh sách chọn & hủy allCheckBox
-            dispatch(removeCheckedSectionId(sectionId));
+            dispatch(removeCheckedSectionId(openSectionId));
             allCBoxRef.current.checked = false;
         }
     };
@@ -71,27 +38,37 @@ const TableArea = () => {
         const isChecked = allCBoxRef.current.checked;
         if (isChecked) {
             // Gỡ tât cả id chọn trước đó && thêm toàn bộ
-            dispatch(setCheckedSectionId(sections.map((se) => se.sectionId)));
+            dispatch(setCheckedSectionId(openSections.map((se) => se.openSessionId)));
             // Bật tất cả single checkbox lên
             singleCBoxRefs.current.forEach((el) => { if (el) el.checked = true });
         } else {
             // Xóa tất cả id trong danh sách
             dispatch(setCheckedSectionId([]));
             // Tắt tất cả single checkbox
-            singleCBoxRefs.current.forEach((el) => { if (el) el.checked = false })
+            singleCBoxRefs.current.forEach((el) => { if (el) el.checked = false });
         }
     };
 
     const handleEnterSearch = (e) => {
         if (e.key === 'Enter') {
             // Gọi API tìm dữ liệu theo lớp - năm - học kì - key search.
+            const classId = filterClassId ? filterClassId : '';
+            const year = filterYear ? filterYear : '';
+            const semester = filterSemester ? filterSemester : '';
+            dispatch(fetchComformOpenSection({
+                searchKey: searchKey,
+                classId: classId,
+                year: year,
+                semester: semester
+            }));
         }
     };
 
-    const handleCheckStudentList = (section) => {
+    const handleCheckStudentList = (openSection) => {
         if (!onSee) {
-            setSelectedSection(section);
-            setOnSee(!onSee);   
+            console.log(openSection);
+            setSelectedSection(openSection);
+            setOnSee(!onSee);
         }
     }
 
@@ -159,7 +136,7 @@ const TableArea = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {sections.map((section, index) => (
+                            {openSections.map((openSection, index) => (
                                 <tr
                                     className='body-row'
                                     key={index}
@@ -168,24 +145,24 @@ const TableArea = () => {
                                         <label className="custom-checkbox">
                                             <input
                                                 type="checkbox"
-                                                onChange={() => handleSingleCheckBox(section.sectionId)}
-                                                ref={(el) => singleCBoxRefs.current[section.sectionId] = el}
+                                                onChange={() => handleSingleCheckBox(openSection.openSessionId)}
+                                                ref={(el) => singleCBoxRefs.current[openSection.openSessionId] = el}
                                             />
                                             <span className="checkmark"></span>
                                         </label>
                                     </td>
-                                    <td>{section.sectionId}</td>
-                                    <td>{section.courseId} <br /> <span>
-                                        {section.courseName}
+                                    <td>{openSection.sessionId}</td>
+                                    <td>{openSection.courseId} <br /> <span>
+                                        {openSection.courseName}
                                     </span></td>
-                                    <td>{section.classId}</td>
-                                    <td>{section.groupNumber}</td>
-                                    <td>{section.year}</td>
-                                    <td>{section.semester}</td>
-                                    <td>{section.students}</td>
+                                    <td>{openSection.classId}</td>
+                                    <td>{openSection.groupNumber}</td>
+                                    <td>{openSection.year}</td>
+                                    <td>{openSection.semester}</td>
+                                    <td>{openSection.students}</td>
                                     <td>
                                         <div className="action-box">
-                                            <div className="see wrap-center" onClick={() => handleCheckStudentList(section)}>
+                                            <div className="see wrap-center" onClick={() => handleCheckStudentList(openSection)}>
                                                 <Icons.Eye />
                                             </div>
                                             <div className="down wrap-center">
@@ -201,7 +178,7 @@ const TableArea = () => {
             </div>
 
             {onSee && <div className='pop-up-container wrap-center'>
-                <ListStudent setOnSee={setOnSee} section={selectedSection} />
+                <ListStudent setOnSee={setOnSee} openSection={selectedSection} />
             </div>}
         </TableAreaContainer>
     );

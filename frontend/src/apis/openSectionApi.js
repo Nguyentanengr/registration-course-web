@@ -4,6 +4,7 @@ export const POST_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions
 export const GET_OPENED_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
 export const REVERT_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/revert';
 export const CONFIRM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
+export const GET_CONFORM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/conform';
 
 const normalizeObject = (openSections) => {
 
@@ -115,7 +116,7 @@ export const fetchOpenedSection = createAsyncThunk('openSections/getOpened',
 export const revertOpenSections = createAsyncThunk('openSections/revert', 
     async ({ openSectionId }, { rejectWithValue }) => {
         try {
-            const TARGET_API = `http://localhost:8080/api/v1/open-sessions/revert/${openSectionId}`
+            const TARGET_API = REVERT_OPEN_SECTION_API + `/${openSectionId}`
             const TOKEN = localStorage.getItem('token');
             const response = await fetch(TARGET_API, {
                 method: 'DELETE',
@@ -147,7 +148,7 @@ export const revertOpenSections = createAsyncThunk('openSections/revert',
 export const confirmOpenSections = createAsyncThunk('openSections/confirm', 
     async ({ openSectionId, status }, { rejectWithValue }) => {
         try {
-            const TARGET_API = `http://localhost:8080/api/v1/open-sessions/${openSectionId}`
+            const TARGET_API = CONFIRM_OPEN_SECTION_API + `/${openSectionId}`
             const TOKEN = localStorage.getItem('token');
             const response = await fetch(TARGET_API, {
                 method: 'PUT',
@@ -175,3 +176,37 @@ export const confirmOpenSections = createAsyncThunk('openSections/confirm',
     }
 );
 
+// 
+
+
+export const fetchComformOpenSection = createAsyncThunk('openSections/getConform', 
+    async ({ searchKey, classId, year, semester }, { rejectWithValue }) => {
+        try {
+
+            const TARGET_API = GET_CONFORM_OPEN_SECTION_API + `?searchKey=${searchKey}&year=${year}&semester=${semester}&classId=${classId}`;
+            console.log(TARGET_API);
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorized': 'Bearer ' + TOKEN,
+                },
+            });
+
+            const objectResponse = await response.json();
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message,
+                });
+            }
+            return objectResponse;
+        } catch(error) {
+            return rejectWithValue({
+                code: 9090,
+                message: error.message || 'Lỗi kết nối đến server'
+            });
+        }
+    }
+);

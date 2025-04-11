@@ -1,5 +1,6 @@
 package com.jikateam.registration_course.entity;
 
+import com.jikateam.registration_course.constant.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,9 @@ public class Student {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
+    @Column(name = "gender", nullable = false)
+    private Gender gender;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
@@ -40,7 +44,7 @@ public class Student {
     @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
-    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "student", fetch = FetchType.LAZY, optional = false)
     private ClassEnrollment classEnrollment;
 
     @OneToMany(mappedBy = "student")
@@ -49,15 +53,4 @@ public class Student {
     @OneToMany(mappedBy = "student")
     private Set<Enrollment> enrollments;
 
-    @Override
-    public String toString() {
-        return "Student{" +
-                "studentId='" + studentId + '\'' +
-                ", fullname='" + fullname + '\'' +
-                ", phone='" + phone + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", isActive=" + isActive +
-                ", account=" + account +
-                '}';
-    }
 }

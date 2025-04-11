@@ -42,6 +42,26 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             @Param("clazzId") String clazzId
     );
 
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN FETCH o.session s " +
+            "JOIN FETCH s.course c " +
+            "JOIN s.clazz cl " +
+            "WHERE (:searchKey IS NULL OR :searchKey = '' " +
+            "OR c.courseId LIKE %:searchKey% " +
+            "OR c.courseName LIKE %:searchKey% " +
+            "OR cl.clazzId LIKE %:searchKey%) " +
+            "AND (:clazzId IS NULL OR cl.clazzId = :clazzId) " +
+            "AND (:year IS NULL OR s.year = :year) " +
+            "AND (:semester IS NULL OR s.semester = :semester) " +
+            "AND (o.status IN (4, 5, 6)) " +
+            "ORDER BY cl.clazzId")
+    List<OpenSessionRegistration> getAllBySemester(
+            @Param("searchKey") String searchKey,
+            @Param("clazzId") String clazzId,
+            @Param("year") Integer year,
+            @Param("semester") Integer semester
+    );
+
 
     @Query("SELECT COUNT(o) > 0 FROM OpenSessionRegistration o " +
                     "WHERE o.openSessionRegistrationId IN :openSessionIds " +

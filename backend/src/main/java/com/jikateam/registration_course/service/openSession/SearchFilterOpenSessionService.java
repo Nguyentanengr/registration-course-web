@@ -2,10 +2,7 @@ package com.jikateam.registration_course.service.openSession;
 
 
 import com.jikateam.registration_course.converter.OpenSessionConverter;
-import com.jikateam.registration_course.dto.response.CodeResponse;
-import com.jikateam.registration_course.dto.response.OpenSessionInfoResponse;
-import com.jikateam.registration_course.dto.response.RegisterOpenSessionResponse;
-import com.jikateam.registration_course.dto.response.RegisteredByStudentResponse;
+import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
 import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.EnrollmentRepository;
@@ -55,6 +52,35 @@ public class SearchFilterOpenSessionService {
         return openSessions.stream()
                 .map(o -> openSessionConverter
                         .mapToNewOpenSessionInfoResponse(o
+                                , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
+                .toList();
+    }
+
+
+    public List<ConformOpenSessionResponse> getAllBySemester
+            (String searchKey, String classId, Integer year, Integer semester)
+    {
+
+        // Lọc ra các bản ghi theo đợt đăng ký và lớp sinh viên (join fetch)
+        // Chỉ lấy các lớp với trạng thái confirm, teaching, completed (page Quản lý)
+        List<OpenSessionRegistration> openSessions = openSessionRegistrationRepository
+                .getAllBySemester(searchKey, classId, year, semester);
+
+        List<Integer> openSessionIds = openSessions.stream()
+                .map(OpenSessionRegistration::getOpenSessionRegistrationId).toList();
+
+        List<Object[]> numberOfRegisterOnSessions = enrollmentRepository
+                .getNumberOfRegisterOnOpenSessions(openSessionIds);
+
+        // Chuyển sang map để dễ lấy ra số lượng đăng ký trên id
+        Map<Integer, Long> countMap = numberOfRegisterOnSessions.stream() // map<openSessionId, count>
+                .collect(Collectors.toMap(pair -> (Integer) pair[0], pair -> (Long) pair[1]));
+
+        log.info("Response for number of register on session: {}", numberOfRegisterOnSessions);
+
+        return openSessions.stream()
+                .map(o -> openSessionConverter
+                        .mapToConformOpenSessionResponse(o
                                 , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
                 .toList();
     }

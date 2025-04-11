@@ -1,15 +1,18 @@
 package com.jikateam.registration_course.controller.openSession;
 
 
-import com.jikateam.registration_course.dto.request.*;
+import com.jikateam.registration_course.dto.request.CreateOpenSessionListRequest;
+import com.jikateam.registration_course.dto.request.DeleteOpenSessionListRequest;
+import com.jikateam.registration_course.dto.request.UpdateStatusOpenSessionListRequest;
+import com.jikateam.registration_course.dto.request.UpdateStatusOpenSessionRequest;
 import com.jikateam.registration_course.dto.response.*;
 import com.jikateam.registration_course.service.openSession.CreateOpenSessionService;
 import com.jikateam.registration_course.service.openSession.DeleteOpenSessionService;
 import com.jikateam.registration_course.service.openSession.SearchFilterOpenSessionService;
 import com.jikateam.registration_course.service.openSession.UpdateStatusOpenSessionService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,6 +50,29 @@ public class OpenSessionController {
                 .data(responses)
                 .build();
     }
+
+    @GetMapping("/conform")
+    public DataResponse<List<ConformOpenSessionResponse>> getAllOpenSessionBySemester(
+            @RequestParam(defaultValue = "") String searchKey,
+            @RequestParam(required = false) String classId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer semester
+    ) {
+
+        List<ConformOpenSessionResponse> responses = searchFilterOpenSessionService
+                .getAllBySemester(searchKey, classId, year, semester);
+
+        log.info("Response conform open session for params searchKey: " +
+                "{}, year: {}, semester: {}, classId: {}: {}",
+                searchKey, year, semester, classId, responses);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<ConformOpenSessionResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+    }
+
 
     @GetMapping("/for-register")
     public DataResponse<List<RegisterOpenSessionResponse>> getAllOpenSessionForRegister(

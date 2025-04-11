@@ -5,11 +5,13 @@ import { Icons } from '../../../assets/icons/Icon';
 import SelectOption from '../../commons/SelectOption';
 import { FilterAreaContainer } from './FilterArea.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetFilter, setFilterClassId, setFilterSemester, setFilterYear } from '../../../stores/slices/studentListSlice';
+import { resetFilter, setFilterClassId, setFilterSemester, setFilterYear, setOpenSections } from '../../../stores/slices/studentListSlice';
+import { fetchAllClassInfos } from '../../../apis/classApi';
+import { fetchComformOpenSection } from '../../../apis/openSectionApi';
 
 export const generateYears = () => {
-    const currentYear = new Date().getFullYear() - 14;
-    const yearArray = Array.from({ length: 15 }, (_, i) => currentYear + i);
+    const currentYear = new Date().getFullYear();
+    const yearArray = Array.from({ length: 15 }, (_, i) => currentYear - i);
     return yearArray;
 }
 
@@ -34,12 +36,28 @@ const FilterArea = () => {
 
         // làm mới filter 
         dispatch(resetFilter());
+        dispatch(setOpenSections([])); 
     };
 
     useEffect(() => {
         // Gọi API lấy dữ liệu khi lớp - năm - học kì thay đổi. 
+        console.log(filterClassId, filterYear, filterSemester);
+        const classId = filterClassId ? filterClassId : '';
+        const year = filterYear ? filterYear : '';
+        const semester = filterSemester ? filterSemester : '';
+        dispatch(fetchComformOpenSection({
+            searchKey: searchKey,
+            classId: classId,
+            year: year,
+            semester: semester
+        }));
 
     }, [filterClassId, filterYear, filterSemester]);
+
+    // gọi api lấy dữ liệu classID
+    useEffect(() => {
+        dispatch(fetchAllClassInfos());
+    }, [dispatch])
 
     return (
         <FilterAreaContainer>

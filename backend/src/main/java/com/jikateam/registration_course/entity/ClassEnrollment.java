@@ -14,27 +14,19 @@ import lombok.*;
 @AllArgsConstructor
 public class ClassEnrollment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "class_enrollment_id")
-    private Integer classEnrollmentId;
+    @Column(name = "student_id", length = 12)
+    private String studentId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", unique = true)
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private Clazz classEntity;
 
     @Column(nullable = false)
     private ClassEnrollmentStatus status; // 0: enrolled, 1: completed, 2: drop out
 
-    @Override
-    public String toString() {
-        return "ClassEnrollment{" +
-                "classEnrollmentId=" + classEnrollmentId +
-                ", student=" + student +
-                ", status=" + status +
-                '}';
-    }
 }
