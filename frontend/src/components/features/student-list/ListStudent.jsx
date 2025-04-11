@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import { ListStudentContainer } from './ListStudent.styled';
+import { useDispatch, useSelector } from 'react-redux';
 
 const students = [
     {
@@ -207,9 +208,19 @@ const students = [
 ];
 
 
-const ListStudent = ({ setOnSee }) => {
+const ListStudent = ({ setOnSee, section }) => {
 
     const thisRef = useRef(null);
+    const dispatch = useDispatch();
+    const [onRefresh, setOnRefresh] = useState(false);
+    const {
+        filterClassId,
+        filterYear,
+        filterSemester,
+        searchKey,
+        classIds,
+        sections,
+    } = useSelector((state) => state.studentList);
 
     const handleClickConfirm = () => {
         setOnSee(false);
@@ -233,8 +244,8 @@ const ListStudent = ({ setOnSee }) => {
         <ListStudentContainer ref={thisRef}>
             <div className="show-list">
                 <div className="s-title">
-                    <h2>Danh sách sinh viên - Lớp học phần 10002</h2>
-                    <small>INT1340 - Cơ sở dữ liệu - Lớp D22CQCN01-N - Nhóm 2</small>
+                    <h2>Danh sách sinh viên - Lớp học phần {section.sectionId}</h2>
+                    <small>{section.courseId} - {section.courseName} - Lớp {section.classId} - Nhóm {section.groupNumber}</small>
                 </div>
             </div>
 

@@ -34,6 +34,7 @@ public class SearchFilterOpenSessionService {
             (String searchKey, Integer phaseId, String clazzId) {
 
         // Lọc ra các bản ghi theo đợt đăng ký và lớp sinh viên (join fetch)
+        // Chỉ lấy các lớp với trạng thái chờ / mở / đóng (page Quản lý)
         List<OpenSessionRegistration> openSessions = openSessionRegistrationRepository
                 .getAllByPhaseAndClass(searchKey, phaseId, clazzId);
 

@@ -64,7 +64,7 @@ export const TableAreaContainer = styled.div`
         }
 
         .right {
-            gap: 10px;
+            gap: 15px;
             p {
                 font-weight: 600;
             }
@@ -95,13 +95,15 @@ export const TableAreaContainer = styled.div`
             }
 
             .excel-btn {
+                width: 160px;
                 .excel {
+                    width: 100%;
                     border-radius: 5px;
                     border: 1px solid ${Theme.hover};
                     height: 40px;
                     padding: 0 20px;
                     gap: 10px;
-                    opacity: 0.6;
+                    opacity: 0.5;
                     .icon {
                         font-size: 20px;
                     }

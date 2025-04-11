@@ -159,4 +159,18 @@ public class OpenSessionController {
                 .build();
     }
 
+    @DeleteMapping("/revert/{id}")
+    public DataResponse<Void> revertStatusPending(
+            @PathVariable("id") Integer openSessionId
+    ) {
+
+        updateStatusOpenSessionService.revertStatus(openSessionId);
+
+        CodeResponse codeResponse = CodeResponse.UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY;
+        return DataResponse.<Void>builder()
+                .code(codeResponse.getCode())
+                .message(codeResponse.getMessage())
+                .build();
+    }
+
 }

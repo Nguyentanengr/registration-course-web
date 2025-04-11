@@ -3,7 +3,7 @@ import { Theme } from '../../../assets/styles/Theme';
 
 export const FilterAreaContainer = styled.div`
     width: 100%;
-    padding-bottom: 100px;
+    padding-bottom: 30px;
     .custom-checkbox {
         display: flex;
         align-items: center;
@@ -317,15 +317,38 @@ export const FilterAreaContainer = styled.div`
         .table-container {
             margin-top: 20px;
             width: 100%;
-            overflow-x: auto;
+            height: 575px; 
+            overflow-y: auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
             font-size: 14px;
 
+            &::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.1); 
+                border-radius: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+
             .table {
                 width: 100%;
+                min-width: 800px;
                 border-collapse: collapse;
+            }
+
+            thead {
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 1;
             }
 
             th, td {
@@ -351,6 +374,82 @@ export const FilterAreaContainer = styled.div`
                         font-size: 14px;
                     }
                 }
+                &.action {
+                    position: relative;
+                    .icon {
+                        height: 25px;
+                        width: 25px;
+                        transition: 0.2s;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        &:hover {
+                            background-color: ${Theme.hover};
+                        }
+                    }
+
+                    .popup {
+                        position: absolute;
+                        top: 70%;
+                        left: -130%;
+                        width: 200px;
+                        z-index: 1;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: start;
+                        padding: 7px;
+                        background-color: ${Theme.header};
+                        border-radius: 5px;
+                        box-shadow: 1px -1px 3px rgba(0, 0, 0, 0.2);
+
+                        .icon-item {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 30px;
+                            height: 30px;
+                            font-size: 16px;
+                        }
+
+                        .action-name {
+                            font-size: 16px;
+                        }
+
+                        .item {
+                            width: 100%;
+                            cursor: pointer;
+                            border-radius: 5px;
+                            display: flex;
+                            align-items: center;
+                            gap: 7px;
+                            background-color: transparent;
+                            color: ${Theme.dark};
+
+                            &.disable {
+                                pointer-events: none;  
+                                opacity: 0.5;          
+                                user-select: none;    
+                            }
+
+                            &:hover {
+                                background-color: ${Theme.hover};
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            tr {
+                &:hover {
+                    background-color: ${Theme.softBlue};
+                }
+            }
+
+            .empty-list {
+                width: 100%;
+                text-align: center;
+                padding: 10px 0;
+                color: ${Theme.mediumSoft};
             }
         }
     }

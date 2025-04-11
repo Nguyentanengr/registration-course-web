@@ -42,7 +42,7 @@ public class SecurityConfig {
             "/api/v1/phases/*", "/api/v1/classes", "/api/v1/classes/*",
             "/api/v1/open-sessions", "/api/v1/open-sessions/*",
             "/api/v1/schedules", "/api/v1/auth/gen-pass",
-            "/api/v1/schedules/*",
+            "/api/v1/schedules/*", "/api/v1/open-sessions/revert/*"
 
 
     };

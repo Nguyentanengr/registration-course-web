@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchActiveClassInfos } from "../../apis/classApi";
 import { fetchAllPhaseBySemester } from "../../apis/phaseApi";
 import { fetchSectionsBySemester } from "../../apis/sectionApi";
-import { createOpenSections } from "../../apis/openSectionApi";
+import { createOpenSections, fetchOpenedSection } from "../../apis/openSectionApi";
 import { SiTicketmaster } from "react-icons/si";
 
 
@@ -26,8 +26,33 @@ const openSectionSlice = createSlice({
         openSections: [],
         postLoading: false,
         postError: null,
+
+        // Lấy danh sách học phần đã mở
+        searchSection: '',
+        oLoading: false,
+        openedSections: [
+            {
+                sectionId: 10001,
+                courseId: 'INT1339',
+                courseName: 'Công nghệ phần mềm',
+                classId: 'D22CQCQN02-N',
+                groupNumber: 1,
+                year: 2024,
+                semester: 1,
+                registers: 69,
+                maxStudents: 100,
+                minStudents: 20,
+                phaseId: 10001,
+                phaseName: 'ĐỢT ĐĂNG KÝ 1 HỌC KÌ 1 NĂM 2025',
+                status: 'PENDING',
+            }
+        ],
     },
     reducers: {
+        
+        setSearchSection: (state, action) => {
+            state.searchSection = action.payload;
+        },
         setYears: (state, action) => {
             state.years = action.payload;
         },
@@ -87,11 +112,23 @@ const openSectionSlice = createSlice({
                 state.postLoading = false;
                 state.postError = payload;
             })
+            .addCase(fetchOpenedSection.pending, (state) => {
+                state.oLoading = true;
+                state.getError = null;
+            })
+            .addCase(fetchOpenedSection.fulfilled, (state, { payload }) => {
+                state.oLoading = false;
+                state.openedSections = payload.data;
+            })
+            .addCase(fetchOpenedSection.rejected, (state, { payload }) => {
+                state.oLoading = false;
+            })
     }
 
 });
 
 export const { setYears, setSemesters, setPhaseId, resetSections
     , setSemester, setClassId, setYear, resetOpenSection
-    , addOpenSection, removeOpenSection, setOpenSection } = openSectionSlice.actions;
+    , addOpenSection, removeOpenSection, setOpenSection
+    , setSearchSection } = openSectionSlice.actions;
 export default openSectionSlice.reducer;

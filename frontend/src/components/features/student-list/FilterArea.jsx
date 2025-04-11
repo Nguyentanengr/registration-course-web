@@ -1,10 +1,46 @@
 
 
+import { useEffect, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import SelectOption from '../../commons/SelectOption';
 import { FilterAreaContainer } from './FilterArea.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetFilter, setFilterClassId, setFilterSemester, setFilterYear } from '../../../stores/slices/studentListSlice';
+
+export const generateYears = () => {
+    const currentYear = new Date().getFullYear() - 14;
+    const yearArray = Array.from({ length: 15 }, (_, i) => currentYear + i);
+    return yearArray;
+}
 
 const FilterArea = () => {
+
+    const dispatch = useDispatch();
+    const [onRefresh, setOnRefresh] = useState(false);
+    const {
+        filterClassId,
+        filterYear,
+        filterSemester,
+        searchKey,
+        classIds,
+        sections,
+    } = useSelector((state) => state.studentList);
+
+    const handleClickRefresh = () => {
+        setOnRefresh(true);
+        setTimeout(() => {
+            setOnRefresh(false); // chờ đợt hiệu ứng quay tròn kết thúc.
+        }, 500);
+
+        // làm mới filter 
+        dispatch(resetFilter());
+    };
+
+    useEffect(() => {
+        // Gọi API lấy dữ liệu khi lớp - năm - học kì thay đổi. 
+
+    }, [filterClassId, filterYear, filterSemester]);
+
     return (
         <FilterAreaContainer>
             <div className="title-container">
@@ -25,7 +61,12 @@ const FilterArea = () => {
                             Lớp sinh viên
                         </div>
                         <div className="select-option">
-                            <SelectOption options={["D22CQCN01-N", "D18CQCN02-N", "D22CQCN03-N"]} />
+                            <SelectOption
+                                options={classIds}
+                                value={filterClassId}
+                                placeHolder='Chọn lớp'
+                                onSelect={(value) => { dispatch(setFilterClassId(value)) }}
+                            />
                         </div>
                     </div>
                     <div className="option-box">
@@ -33,7 +74,12 @@ const FilterArea = () => {
                             Năm học
                         </div>
                         <div className="select-option">
-                            <SelectOption options={["2024", "2025", "2026", "2027"]} />
+                            <SelectOption
+                                options={generateYears()}
+                                value={filterYear}
+                                placeHolder='Chọn năm'
+                                onSelect={(value) => { dispatch(setFilterYear(value)) }}
+                            />
                         </div>
                     </div>
                     <div className="option-box">
@@ -41,15 +87,20 @@ const FilterArea = () => {
                             Học kì
                         </div>
                         <div className="select-option">
-                            <SelectOption options={["1", "2", "3"]} />
+                            <SelectOption
+                                options={[1, 2, 3]}
+                                value={filterSemester}
+                                placeHolder='Chọn học kì'
+                                onSelect={(value) => { dispatch(setFilterSemester(value)) }}
+                            />
                         </div>
                     </div>
-                    <div className="search-btn">
+                    <div className="search-btn" onClick={handleClickRefresh}>
                         <button className='search wrap-center'>
-                            <div className="icon wrap-center">
-                                <Icons.SearchIcon />
+                            <div className={`icon wrap-center `}>
+                                <Icons.Refresh className={`${onRefresh ? 'rotate' : ''}`} />
                             </div>
-                            <p>Tìm kiếm</p>
+                            <p>Làm mới</p>
                         </button>
                     </div>
                 </div>

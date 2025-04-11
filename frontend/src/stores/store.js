@@ -4,7 +4,9 @@ import sectionReducer from "./slices/sectionSlice";
 import scheduleReducer from "./slices/scheduleSlice";
 import authReducer from "./slices/authSlice";
 import phaseReducer from "./slices/phaseSlice";
-import openSectionReducer from "./slices/openSectionSlice"
+import openSectionReducer from "./slices/openSectionSlice";
+import studentListReducer from "./slices/studentListSlice";
+
 
 export default configureStore({
     reducer: {
@@ -14,5 +16,6 @@ export default configureStore({
         schedule: scheduleReducer,
         phase: phaseReducer,
         openSection: openSectionReducer,
+        studentList: studentListReducer,
     },
 });

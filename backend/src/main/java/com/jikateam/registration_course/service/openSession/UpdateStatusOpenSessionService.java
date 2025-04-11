@@ -96,4 +96,21 @@ public class UpdateStatusOpenSessionService {
 
     }
 
+
+    public void revertStatus
+            (Integer openSessionId) {
+
+        var openSessionEntity = openSessionRegistrationRepository.findById(openSessionId)
+                .orElseThrow(() -> new BusinessException(CodeResponse.OPEN_SESSION_NOT_FOUND));
+
+        log.info("Status session: {}", openSessionEntity.getStatus());
+
+        // Chỉ được phép thu hồi đăng ký khi pending (chưa mở) -> Xóa khỏi bảng openSession
+        if (openSessionEntity.getStatus() == RegistrationStatus.PENDING) {
+            openSessionRegistrationRepository.delete(openSessionEntity);
+        } else {
+            throw new BusinessException(CodeResponse.INVALID_PREVIOUS_STATUS);
+        }
+    }
+
 }

@@ -17,7 +17,6 @@ const SelectOption = ({ options = [], width = '100%', onSelect, value = '', plac
     
     // Set default value when options change and no value is selected
     useEffect(() => {
-        console.log("select option ",value);
         if (options.length > 0 && !value && onSelect && !placeHolder) {
             onSelect(options[0]); // Khi không có placeHolder mới set mặc định phần tử đầu tiên
         }

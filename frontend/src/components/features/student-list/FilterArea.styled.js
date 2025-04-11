@@ -120,6 +120,16 @@ export const FilterAreaContainer = styled.div`
                     .icon {
                         font-size: 20px;
                         font-weight: 500;
+
+                        .rotate {
+                            animation: spin 0.5s ease-in-out forwards;
+                        }
+
+                        @keyframes spin {
+                            to {
+                                transform: rotate(360deg);
+                            }
+                        }
                     }
 
                     p {

@@ -7,50 +7,11 @@ import CircleSpinner from '../../commons/CircleSpinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
 import { fetchAllPhase, fetchAllPhaseBySemester } from '../../../apis/phaseApi';
-import { addOpenSection, removeOpenSection, resetOpenSection, resetSections, setClassId, setOpenSection, setPhaseId, setSemester, setSemesters, setYear, setYears } from '../../../stores/slices/openSectionSlice';
+import { addOpenSection, removeOpenSection, resetOpenSection, resetSections, setClassId, setOpenSection, setPhaseId, setSearchSection, setSemester, setSemesters, setYear, setYears } from '../../../stores/slices/openSectionSlice';
 import { fetchActiveClassInfos } from '../../../apis/classApi';
 import { fetchSectionsBySemester } from '../../../apis/sectionApi';
 import Alert from '../../commons/Alert';
-import { createOpenSections } from '../../../apis/openSectionApi';
-
-const openList = [
-    {
-        sectionId: "10001",
-        courseId: "INT1339",
-        courseName: "Lập trình C++",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: '0/100',
-        registrationPeriod: "Giai đoạn đăng ký kỳ hè năm 2024",
-        status: "Đang mở"
-    },
-    {
-        sectionId: "10004",
-        courseId: "INT1342",
-        courseName: "Trí tuệ nhân tạo",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: '0/100',
-        registrationPeriod: "Giai đoạn đăng ký kỳ hè năm 2024",
-        status: "Đang mở"
-    },
-    {
-        sectionId: "10005",
-        courseId: "INT1343",
-        courseName: "Công nghệ phần mềm",
-        classId: "D22CQCQN02-N",
-        group: 1,
-        year: 2024,
-        semester: 1,
-        students: '0/100',
-        registrationPeriod: "Giai đoạn đăng ký kỳ hè năm 2024",
-        status: "Đang mở"
-    }
-];
+import { confirmOpenSections, createOpenSections, fetchOpenedSection, revertOpenSections } from '../../../apis/openSectionApi';
 
 
 export const cvertDateTimeJson = (string) => {
@@ -63,6 +24,19 @@ export const cvertDateTimeJson = (string) => {
     return '';
 };
 
+export const cvertSectionStatus = (status) => {
+    switch (status) {
+        case 'PENDING':
+            return 'Đang chờ';
+        case 'OPEN':
+            return 'Đang mở';
+        case 'CLOSE':
+            return 'Đã đóng';
+        default:
+            return '';
+    };
+}
+
 
 const FilterArea = () => {
 
@@ -73,10 +47,27 @@ const FilterArea = () => {
     const [isOpen, setIsOpen] = useState(false);
     const checkBoxRefs = useRef([]);
     const checkBoxAllRefs = useRef(null);
+    const popupRefs = useRef({});
+    const [activePopupId, setActivePopupId] = useState(null);
+
     const { getLoading, searchKey, phases } = useSelector((state) => state.phase);
-    const { classes, classId, year, semester
-        , years, semesters, openPhases, phaseId
-        , sections, openSections, postLoading, postError } = useSelector((state) => state.openSection);
+    const {
+        classes,
+        classId,
+        year,
+        semester,
+        years,
+        semesters,
+        openPhases,
+        phaseId,
+        sections,
+        openSections,
+        postLoading,
+        postError,
+        oLoading,
+        searchSection,
+        openedSections
+    } = useSelector((state) => state.openSection);
 
     const handleOnClickOption = (option) => {
         setFilter(option);
@@ -89,6 +80,34 @@ const FilterArea = () => {
             dispatch(fetchAllPhase({ searchKey: searchKey }));
         }
     };
+
+    const handleEnterSearchSection = (e) => {
+        if (e.key == "Enter") {
+            dispatch(fetchOpenedSection({ searchKey: searchSection }));
+        }
+    };
+
+    const handleRemoveOpenedSection = (openedSectionId) => {
+        // call api cập nhật trạng thái 
+        dispatch(revertOpenSections({ openSectionId: openedSectionId }))
+            .unwrap()
+            .then((action) => {
+                // fetch lại các sections
+                dispatch(fetchSectionsBySemester({ classId: classId, year: year, semester: semester }));
+                // fetch lại các openedSections
+                dispatch(fetchOpenedSection({ searchKey: searchSection }));
+            })
+    }
+
+    const handleConfirmOpenedSection = (openedSectionId, status) => {
+        // call api cập nhật trạng thái 
+        dispatch(confirmOpenSections({ openSectionId: openedSectionId, status: status }))
+            .unwrap()
+            .then((action) => {
+                // fetch lại các openedSections
+                dispatch(fetchOpenedSection({ searchKey: searchSection }));
+            })
+    }
 
     const generateYears = () => {
         const currentYear = new Date().getFullYear() - 10;
@@ -108,20 +127,28 @@ const FilterArea = () => {
         return finded.phaseId;
     };
 
+    // Toggle thao tác cho từng hàng
+    const togglePopup = (id) => {
+        console.log(id);
+        setActivePopupId(activePopupId === id ? null : id); // Nếu popup đang mở thì đóng, nếu không thì mở
+    };
+
     // Khi click mở tất cả
     const handleClickOpenAll = () => {
-        dispatch(createOpenSections({ openSections: openSections}))
+        dispatch(createOpenSections({ openSections: openSections }))
             .unwrap()
-            .then((action) => {      
+            .then((action) => {
                 // fetch lại các sections
                 dispatch(fetchSectionsBySemester({ classId: classId, year: year, semester: semester }));
                 // reset lại openSection (những section được chọn)
                 dispatch(resetOpenSection());
+                // fetch lại các openedSections
+                dispatch(fetchOpenedSection({ searchKey: searchSection }));
 
                 // Tắt checkbox chọn tất cả
                 checkBoxAllRefs.current.checked = false;
                 checkBoxRefs.current.forEach((el) => { if (el) el.checked = false });
-                
+
             })
             .catch((error) => {
 
@@ -181,10 +208,11 @@ const FilterArea = () => {
         }
     }, [openSections]);
 
-    // trang được render - call get phase, get class
+    // trang được render - call get phase, get class, lấy ra tất cả học phần đã mở
     useEffect(() => {
         dispatch(fetchAllPhase({ searchKey: searchKey }));
         dispatch(fetchActiveClassInfos());
+        dispatch(fetchOpenedSection({ searchKey: searchSection }));
     }, [dispatch]);
 
     // Khi classId thay đổi -> set mặc định giá trị tương ứng cho year và semester
@@ -209,6 +237,30 @@ const FilterArea = () => {
             dispatch(fetchSectionsBySemester({ classId: classId, year: year, semester: semester }));
         }
     }, [classId, year, semester]);
+
+
+    // Xử lý click ra ngoài để đóng popup
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            // Nếu không có popup nào đang mở, không cần kiểm tra
+            if (!activePopupId) return;
+            const isClickOutsideAllPopups = popupRefs.current[activePopupId] &&
+                !popupRefs.current[activePopupId].contains(e.target);
+
+            console.log("Click target:", e.target);
+            console.log("popupRefs.current:", popupRefs.current);
+            console.log("Is click outside all popups?", isClickOutsideAllPopups);
+
+            if (isClickOutsideAllPopups) {
+                setActivePopupId(null); // Đóng popup nếu nhấp ra ngoài
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [activePopupId]);
+
 
     return (
         <FilterAreaContainer>
@@ -291,7 +343,7 @@ const FilterArea = () => {
                         <div className="left">
                             <div className="select-all wrap-center">
                                 <label className="custom-checkbox">
-                                    <input type="checkbox" onChange={handeChangeAllCheckBox} ref={checkBoxAllRefs}/>
+                                    <input type="checkbox" onChange={handeChangeAllCheckBox} ref={checkBoxAllRefs} />
                                     <span className="checkmark"></span>
                                     Chọn tất cả
                                 </label>
@@ -313,7 +365,7 @@ const FilterArea = () => {
                             >
                                 <button className='search wrap-center'>
                                     <div className="icon wrap-center">
-                                        { postLoading ? <CircleSpinner size={15} color='#ffffff' /> : <Icons.FollowPlus />}
+                                        {postLoading ? <CircleSpinner size={15} color='#ffffff' /> : <Icons.FollowPlus />}
                                     </div>
                                     <p>Mở tất cả</p>
                                 </button>
@@ -384,9 +436,16 @@ const FilterArea = () => {
                         <div className="search-container wrap-center">
                             <div className="input-container wrap-center">
                                 <div className="icon wrap-center">
-                                    <Icons.SearchIcon />
+                                    {oLoading ? <CircleSpinner size={15} color='#777777' /> : <Icons.SearchIcon />}
                                 </div>
-                                <input type="text" placeholder='Tìm kiếm lớp học phần ...' spellCheck={false} />
+                                <input
+                                    type="text"
+                                    placeholder='Tìm kiếm lớp học phần ...'
+                                    spellCheck={false}
+                                    value={searchSection}
+                                    onChange={(e) => { dispatch(setSearchSection(e.target.value)) }}
+                                    onKeyDown={handleEnterSearchSection}
+                                />
                             </div>
                         </div>
                     </div>
@@ -408,7 +467,7 @@ const FilterArea = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {openList.map((section, index) => (
+                                    {openedSections.map((section, index) => (
                                         <tr
                                             className='body-row'
                                             key={index}
@@ -418,17 +477,73 @@ const FilterArea = () => {
                                                 {section.courseName}
                                             </span></td>
                                             <td>{section.classId}</td>
-                                            <td>{section.group}</td>
+                                            <td>{section.groupNumber}</td>
                                             <td>{section.year}</td>
                                             <td>{section.semester}</td>
-                                            <td>{section.students}</td>
-                                            <td>{section.registrationPeriod}</td>
-                                            <td><span className='status'>{section.status}</span></td>
-                                            <td><Icons.More /></td>
+                                            <td>{section.registers} / {section.maxStudents}</td>
+                                            <td>{section.phaseName}</td>
+                                            <td>
+                                                <span
+                                                    className='status'
+                                                >
+                                                    {cvertSectionStatus(section.status)}
+                                                </span>
+                                            </td>
+                                            <td className='action'>
+                                                <div
+                                                    className="icon wrap-center"
+                                                    onClick={() => togglePopup(section.openedSectionId)}
+                                                >
+                                                    <Icons.More />
+                                                </div>
+                                                {activePopupId === section.openedSectionId && <div
+                                                    className="popup"
+                                                    ref={(el) => (popupRefs.current[section.openedSectionId] = el)}
+                                                >
+                                                    <div
+                                                        className={`item ${section.status === 'CLOSE' ? '' : 'disable'}`}
+                                                        onClick={() => {handleConfirmOpenedSection(section.openedSectionId, 'CONFIRM')}}
+                                                    >
+                                                        <div className="icon-item">
+                                                            <Icons.Confirm />
+                                                        </div>
+                                                        <div className="action-name">
+                                                            Xác nhận
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className={`item ${section.status === 'CLOSE' ? '' : 'disable'}`}
+                                                        onClick={() => {handleConfirmOpenedSection(section.openedSectionId, 'CANCEL')}}
+                                                    >
+                                                        <div className="icon-item">
+                                                            <Icons.Cancel />
+                                                        </div>
+                                                        <div className="action-name">
+                                                            Hủy lớp
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className={`item ${section.status === 'PENDING' ? '' : 'disable'}`}
+                                                        onClick={() => {handleRemoveOpenedSection(section.openedSectionId)}}
+                                                    >
+                                                        <div className="icon-item">
+                                                            <Icons.Trash />
+                                                        </div>
+                                                        <div className="action-name">
+                                                            Gỡ
+                                                        </div>
+                                                    </div>
+
+                                                </div>}
+                                            </td>
+
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            {openedSections.length == 0 && <div className='empty-list'>
+                                Không có dữ liệu
+                            </div>}
                         </div>
                     </div>
                 </div>

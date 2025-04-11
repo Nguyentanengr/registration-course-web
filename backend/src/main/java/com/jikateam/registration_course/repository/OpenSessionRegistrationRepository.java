@@ -34,6 +34,7 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             "OR cl.clazzId LIKE %:searchKey%) " +
             "AND (:phaseId IS NULL OR p.registrationPhaseId = :phaseId) " +
             "AND (:clazzId IS NULL OR cl.clazzId = :clazzId) " +
+            "AND (o.status IN (0, 1, 2)) " +
             "ORDER BY cl.clazzId")
     List<OpenSessionRegistration> getAllByPhaseAndClass(
             @Param("searchKey") String searchKey,
