@@ -9,7 +9,7 @@ const AdminLeftHeader = () => {
                     <div className="logo">
                         <img src="/images/logo-navbar.png" alt="" />
                     </div>
-                    <div className="logo-text">A-Sbox</div>
+                    <div className="logo-text">Abox</div>
                 </div>
             </Link>
         </AdminLeftHeaderContainer>

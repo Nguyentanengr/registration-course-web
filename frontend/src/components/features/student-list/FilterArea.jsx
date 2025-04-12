@@ -50,7 +50,7 @@ const FilterArea = () => {
             classId: classId,
             year: year,
             semester: semester
-        }));
+        })); 
 
     }, [filterClassId, filterYear, filterSemester]);
 

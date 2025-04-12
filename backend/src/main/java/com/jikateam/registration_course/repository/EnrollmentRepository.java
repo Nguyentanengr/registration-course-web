@@ -26,11 +26,21 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     @Query("SELECT o.openSessionRegistrationId " +
             "FROM Enrollment e " +
             "JOIN e.openSessionRegistration o " +
-            "WHERE e.student.studentId = :studentId AND o.openSessionRegistrationId IN :openSessionIds")
+            "JOIN e.student s " +
+            "JOIN s.account a " +
+            "WHERE a.accountId = :accountId AND o.openSessionRegistrationId IN :openSessionIds AND e.status = 0")
     List<Integer> getIfRegistered(
             @Param("openSessionIds") Iterable<Integer> openSessionIds,
-            @Param("studentId") String studentId
+            @Param("accountId") Integer accountId
     );
+
+
+    @Query("SELECT SUM(c.credits) FROM Enrollment e " +
+            "JOIN e.openSessionRegistration o " +
+            "JOIN o.session s " +
+            "JOIN s.course c " +
+            "WHERE e.student.studentId = :studentId AND e.isPassed = true")
+    Long getAccumulateCreditsByStudentId(@Param("studentId") String studentId);
 
 
     @Procedure(procedureName = "RegisterCourse")

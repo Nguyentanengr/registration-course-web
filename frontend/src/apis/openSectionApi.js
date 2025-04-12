@@ -5,6 +5,7 @@ export const GET_OPENED_SECTION_API = 'http://localhost:8080/api/v1/open-session
 export const REVERT_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/revert';
 export const CONFIRM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
 export const GET_CONFORM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/conform';
+export const GET_REGISTER_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/for-register';
 
 const normalizeObject = (openSections) => {
 
@@ -184,6 +185,42 @@ export const fetchComformOpenSection = createAsyncThunk('openSections/getConform
         try {
 
             const TARGET_API = GET_CONFORM_OPEN_SECTION_API + `?searchKey=${searchKey}&year=${year}&semester=${semester}&classId=${classId}`;
+            console.log(TARGET_API);
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorized': 'Bearer ' + TOKEN,
+                },
+            });
+
+            const objectResponse = await response.json();
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message,
+                });
+            }
+            return objectResponse;
+        } catch(error) {
+            return rejectWithValue({
+                code: 9090,
+                message: error.message || 'Lỗi kết nối đến server'
+            });
+        }
+    }
+);
+
+// http://localhost:8080/api/v1/open-sessions/for-register?accountId=10035&filterType=0
+
+
+
+export const fetchRegisterOpenSection = createAsyncThunk('openSections/getRegister', 
+    async ({ accountId, filterType }, { rejectWithValue }) => {
+        try {
+
+            const TARGET_API = GET_REGISTER_OPEN_SECTION_API + `?accountId=${accountId}&filterType=${filterType}`;
             console.log(TARGET_API);
             const TOKEN = localStorage.getItem('token');
             const response = await fetch(TARGET_API, {

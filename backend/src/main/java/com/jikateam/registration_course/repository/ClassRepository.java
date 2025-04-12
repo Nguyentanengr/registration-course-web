@@ -29,4 +29,11 @@ public interface ClassRepository extends JpaRepository<Clazz, String> {
             "WHERE c.endYear >= :currentYear"
     )
     List<Clazz> getAllActiveClazzInfo(@Param("currentYear") int currentYear);
+
+    @Query("SELECT c FROM Clazz c " +
+            "JOIN c.classEnrollments ce " +
+            "JOIN ce.student s " +
+            "JOIN s.account a " +
+            "WHERE a.accountId = :accountId")
+    Clazz findByAccountId(@Param("accountId") Integer accountId);
 }

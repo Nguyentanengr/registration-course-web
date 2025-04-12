@@ -6,7 +6,8 @@ public record RegisterOpenSessionResponse(
         String openSessionId,
         RegistrationStatus status,
         Boolean isRegistered,
-        RegisterSessionInfoResponse sessionInfo,
-        Long numberOfRegister
+        Long empty,
+        Boolean isAble,
+        RegisterSessionInfoResponse sessionInfo
 ) {
 }

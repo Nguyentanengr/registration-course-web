@@ -50,7 +50,7 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             "OR c.courseId LIKE %:searchKey% " +
             "OR c.courseName LIKE %:searchKey% " +
             "OR cl.clazzId LIKE %:searchKey%) " +
-            "AND (:clazzId IS NULL OR cl.clazzId = :clazzId) " +
+            "AND (:clazzId IS NULL OR :clazzId = '' OR cl.clazzId = :clazzId) " +
             "AND (:year IS NULL OR s.year = :year) " +
             "AND (:semester IS NULL OR s.semester = :semester) " +
             "AND (o.status IN (4, 5, 6)) " +
@@ -108,14 +108,32 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             (@Param("currentDate") LocalDate now);
 
 
+    // Lấy ra để đăng ký
     @Query("SELECT o FROM OpenSessionRegistration o " +
             "JOIN FETCH o.session s " +
             "JOIN FETCH s.course c " + // fetch eage
             "JOIN FETCH s.schedules sc " + // fetch eage
             "JOIN o.registrationPhase p " +
-            "WHERE p.registrationPhaseId = :phaseId AND s.clazz.clazzId = :clazzId")
-    List<OpenSessionRegistration> getAllByFilterTypeClass
-            (@Param("clazzId") String clazzId, @Param("phaseId") Integer phaseId);
+            "WHERE p.registrationPhaseId = :phaseId " +
+            "AND s.clazz.clazzId = :clazzId")
+    List<OpenSessionRegistration> getAllByFilterTypeClass(
+             @Param("clazzId") String clazzId,
+             @Param("phaseId") Integer phaseId
+    );
+
+    // lấy ra để xem
+    @Query("SELECT o FROM OpenSessionRegistration o " +
+            "JOIN FETCH o.session s " +
+            "JOIN FETCH s.course c " + // fetch eage
+            "JOIN FETCH s.schedules sc " + // fetch eage
+            "JOIN o.registrationPhase p " +
+            "WHERE p.year = :year AND p.semester = :semester " +
+            "AND s.clazz.clazzId = :clazzId")
+    List<OpenSessionRegistration> getAllByFilterTypeClassInPrevPhase(
+            @Param("clazzId") String clazzId,
+            @Param("year") Integer year,
+            @Param("semester") Integer semester
+    );
 
     @Query("SELECT o FROM OpenSessionRegistration o " +
             "JOIN FETCH o.session s " +

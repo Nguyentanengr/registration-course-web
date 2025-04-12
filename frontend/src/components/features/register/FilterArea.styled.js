@@ -115,12 +115,18 @@ export const FilterAreaContainer = styled.div`
         .timer-container {
             display: flex;
             align-items: center;
-            justify-content: start;
             gap: 15px;
             border: 2px solid rgb(252, 15, 15);
             padding: 7px 25px;
             border-radius: 10px;
             color: rgb(252, 15, 15);
+            width: 400px;
+
+            &.close {
+                width: 200px;
+                color: rgb(0, 0, 0);
+                border: 2px solid rgb(0, 0, 0);
+            }
 
             .icon {
                 font-size: 30px;
@@ -133,6 +139,8 @@ export const FilterAreaContainer = styled.div`
                 font-size: 16px;
                 font-weight: 500;
                 /* font-family: 'Montserrat', sans-serif; */
+
+
             }
         }
     }

@@ -6,8 +6,8 @@ export const SelectedAreaContainer = styled.div`
    height: 500px;
 
    .title {
-        font-size: 18px;
-        font-weight: 700;
+        font-size: 16px;
+        font-weight: 600;
 
         span {
             color: ${Theme.logo};
@@ -61,18 +61,29 @@ export const SelectedAreaContainer = styled.div`
             }
         }
 
-        .pending {
-            padding: 3px;
-            background-color:  #FFEDED;
+        .sc {
+            font-size: 14px;
+            margin: 3px 0px;
+        }
+
+        .light, .highlight, .dark {
+            padding: 5px;
+            font-size: 14px;
+            font-weight: 600;
             text-align: center;
             border-radius: 15px;
         }
 
-        .confirmed {
-            padding: 3px;
-            background-color: ${Theme.lightSuccess};
-            text-align: center;
-            border-radius: 15px;
+        .light {
+            background-color:rgb(255, 247, 247);
+        }
+
+        .highlight {
+            background-color:rgb(228, 237, 255);
+        }
+
+        .dark {
+            background-color:rgb(232, 232, 232);
         }
 
 

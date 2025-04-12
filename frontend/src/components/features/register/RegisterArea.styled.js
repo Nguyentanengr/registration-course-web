@@ -10,6 +10,11 @@ export const RegisterAreaContainer = styled.div`
         cursor: pointer;
         user-select: none;
 
+        &.expired, &.empty, &.disable, &.overlap {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         input {
             display: none;
         }
@@ -68,9 +73,6 @@ export const RegisterAreaContainer = styled.div`
         td {
             padding: 10px;
 
-            &.time-box {
-                width: 230px;
-            }
         }
 
         tr.boldHighlight {
@@ -83,10 +85,35 @@ export const RegisterAreaContainer = styled.div`
 
         tr.body-row {
             transition: 0.05s;
+
+            &.overlap {
+                background-color:rgb(255, 180, 180);
+                cursor: not-allowed;
+            }
+
+            &.disable {
+                background-color:rgb(255, 247, 221);
+                cursor: not-allowed;
+            }
+
+            &.empty {
+                cursor: not-allowed;
+                background-color: rgb(255, 237, 237);  
+            }
+
+            &.expired {
+                background-color: #fafafa;
+                cursor: not-allowed;
+            }
             
             &:hover {
                 background-color: ${Theme.lightSoft};
             }
+        }
+
+        .sc {
+            font-size: 14px;
+            margin: 3px 0px;
         }
 
         .option-box {

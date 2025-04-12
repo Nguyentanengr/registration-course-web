@@ -27,7 +27,7 @@ public interface OpenSessionConverter {
     @Mapping(source = "o.openSessionRegistrationId", target = "openSessionId")
     @Mapping(source = "o.session", target = "sessionInfo")
     RegisterOpenSessionResponse mapToRegisterSessionInfoResponse
-            (OpenSessionRegistration o, boolean isRegistered, Long numberOfRegister);
+            (OpenSessionRegistration o, boolean isRegistered, Long empty, Boolean isAble);
 
     @Mapping(source = "o.session.course", target = "sessionInfo.courseInfo")
     @Mapping(source = "o.session.clazz.clazzId", target = "sessionInfo.classId")

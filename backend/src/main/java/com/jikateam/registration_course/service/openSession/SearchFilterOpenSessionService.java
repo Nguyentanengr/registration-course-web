@@ -3,10 +3,11 @@ package com.jikateam.registration_course.service.openSession;
 
 import com.jikateam.registration_course.converter.OpenSessionConverter;
 import com.jikateam.registration_course.dto.response.*;
+import com.jikateam.registration_course.entity.CourseDependency;
 import com.jikateam.registration_course.entity.OpenSessionRegistration;
+import com.jikateam.registration_course.entity.RegistrationPhase;
 import com.jikateam.registration_course.exception.BusinessException;
-import com.jikateam.registration_course.repository.EnrollmentRepository;
-import com.jikateam.registration_course.repository.OpenSessionRegistrationRepository;
+import com.jikateam.registration_course.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class SearchFilterOpenSessionService {
     private final OpenSessionRegistrationRepository openSessionRegistrationRepository;
     private final OpenSessionConverter openSessionConverter;
     private final EnrollmentRepository enrollmentRepository;
+    private final ClassRepository classRepository;
+    private final CourseDependencyRepository courseDependencyRepository;
+    private final RegistrationPhaseRepository phaseRepository;
 
     public List<OpenSessionInfoResponse> getAllByPhaseAndClass
             (String searchKey, Integer phaseId, String clazzId) {
@@ -85,29 +89,57 @@ public class SearchFilterOpenSessionService {
                 .toList();
     }
 
-    public List<RegisterOpenSessionResponse> getAllForRegister
-            (Integer phaseId, String studentId, String clazzId, Integer filterType) {
+    public ListRegisterOpenSessionResponse getAllForRegister
+            (Integer accountId, Integer filterType) {
+
+        RegistrationPhase phase = null;
 
         var responseEntities = switch (filterType) {
-            case 0 -> { // Trường hợp lọc theo lớp sinh viên có clazzId
-                yield  openSessionRegistrationRepository.getAllByFilterTypeClass(clazzId, phaseId);
-            }
-            case 1 -> {
-                yield openSessionRegistrationRepository.getAllByFilterTypeEduProgram(clazzId, phaseId);
-            }
-            case 2 -> {
-                yield openSessionRegistrationRepository.getAllByFilterTypeCourseNotPassed(studentId, phaseId);
+            case 0 -> { // Trường hợp lọc theo lớp sinh viên có account id hiện tại
+                // Tìm ra lớp của sinh viên hiện tại để lấy ra class Id, currentYear, currentSemester
+                var clazz = classRepository.findByAccountId(accountId);
+
+                // Tính toán ra nextYear và nextSemester cho học kì tiếp theo.
+                var nextSemester = clazz.getCurrentSemester() == 1 ? 2
+                        : clazz.getCurrentSemester() == 2 ? 3
+                        : 1;
+                var nextYear = clazz.getCurrentSemester() == 3 ? clazz.getStartYear() + clazz.getCurrentYear()
+                        : clazz.getStartYear() + clazz.getCurrentYear() - 1;
+
+                log.info("The next year and next semester for class {}: {}, {}"
+                        , clazz.getClazzId(), nextYear, nextSemester);
+
+                phase = phaseRepository.getOpenPhaseBySemester(nextYear, nextSemester, LocalDateTime.now());
+
+                // Tìm các lớp học phần trong đợt đăng kí đang mở
+                if (phase != null) {
+                    log.info("Found phase registration: {}", phase.getRegistrationPhaseName());
+                    log.info("Find session with clazzId and phaseId: {} {}", clazz.getClazzId(), phase.getRegistrationPhaseId());
+                    yield openSessionRegistrationRepository
+                            .getAllByFilterTypeClass(clazz.getClazzId(), phase.getRegistrationPhaseId());
+                } else {
+                    log.info("Not Found phase registration");
+                    log.info("Find session with clazzId and year and semester: {} {} {}"
+                            , clazz.getClazzId(), clazz.getCurrentYear() + clazz.getStartYear() - 1, clazz.getCurrentSemester());
+                    yield openSessionRegistrationRepository
+                            .getAllByFilterTypeClassInPrevPhase(clazz.getClazzId()
+                                    , clazz.getCurrentYear() + clazz.getStartYear() - 1, clazz.getCurrentSemester());
+                }
             }
             default -> throw new BusinessException(CodeResponse.INVALID_FILTER_TYPE);
         };
 
         // Tính isRegistered và empty
 
+        log.info("List ResponseEntities {}", responseEntities.stream()
+                .map(OpenSessionRegistration::getOpenSessionRegistrationId).toList());
+
         List<Integer> openSessionIds = responseEntities.stream()
                 .map(OpenSessionRegistration::getOpenSessionRegistrationId).toList();
 
         // Lấy ra những lớp mà sinh viên đăng ký từ những lớp ở trên
-        List<Integer> registered = enrollmentRepository.getIfRegistered(openSessionIds, studentId);
+        List<Integer> registered = enrollmentRepository.getIfRegistered(openSessionIds, accountId);
+        log.info("Session id which student registered: {}", registered);
 
         // Lấy ra số lượng còn lại cho mỗi lớp ở trên
         List<Object[]> numberOfRegisterOnSessions = enrollmentRepository
@@ -117,11 +149,32 @@ public class SearchFilterOpenSessionService {
         Map<Integer, Long> countMap = numberOfRegisterOnSessions.stream() // map<openSessionId, count>
                 .collect(Collectors.toMap(pair -> (Integer) pair[0], pair -> (Long) pair[1]));
 
-        return responseEntities.stream()
+        log.info("Quantity empty per open session: {}", countMap);
+
+        // Lấy ra các danh sách môn
+        List<String> courseIds = responseEntities.stream()
+                .map((openSession) -> openSession.getSession().getCourse().getCourseId())
+                .toList();
+
+        // Lấy ra những môn mà sinh viên bị điều kiện tiên quyết
+        List<String> prerequisites = courseDependencyRepository
+                .getPrerequisites(courseIds, accountId);
+
+        log.info("Disable course: {}", prerequisites);
+
+        List<RegisterOpenSessionResponse> responses = responseEntities.stream()
                 .map(o -> openSessionConverter.mapToRegisterSessionInfoResponse(o
                         , registered.contains(o.getOpenSessionRegistrationId())
-                        , countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)))
+                        , o.getSession().getMaxStudents() - countMap.getOrDefault(o.getOpenSessionRegistrationId(), 0L)
+                        , !prerequisites.contains(o.getSession().getCourse().getCourseId())
+                ))
                 .toList();
+
+        return ListRegisterOpenSessionResponse.builder()
+                .startTime(phase != null ? phase.getOpenTime() : null)
+                .endTime(phase != null ? phase.getCloseTime() : null)
+                .openSessions(responses)
+                .build();
     }
 
 

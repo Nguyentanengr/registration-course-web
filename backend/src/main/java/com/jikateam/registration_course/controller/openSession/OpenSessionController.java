@@ -75,25 +75,24 @@ public class OpenSessionController {
 
 
     @GetMapping("/for-register")
-    public DataResponse<List<RegisterOpenSessionResponse>> getAllOpenSessionForRegister(
-            @RequestParam Integer phaseId,
-            @RequestParam String studentId,
-            @RequestParam(defaultValue = "") String classId,
+    public DataResponse<ListRegisterOpenSessionResponse> getAllOpenSessionForRegister(
+            @RequestParam Integer accountId,
             @RequestParam Integer filterType // 0: class | 1 : CTDT | 2 : pass
     ) {
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
 
         if (filterType < 0 || filterType > 2) {
-            return DataResponse.<List<RegisterOpenSessionResponse>>builder()
+            return DataResponse.<ListRegisterOpenSessionResponse>builder()
                     .code(codeResponse.getCode())
-                    .data(List.of())
+                    .data(null)
                     .build();
         }
 
-        var responses = searchFilterOpenSessionService.getAllForRegister(phaseId, studentId, classId, filterType);
+        var responses = searchFilterOpenSessionService.getAllForRegister(accountId, filterType);
 
-        return DataResponse.<List<RegisterOpenSessionResponse>>builder()
+
+        return DataResponse.<ListRegisterOpenSessionResponse>builder()
                 .code(codeResponse.getCode())
                 .data(responses)
                 .build();

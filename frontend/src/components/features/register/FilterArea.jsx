@@ -3,22 +3,75 @@ import { useEffect, useRef, useState } from "react";
 import { Icons } from "../../../assets/icons/Icon";
 import { FilterAreaContainer } from "./FilterArea.styled";
 import SelectOption from "../../commons/SelectOption";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStudentByAccount } from "../../../apis/studentApi";
+import { fetchRegisterOpenSection } from "../../../apis/openSectionApi";
+
+export const convertToCounter = (endTime) => {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diffInSeconds = Math.max(0, Math.floor((end - now) / 1000));
+    return diffInSeconds;
+};
+
+export const formatSecondsToTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const pad = (num) => num.toString().padStart(2, '0');
+
+    return `${pad(hours)} giờ ${pad(minutes)} phút ${pad(seconds)} giây`;
+};
+
 
 const FilterArea = ({ options, selected, setSelected }) => {
 
+    const dispatch = useDispatch();
     const [isExpanded, setIsExpanded] = useState(false);
     const optionRef = useRef(null);
-    const [info, setInfo] = useState({
-        "studentName": "Phạm Tấn Nguyên",
-        "studentId": "N22DCCN156",
-        "major": "Ngành công nghệ thông tin",
-        "totalCredits": "140",
-    });
+    const { myInfo } = useSelector((state) => state.studentInfo);
+    const { listOpenSession } = useSelector((state) => state.register);
+    const [counter, setCounter] = useState(listOpenSession.endTime ? convertToCounter(listOpenSession.endTime) : '');
 
     const handleOnClickOption = (index) => {
         setSelected(options[index]);
+        if (index == 0) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            dispatch(fetchRegisterOpenSection({ accountId: user.userId, filterType: index}));
+        }
         setIsExpanded(false);
     }
+
+    // khi giao diện bật lên, gọi api lấy dữ liệu sinh viên
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        dispatch(fetchStudentByAccount({ accountId: user.userId }))
+            .unwrap()
+            .then((action) => {
+
+            });
+        dispatch(fetchRegisterOpenSection({ accountId: user.userId, filterType: 0}));
+    }, []);
+
+    // Bắt đầu đếm số giây còn lại
+    useEffect(() => {
+        console.log('counter')
+        const time = new Date(listOpenSession.endTime);
+
+        if (counter) {
+            const interval = setInterval(() => {
+                setCounter(prev => {
+                    if (prev - 1 < 0) {
+                        return '';
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [listOpenSession.endTime]);
 
     useEffect(() => {
         const handleOutsideClide = (e) => {
@@ -46,13 +99,13 @@ const FilterArea = ({ options, selected, setSelected }) => {
                             <div className="icon wrap-center">
                                 <Icons.Hash />
                             </div>
-                            <div className="text">Mã sinh viên: <span>{info.studentId}</span></div>
+                            <div className="text">Mã sinh viên: <span>{myInfo.studentId}</span></div>
                         </div>
                         <div className="item-box">
                             <div className="icon wrap-center">
                                 <Icons.FlatUser />
                             </div>
-                            <div className="text">Tên: <span>{info.studentName}</span></div>
+                            <div className="text">Tên: <span>{myInfo.studentName}</span></div>
                         </div>
                     </div>
                     <div className="right">
@@ -60,13 +113,13 @@ const FilterArea = ({ options, selected, setSelected }) => {
                             <div className="icon wrap-center">
                                 <Icons.Registration />
                             </div>
-                            <div className="text">Ngành học: <span>{info.major}</span></div>
+                            <div className="text">Ngành học: <span>{myInfo.majorName}</span></div>
                         </div>
                         <div className="item-box">
                             <div className="icon wrap-center">
                                 <Icons.BookMark />
                             </div>
-                            <div className="text">Tổng số tín chỉ tích lũy: <span>{info.totalCredits} tín chỉ</span></div>
+                            <div className="text">Tổng số tín chỉ tích lũy: <span>{myInfo.accumulateCredits} tín chỉ</span></div>
                         </div>
                     </div>
                 </div>
@@ -102,13 +155,13 @@ const FilterArea = ({ options, selected, setSelected }) => {
                     </div>
                 </div>
 
-                <div className="timer-container">
+                <div className= {`timer-container ${counter ? '' : 'close'}`}>
 
                     <div className="icon">
                         <Icons.Clock />
                     </div>
-                    <div className="text">
-                        Kết thúc sau: 23 giờ 18 phút 22 giây
+                    <div className={`text ${counter ? '' : 'close'}`}>
+                        {counter ? `Kết thúc sau: ${formatSecondsToTime(counter)}` : 'Đã kết thúc'}
                     </div>
                 </div>
             </div>
