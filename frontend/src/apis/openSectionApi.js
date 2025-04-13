@@ -6,6 +6,7 @@ export const REVERT_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessio
 export const CONFIRM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
 export const GET_CONFORM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/conform';
 export const GET_REGISTER_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/for-register';
+export const GET_REGISTERED_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/by-student';
 
 const normalizeObject = (openSections) => {
 
@@ -221,6 +222,41 @@ export const fetchRegisterOpenSection = createAsyncThunk('openSections/getRegist
         try {
 
             const TARGET_API = GET_REGISTER_OPEN_SECTION_API + `?accountId=${accountId}&filterType=${filterType}`;
+            console.log(TARGET_API);
+            const TOKEN = localStorage.getItem('token');
+            const response = await fetch(TARGET_API, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorized': 'Bearer ' + TOKEN,
+                },
+            });
+
+            const objectResponse = await response.json();
+            if (objectResponse.code != 1000) {
+                return rejectWithValue({
+                    code: objectResponse.code,
+                    message: objectResponse.message,
+                });
+            }
+            return objectResponse;
+        } catch(error) {
+            return rejectWithValue({
+                code: 9090,
+                message: error.message || 'Lỗi kết nối đến server'
+            });
+        }
+    }
+);
+
+// http://localhost:8080/api/v1/open-sessions/by-student?accountId=10035
+
+
+export const fetchRegisteredOpenSection = createAsyncThunk('openSections/getRegistered', 
+    async ({ accountId }, { rejectWithValue }) => {
+        try {
+
+            const TARGET_API = GET_REGISTERED_OPEN_SECTION_API + `?accountId=${accountId}`;
             console.log(TARGET_API);
             const TOKEN = localStorage.getItem('token');
             const response = await fetch(TARGET_API, {

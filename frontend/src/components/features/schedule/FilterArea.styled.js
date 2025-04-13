@@ -147,6 +147,7 @@ export const FilterAreaContainer = styled.div`
                     border-radius: 5px;
                     border: 1px solid rgba(0, 0, 0, 0.1);
                     padding: 10px;
+                    min-height: 180px;
 
                     &.light {
                         background-color:rgb(212, 244, 255);

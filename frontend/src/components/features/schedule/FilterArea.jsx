@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { Icons } from '../../../assets/icons/Icon';
 import { FilterAreaContainer } from './FilterArea.styled';
 import SelectOption from '../../commons/SelectOption';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchStudentByAccount } from '../../../apis/studentApi';
+import { setSelectedWeek, setSemesterYear } from '../../../stores/slices/timeTableSlice';
+import { fetchTimeTable } from '../../../apis/timeTableApi';
 
 
 export const timeMap = {
@@ -20,7 +24,7 @@ export const timeMap = {
 };
 
 const toVieDay = {
-    "MONDAY": "Thứ 2", 
+    "MONDAY": "Thứ 2",
     "TUESDAY": "Thứ 3",
     "WEDNESDAY": "Thứ 4",
     "THURSDAY": "Thứ 5",
@@ -29,7 +33,7 @@ const toVieDay = {
     "SUNDAY": "Chủ nhật",
 };
 const toEngDay = {
-    "Thứ 2": "MONDAY", 
+    "Thứ 2": "MONDAY",
     "Thứ 3": "TUESDAY",
     "Thứ 4": "WEDNESDAY",
     "Thứ 5": "THURSDAY",
@@ -49,161 +53,29 @@ const days = [
 ]
 
 export const convertToDayMonthYear = (dateStr) => {
-    const [year, month, day] = dateStr.split("-");
-    return `${day}/${month}/${year}`;
+    if (dateStr) {
+        const [year, month, day] = dateStr.split("-");
+        return `${day}/${month}/${year}`;
+    }
+    return '';
 };
 
 export const convertToYearMonthDay = (dateStr) => {
-    const [day, month, year] = dateStr.split("/");
-    return `${year}-${month}-${day}`;
+    if (dateStr) {
+        const [day, month, year] = dateStr.split("/");
+        return `${year}-${month}-${day}`;
+    }
+    return '';
 }
 
 
 
 const FilterArea = () => {
-
-    const [info, setInfo] = useState({
-        "studentName": "Phạm Tấn Nguyên",
-        "studentId": "N22DCCN156",
-        "major": "Ngành công nghệ thông tin",
-        "totalCredits": "140",
-    });
-
-    const [semesters, setSemester] = useState([
-        "Học kì 1 năm học 2024",
-        "Học kì 2 năm học 2024",
-        "Học kì 3 năm học 2024",
-        "Học kì 1 năm học 2025",
-        "Học kì 2 năm học 2025",
-        "Học kì 3 năm học 2025",
-    ]);
-
-    const [courses, setCourse] = useState([
-        "Tất cả",
-        "Lập trình web",
-        "Lập trình C++",
-        "Phân tích thiết kế hệ thống",
-        "Trí tuệ nhân tạo",
-        "Công nghệ phần mềm",
-        "Lập trình di dộng",
-        "Kiểm thử phần mềm",
-        "Cơ sở dữ liệu",
-    ]);
-
-
-    const [schedules, setSchedules] = useState([
-        {
-            "week": 1,
-            "startDate": "2030-12-30",
-            "endDate": "2031-01-05",
-            "timetables": [
-                {
-                    "courseId": "INT1339",
-                    "courseName": "Nhập môn trí tuệ nhân tạo",
-                    "group": 1,
-                    "placeId": "2B11",
-                    "teacherName": "Bùi Công Túy",
-                    "dayOfWeek": "MONDAY",
-                    "startPeriod": 1,
-                    "endPeriod": 4
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Cơ sở dữ liệu",
-                    "group": 1,
-                    "placeId": "2B24",
-                    "teacherName": "Dương Minh Tuyền",
-                    "dayOfWeek": "MONDAY",
-                    "startPeriod": 7,
-                    "endPeriod": 9,
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Lập trình hướng đối tượng",
-                    "group": 1,
-                    "placeId": "2A31",
-                    "teacherName": "Nguyễn Hoàng thành",
-                    "dayOfWeek": "THURSDAY",
-                    "startPeriod": 7,
-                    "endPeriod": 9,
-                },
-            ]
-        },
-        {
-            "week": 2,
-            "startDate": "2031-01-06",
-            "endDate": "2031-01-12",
-            "timetables": [
-                {
-                    "courseId": "INT1339",
-                    "courseName": "Nhập môn trí tuệ nhân tạo",
-                    "group": 1,
-                    "placeId": "2B11",
-                    "teacherName": "Bùi Công Túy",
-                    "dayOfWeek": "MONDAY",
-                    "startPeriod": 1,
-                    "endPeriod": 4
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Cơ sở dữ liệu",
-                    "group": 1,
-                    "placeId": "2B24",
-                    "teacherName": "Dương Minh Tuyền",
-                    "dayOfWeek": "WEDNESDAY",
-                    "startPeriod": 4,
-                    "endPeriod": 6,
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Lập trình hướng đối tượng",
-                    "group": 1,
-                    "placeId": "2A31",
-                    "teacherName": "Nguyễn Hoàng thành",
-                    "dayOfWeek": "WEDNESDAY",
-                    "startPeriod": 7,
-                    "endPeriod": 9,
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Cơ sở dữ liệu",
-                    "group": 1,
-                    "placeId": "2B24",
-                    "teacherName": "Dương Minh Tuyền",
-                    "dayOfWeek": "WEDNESDAY",
-                    "startPeriod": 10,
-                    "endPeriod": 12,
-                },
-                {
-                    "courseId": "INT1345",
-                    "courseName": "Lập trình hướng đối tượng",
-                    "group": 1,
-                    "placeId": "2A31",
-                    "teacherName": "Nguyễn Hoàng thành",
-                    "dayOfWeek": "SATURDAY",
-                    "startPeriod": 1,
-                    "endPeriod": 4,
-                },
-            ]
-        },
-        {
-            "week": 3,
-            "startDate": "2031-01-13",
-            "endDate": "2031-01-19",
-            "timetables": [
-                {
-                    "courseId": "INT1339",
-                    "courseName": "Nhập môn trí tuệ nhân tạo",
-                    "group": 1,
-                    "placeId": "2B11",
-                    "teacherName": "Bùi Công Túy",
-                    "dayOfWeek": "MONDAY",
-                    "startPeriod": 1,
-                    "endPeriod": 1
-                }
-            ]
-        },
-    ]);
+    const dispatch = useDispatch();
+    const { myInfo } = useSelector((state) => state.studentInfo);
+    const { semesterYear, timeTables, selectedWeek } = useSelector((state) => state.timeTable);
+    const [courses, setCourses] = useState([]); // mảng chứa id - name
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     const [timetableOnDay, setTimetableOnDay] = useState({
         "MONDAY": [],
@@ -225,29 +97,74 @@ const FilterArea = () => {
         "SUNDAY": "",
     });
 
-
-    const [selectedWeek, setSelectedWeek] = useState(0); //id
-
     const handleClickPrev = () => {
-        if (selectedWeek > 0) {
-            setSelectedWeek(selectedWeek - 1);
+        if (selectedWeek != null && selectedWeek > 0) {
+            dispatch(setSelectedWeek(selectedWeek - 1));
         }
     };
     const handleClickNext = () => {
-        if (selectedWeek < schedules.length - 1) {
-            setSelectedWeek(selectedWeek + 1);
+        if (selectedWeek != null && selectedWeek < timeTables.length - 1) {
+            dispatch(setSelectedWeek(selectedWeek + 1));
         }
     };
 
-    
+    const getSemesterYearList = (studentId) => {
+        let arr = [];
+        if (studentId) {
+            const startYear = parseInt('20' + studentId.substring(1, 3));
+            for (let i = 0; i < 5; i++) {
+                for (let j = 1; j <= 3; j++) {
+                    arr.push({
+                        year: startYear + i,
+                        semester: j
+                    });
+                }
+            }
+        }
+        console.log(arr);
+
+        return arr;
+    };
+
+    const convertSemesterToText = (semester) => {
+        if (semester) {
+            return `Học kì ${semester.semester} năm học ${semester.year} - ${semester.year + 1}`;
+        }
+        return '';
+    }
+
+    const revertTextToSemester = (text) => {
+        const arr = text.split(' ');
+        return {
+            year: parseInt(arr[5]),
+            semester: parseInt(arr[2]),
+        }
+    };
+
+    const revertTextToCourse = (text) => {
+        if (text && typeof text === 'string') {
+            const parts = text.split(' - ');
+            if (parts.length === 2) {
+                return {
+                    courseId: parts[0].trim(),
+                    courseName: parts[1].trim(),
+                };
+            }
+        }
+        return null; // Trả về null nếu text không hợp lệ
+    };
+
+
 
     const getTimeTable = (id) => {
-        if (schedules.length != 0) {
-            return convertToDayMonthYear(schedules[id].startDate) + " - " + convertToDayMonthYear(schedules[id].endDate);
+        console.log('get timetable');
+        console.log(timeTables);
+        console.log(id);
+        if (timeTables.length != 0 && id != null && id <= timeTables.length) {
+            return convertToDayMonthYear(timeTables[id].startDate) + " - " + convertToDayMonthYear(timeTables[id].endDate);
         }
     };
-
-
+    
     // Khi tuần thay đổi -> thay đổi luôn các buổi học theo ngày
     useEffect(() => {
         const timetable = {
@@ -259,11 +176,19 @@ const FilterArea = () => {
             "SATURDAY": [],
             "SUNDAY": [],
         };
-        if (schedules.length != 0) {
-            schedules[selectedWeek].timetables.forEach((t) => {
-                timetable[t.dayOfWeek].push(t);
-            })
+        if (timeTables.length != 0 && selectedWeek != null) {
+            // Xếp các buổi học trong tuần theo ngày
+            timeTables[selectedWeek].timetables.forEach((t) => {
+                if (selectedCourse) {
+                    if (t.courseId === selectedCourse.courseId) {
+                        timetable[t.dayOfWeek].push(t);
+                    }
+                } else {
+                    timetable[t.dayOfWeek].push(t);
+                }
+            });
 
+            // Sắp xếp lại các buổi học trong ngày theo tiết học
             for (let day in timetable) {
                 timetable[day].sort((a, b) => a.startPeriod - b.startPeriod);
             }
@@ -271,7 +196,9 @@ const FilterArea = () => {
             console.log(timetable);
             setTimetableOnDay(timetable);
 
-            let startDate = new Date(schedules[selectedWeek].startDate); // yyyy-mm-dd
+            // Tiếp theo, selected week chỉ chứa thông tin startDate và endDate
+            // Convert sang ngày tháng cụ thể : 'MONDAY': '22-12-2020'
+            let startDate = new Date(timeTables[selectedWeek].startDate); // yyyy-mm-dd
 
             // Parse startDate (e.g., "2030-12-30")
             const daysOfWeekOrder = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
@@ -288,8 +215,104 @@ const FilterArea = () => {
             });
             console.log(newDayOfWeek);
             setDayOfWeek(newDayOfWeek);
+        } else {
+            setTimetableOnDay({
+                "MONDAY": [],
+                "TUESDAY": [],
+                "WEDNESDAY": [],
+                "THURSDAY": [],
+                "FRIDAY": [],
+                "SATURDAY": [],
+                "SUNDAY": [],
+            });
+            setDayOfWeek({
+                "MONDAY": "", // value: 02/04/2025
+                "TUESDAY": "",
+                "WEDNESDAY": "",
+                "THURSDAY": "",
+                "FRIDAY": "",
+                "SATURDAY": "",
+                "SUNDAY": "",
+            });
         }
-    }, [selectedWeek]);
+    }, [selectedWeek, selectedCourse, semesterYear]);
+
+    // khi giao diện bật lên, gọi api lấy dữ liệu sinh viên
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        dispatch(fetchStudentByAccount({ accountId: user.userId }))
+            .unwrap()
+            .then((objectResponse) => {
+                dispatch(setSemesterYear({
+                    semester: objectResponse.data.currentSemester,
+                    year: objectResponse.data.currentYear,
+                }));
+            });
+    }, []);
+
+    // Cập nhật selectedCourse khi courses thay đổi
+
+
+    useEffect(() => {
+        // Gọi API khi semester year thay đổi
+        if (semesterYear) {
+            dispatch(fetchTimeTable({
+                studentId: myInfo.studentId,
+                semester: semesterYear.semester,
+                year: semesterYear.year,
+            }));
+            setSelectedCourse(null);
+        }
+    }, [semesterYear]);
+
+    useEffect(() => {
+
+        console.log("timeTables");
+        console.log(timeTables);
+
+        if (timeTables.length == 0) {
+            dispatch(setSelectedWeek(null));
+        } else {
+            let week = 0;
+            const now = new Date();
+            const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            // Chọn tuần học ở thời điểm hiện tại. 
+            timeTables.forEach((t, index) => {
+                const start = new Date(t.startDate);
+                const end = new Date(t.endDate);
+                const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+                const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+                if (startDateOnly <= nowDateOnly && nowDateOnly <= endDateOnly) {
+                    week = index;
+                }
+            });
+            // Nếu không có thì trả về tuần đầu tiên
+            console.log("selectedWeek", week);
+            dispatch(setSelectedWeek(week));
+        }
+
+        // lọc ra tất cả môn khác nhau có trong lịch học. 
+        const courseMap = new Map();
+
+        timeTables.forEach(week => {
+            week.timetables.forEach(item => {
+                const key = item.courseId + '::' + item.courseName;
+                if (!courseMap.has(key)) {
+                    courseMap.set(key, {
+                        courseId: item.courseId,
+                        courseName: item.courseName
+                    });
+                }
+            });
+        });
+
+        setCourses(Array.from(courseMap.values()));
+    }, [timeTables]);
+
+    useEffect(() => {
+        console.log("selectedCourse");
+        console.log(selectedCourse);
+    }, [selectedCourse]);
 
     return (
         <FilterAreaContainer>
@@ -305,13 +328,13 @@ const FilterArea = () => {
                             <div className="icon wrap-center">
                                 <Icons.Hash />
                             </div>
-                            <div className="text">Mã sinh viên: <span>{info.studentId}</span></div>
+                            <div className="text">Mã sinh viên: <span>{myInfo.studentId}</span></div>
                         </div>
                         <div className="item-box">
                             <div className="icon wrap-center">
                                 <Icons.FlatUser />
                             </div>
-                            <div className="text">Tên: <span>{info.studentName}</span></div>
+                            <div className="text">Tên: <span>{myInfo.studentName}</span></div>
                         </div>
                     </div>
                     <div className="right">
@@ -319,13 +342,13 @@ const FilterArea = () => {
                             <div className="icon wrap-center">
                                 <Icons.Registration />
                             </div>
-                            <div className="text">Ngành học: <span>{info.major}</span></div>
+                            <div className="text">Ngành học: <span>{myInfo.majorName}</span></div>
                         </div>
                         <div className="item-box">
                             <div className="icon wrap-center">
                                 <Icons.BookMark />
                             </div>
-                            <div className="text">Tổng số tín chỉ tích lũy: <span>{info.totalCredits} tín chỉ</span></div>
+                            <div className="text">Tổng số tín chỉ tích lũy: <span>{myInfo.accumulateCredits} tín chỉ</span></div>
                         </div>
                     </div>
                 </div>
@@ -333,10 +356,19 @@ const FilterArea = () => {
             <div className="filter-control">
                 <div className="filter-box">
                     <div className="semester-filter">
-                        <SelectOption options={semesters} />
+                        <SelectOption
+                            options={getSemesterYearList(myInfo.studentId).map(convertSemesterToText)}
+                            value={convertSemesterToText(semesterYear)}
+                            onSelect={(value) => dispatch(setSemesterYear(revertTextToSemester(value)))}
+                        />
                     </div>
                     <div className="course-filter">
-                        <SelectOption options={courses} />
+                        <SelectOption
+                            options={courses.map(c => c.courseId + ' - ' + c.courseName)}
+                            value={selectedCourse ? selectedCourse.courseId + ' - ' + selectedCourse.courseName : null}
+                            onSelect={(value) => setSelectedCourse(revertTextToCourse(value))}
+                            placeHolder='Lọc theo môn học'
+                        />
                     </div>
                 </div>
                 <div className="control-box">
@@ -369,7 +401,7 @@ const FilterArea = () => {
                         </div>
                         <div className="lessions">
                             {timetableOnDay[day].length == 0 && <div className='empty'>
-                                    Không có lịch học
+                                Không có lịch học
                             </div>}
                             {timetableOnDay[day].map((t, index) => {
                                 return (<div className={`lession ${t.startPeriod <= 6 ? 'light' : 'dark'}`} key={index}>

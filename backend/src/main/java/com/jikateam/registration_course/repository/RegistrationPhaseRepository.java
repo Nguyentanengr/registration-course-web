@@ -21,4 +21,13 @@ public interface RegistrationPhaseRepository extends JpaRepository<RegistrationP
             @Param("semester") Integer semester,
             @Param("currentTime")LocalDateTime currentTime
             );
+
+    @Query(value = "SELECT * FROM registration_phase p " +
+            "WHERE p.close_time < :currentTime " +
+            "ORDER BY p.close_time DESC " +
+            "LIMIT 1",
+            nativeQuery = true)
+    RegistrationPhase findMostRecentClosedPhase(
+            @Param("currentTime") LocalDateTime currentTime
+    );
 }

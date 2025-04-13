@@ -101,12 +101,11 @@ public class OpenSessionController {
 
     @GetMapping("/by-student")
     public DataResponse<List<RegisteredByStudentResponse>> getRegisteredOpenSessionByStudent(
-            @RequestParam Integer phaseId,
-            @RequestParam String studentId
+            @RequestParam Integer accountId
     ) {
         CodeResponse codeResponse = CodeResponse.SUCCESS;
 
-        var response = searchFilterOpenSessionService.getAllIsRegisteredByStudent(phaseId, studentId);
+        var response = searchFilterOpenSessionService.getAllIsRegisteredByStudent(accountId);
 
         return DataResponse.<List<RegisteredByStudentResponse>>builder()
                 .code(codeResponse.getCode())

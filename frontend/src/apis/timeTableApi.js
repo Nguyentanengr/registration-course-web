@@ -1,19 +1,19 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const POST_ENROLL_API = 'http://localhost:8080/api/v1/open-sessions/register';
-export const postRegister = createAsyncThunk('openSessions/register',
-    async ( {studentId, openSessionId, status }, { rejectWithValue }) => {
-        try {
+export const GET_TIME_TABLE_API = 'http://localhost:8080/api/v1/schedules';
 
+export const fetchTimeTable = createAsyncThunk('schedules/getTimeTable',
+    async ({ studentId, semester, year }, { rejectWithValue }) => {
+        try {
+            const TARGET_API = GET_TIME_TABLE_API + `?studentId=${studentId}&semester=${semester}&year=${year}`
+            console.log(TARGET_API);
             const TOKEN = localStorage.getItem('token');
-            console.log(POST_ENROLL_API);
-            const response = await fetch(POST_ENROLL_API, {
-                method: "POST",
+            const response = await fetch(TARGET_API, {
+                method: "GET",
                 headers: { 
                     "Content-Type": "application/json",
                     "Authorized": "Bearer " + TOKEN,
                 },
-                body: JSON.stringify({studentId, openSessionId, status}),
             });
             const objectResponse = await response.json();
             if (objectResponse.code != 1000) {

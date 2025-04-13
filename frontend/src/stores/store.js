@@ -8,7 +8,7 @@ import openSectionReducer from "./slices/openSectionSlice";
 import studentListReducer from "./slices/studentListSlice";
 import studentInfoReducer from "./slices/studentInfoSlice";
 import registerReducer from "./slices/registerSlice";
-
+import timeTableReducer from "./slices/timeTableSlice";
 export default configureStore({
     reducer: {
         user: userReducer,
@@ -20,5 +20,6 @@ export default configureStore({
         studentList: studentListReducer,
         studentInfo: studentInfoReducer,
         register: registerReducer,
+        timeTable: timeTableReducer,
     },
 });

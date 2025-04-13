@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { convertToDayMonthYear } from '../schedule/FilterArea';
 import { dowEngToVie } from '../../../stores/slices/scheduleSlice';
 import { convertToDateTime } from '../student-list/ListStudent';
+import { fetchRegisteredOpenSection } from '../../../apis/openSectionApi';
 
 
 export const convertStatusConform = (status) => {
@@ -30,13 +31,19 @@ const SelectedArea = ({ sessionList }) => {
 
     useEffect(() => {
         let credits = 0;
-        sessionList.forEach((each) => {
-            credits += each.credits;
+        registeredSections.forEach((each) => {
+            credits += each.sessionInfo.courseInfo.credits;
         });
 
-        setNumberCourse(sessionList.length);
+        setNumberCourse(registeredSections.length);
         setNumberCredits(credits)
-    }, [sessionList]);
+    }, [registeredSections]);
+
+    // Tự động gọi api khi tải trang
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        dispatch(fetchRegisteredOpenSection({ accountId : user.userId }));
+    }, []);
 
     return (
         <SelectedAreaContainer>
@@ -65,7 +72,7 @@ const SelectedArea = ({ sessionList }) => {
                                 <td>{openSession.sessionInfo.classId}</td>
                                 <td>{openSession.sessionInfo.groupNumber}</td>
                                 <td>{openSession.sessionInfo.courseInfo.credits}</td>
-                                <td>{convertToDateTime(openSession.registerDate)}</td>
+                                <td>{convertToDateTime(openSession.registerAt)}</td>
                                 <td>
                                     {openSession.sessionInfo.schedules.map((sc) => {
                                         return <div className='sc'>

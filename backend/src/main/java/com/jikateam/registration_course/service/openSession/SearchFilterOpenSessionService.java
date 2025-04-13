@@ -118,12 +118,13 @@ public class SearchFilterOpenSessionService {
                     yield openSessionRegistrationRepository
                             .getAllByFilterTypeClass(clazz.getClazzId(), phase.getRegistrationPhaseId());
                 } else {
+                    phase = phaseRepository.findMostRecentClosedPhase(LocalDateTime.now());
                     log.info("Not Found phase registration");
                     log.info("Find session with clazzId and year and semester: {} {} {}"
-                            , clazz.getClazzId(), clazz.getCurrentYear() + clazz.getStartYear() - 1, clazz.getCurrentSemester());
+                            , clazz.getClazzId(), phase.getYear(), phase.getSemester());
                     yield openSessionRegistrationRepository
                             .getAllByFilterTypeClassInPrevPhase(clazz.getClazzId()
-                                    , clazz.getCurrentYear() + clazz.getStartYear() - 1, clazz.getCurrentSemester());
+                                    , phase.getYear(), phase.getSemester());
                 }
             }
             default -> throw new BusinessException(CodeResponse.INVALID_FILTER_TYPE);
@@ -179,15 +180,37 @@ public class SearchFilterOpenSessionService {
 
 
     public List<RegisteredByStudentResponse> getAllIsRegisteredByStudent
-            (Integer phaseId, String studentId) {
+            (Integer accountId) {
 
         // Lấy danh sách các lớp học phần được đăng ký bởi sinh viên trong giai đoạn hiện tại
-        List<Object[]> responses = openSessionRegistrationRepository
-                .getAllIsRegisteredByStudentId(phaseId, studentId); // List<[openSession, registerAt]>
+        var clazz = classRepository.findByAccountId(accountId);
+
+        // Tính toán ra nextYear và nextSemester cho học kì tiếp theo.
+        var nextSemester = clazz.getCurrentSemester() == 1 ? 2
+                : clazz.getCurrentSemester() == 2 ? 3
+                : 1;
+        var nextYear = clazz.getCurrentSemester() == 3 ? clazz.getStartYear() + clazz.getCurrentYear()
+                : clazz.getStartYear() + clazz.getCurrentYear() - 1;
+
+        log.info("The next year and next semester for class {}: {}, {}"
+                , clazz.getClazzId(), nextYear, nextSemester);
+
+        var phase = phaseRepository.getOpenPhaseBySemester(nextYear, nextSemester, LocalDateTime.now());
+
+        List<Object[]> responses = List.of();
+        if (phase != null) {
+            responses = openSessionRegistrationRepository
+                    .getAllIsRegisteredByStudentId(accountId, phase.getYear(), phase.getSemester()); // List<[openSession, registerAt]>
+        } else {
+            phase = phaseRepository.findMostRecentClosedPhase(LocalDateTime.now());
+            log.info("Most Recent phase {}", phase);
+            responses = openSessionRegistrationRepository
+                    .getAllIsRegisteredByStudentId(accountId, phase.getYear(), phase.getSemester());
+        }
 
 
-        log.info("Number of openSession is registered by student with id = {}: {}"
-                , studentId, responses.size());
+        log.info("Number of openSession is registered by account with id = {}: {}"
+                , accountId, responses.size());
 
         List<RegisteredByStudentResponse> registered =  responses.stream().map(pair -> {
             var openSession = (OpenSessionRegistration) pair[0];

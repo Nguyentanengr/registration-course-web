@@ -6,7 +6,21 @@ import { convertToDayMonthYear } from '../schedule/FilterArea';
 import { useEffect, useRef, useState } from 'react';
 import { postRegister } from '../../../apis/registerApi';
 import Alert from '../../commons/Alert';
-import { setPostError } from '../../../stores/slices/registerSlice';
+import { addRegisteredSession, removeRegisteredSession, setPostError } from '../../../stores/slices/registerSlice';
+
+
+export const convertToDateTimeString = (date) => {
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // getMonth() trả 0-11
+    const day = pad(date.getDate());
+    const hour = pad(date.getHours());
+    const minute = pad(date.getMinutes());
+    const second = pad(date.getSeconds());
+
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+};
 
 const RegisterArea = ({ }) => {
 
@@ -26,18 +40,36 @@ const RegisterArea = ({ }) => {
     }
 
     // Đăng ký và hủy đăng ký
-    const handleRegister = (e, openSessionId) => {
+    const handleRegister = (e, openSession) => {
         const isChecked = e.target.checked;
 
         const status = isChecked ? 'ENROLLED' : 'CANCELLED';
         const studentId = myInfo.studentId;
 
-        dispatch(postRegister({studentId: studentId, openSessionId: openSessionId, status: status}))
+        dispatch(postRegister({
+            studentId: studentId,
+            openSessionId: openSession.openSessionId,
+            status: status
+        }))
             .unwrap()
             .then((action) => {
+
+                if (isChecked) {
+                    // Thêm học phần vào trong danh sách registered
+                    const addOpenSection = {
+                        openSessionId: openSession.openSessionId,
+                        status: openSession.status,
+                        sessionInfo: openSession.sessionInfo,
+                        registerAt: convertToDateTimeString(new Date()),
+                    }
+                    dispatch(addRegisteredSession(addOpenSection));
+                } else {
+                    // Gỡ học phần khỏi danh sách registered
+                    dispatch(removeRegisteredSession(openSession.openSessionId));
+                }
                 setCheckedState(prev => ({
                     ...prev,
-                    [openSessionId]: isChecked
+                    [openSession.openSessionId]: isChecked
                 }));
             });
     };
@@ -131,7 +163,7 @@ const RegisterArea = ({ }) => {
                                         <input
                                             type="checkbox"
                                             checked={checkedState[openSession.openSessionId] || false}
-                                            onChange={(e) => handleRegister(e, openSession.openSessionId)}
+                                            onChange={(e) => handleRegister(e, openSession)}
                                         />
                                         <span className="checkmark"></span>
                                     </label>
@@ -161,7 +193,7 @@ const RegisterArea = ({ }) => {
                     </div>
                 </div>
             </div>
-            {postError && <Alert message={postError.message || 'Đã có lỗi xảy ra'}/>}
+            {postError && <Alert message={postError.message || 'Đã có lỗi xảy ra'} />}
         </RegisterAreaContainer>
     );
 };

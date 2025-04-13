@@ -5,12 +5,13 @@ import { FilterAreaContainer } from "./FilterArea.styled";
 import SelectOption from "../../commons/SelectOption";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentByAccount } from "../../../apis/studentApi";
-import { fetchRegisterOpenSection } from "../../../apis/openSectionApi";
+import { fetchRegisteredOpenSection, fetchRegisterOpenSection } from "../../../apis/openSectionApi";
 
 export const convertToCounter = (endTime) => {
     const now = new Date();
-    const end = new Date(endTime);
+    const end = new Date(endTime);    
     const diffInSeconds = Math.max(0, Math.floor((end - now) / 1000));
+    console.log('diff', diffInSeconds);
     return diffInSeconds;
 };
 
@@ -32,13 +33,14 @@ const FilterArea = ({ options, selected, setSelected }) => {
     const optionRef = useRef(null);
     const { myInfo } = useSelector((state) => state.studentInfo);
     const { listOpenSession } = useSelector((state) => state.register);
-    const [counter, setCounter] = useState(listOpenSession.endTime ? convertToCounter(listOpenSession.endTime) : '');
+    const [counter, setCounter] = useState(null);
 
     const handleOnClickOption = (index) => {
         setSelected(options[index]);
         if (index == 0) {
             const user = JSON.parse(localStorage.getItem('user'));
             dispatch(fetchRegisterOpenSection({ accountId: user.userId, filterType: index}));
+            dispatch(fetchRegisteredOpenSection({ accountId: user.userId }));
         }
         setIsExpanded(false);
     }
@@ -54,16 +56,23 @@ const FilterArea = ({ options, selected, setSelected }) => {
         dispatch(fetchRegisterOpenSection({ accountId: user.userId, filterType: 0}));
     }, []);
 
+    // Cập nhật counter khi listOpenSession.endTime thay đổi
+    useEffect(() => {
+        if (listOpenSession.endTime) {
+            const newCounter = convertToCounter(listOpenSession.endTime);
+            setCounter(newCounter);
+        } else {
+            setCounter(null); // Nếu không có endTime, đặt counter là null
+        }
+    }, [listOpenSession.endTime]);
+
     // Bắt đầu đếm số giây còn lại
     useEffect(() => {
-        console.log('counter')
-        const time = new Date(listOpenSession.endTime);
-
-        if (counter) {
+        if (typeof counter === 'number' && counter > 0) {
             const interval = setInterval(() => {
                 setCounter(prev => {
                     if (prev - 1 < 0) {
-                        return '';
+                        return null;
                     }
                     return prev - 1;
                 });
@@ -71,7 +80,7 @@ const FilterArea = ({ options, selected, setSelected }) => {
 
             return () => clearInterval(interval);
         }
-    }, [listOpenSession.endTime]);
+    }, [counter]);
 
     useEffect(() => {
         const handleOutsideClide = (e) => {

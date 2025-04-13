@@ -164,18 +164,25 @@ public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSes
             (@Param("studentId") String studentId, @Param("phaseId") Integer phaseId);
 
 
-    // Lấy danh sách các lớp học phần được đăng ký bởi sinh viên trong giai đoạn hiện tại
+
+    // Lấy danh sách các lớp học phần được đăng ký bởi sinh viên trong các giai đoạn của học kì và năm học
     @Query("SELECT o, e.enrollTime FROM OpenSessionRegistration o " +
             "JOIN FETCH o.session s " + // fetch eager
             "JOIN FETCH s.course c " + // fetch eager
             "JOIN FETCH s.schedules sc " + // fetch eager
             "JOIN o.registrationPhase p " +
             "JOIN o.enrollments e " +
-            "WHERE p.registrationPhaseId = :phaseId " +
-            "AND e.student.studentId = :studentId " +
+            "JOIN e.student st " +
+            "JOIN st.account a " +
+            "WHERE p.year = :year " +
+            "AND p.semester = :semester " +
+            "AND a.accountId = :accountId " +
             "AND e.status = 0 ") // Đã đăng ký
-    List<Object[]> getAllIsRegisteredByStudentId
-            (@Param("phaseId") Integer phaseId, @Param("studentId") String studentId);
+    List<Object[]> getAllIsRegisteredByStudentId(
+            @Param("accountId") Integer accountId,
+            @Param("year") Integer year,
+            @Param("semester") Integer semester
+    );
 
 
 }
