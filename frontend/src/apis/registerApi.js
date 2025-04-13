@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const POST_ENROLL_API = 'http://localhost:8080/api/v1/open-sessions/register';
+export const POST_ENROLL_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/register`;
 export const postRegister = createAsyncThunk('openSessions/register',
     async ( {studentId, openSessionId, status }, { rejectWithValue }) => {
         try {

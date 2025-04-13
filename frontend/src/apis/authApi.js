@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const LOGIN_API = "http://localhost:8080/api/v1/auth/login";
-const LOGOUT_API = "http://localhost:8080/api/v1/auth/logout";
+const LOGIN_API = `${import.meta.env.VITE_API_URL}/api/v1/auth/login`;
+const LOGOUT_API = `${import.meta.env.VITE_API_URL}/api/v1/auth/logout`;
 
 export const loginUser = createAsyncThunk("auth/loginUser",
     async ({ username, password }, { rejectWithValue }) => { // para 1 : request body

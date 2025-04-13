@@ -30,23 +30,7 @@ const openSectionSlice = createSlice({
         // Lấy danh sách học phần đã mở
         searchSection: '',
         oLoading: false,
-        openedSections: [
-            {
-                sectionId: 10001,
-                courseId: 'INT1339',
-                courseName: 'Công nghệ phần mềm',
-                classId: 'D22CQCQN02-N',
-                groupNumber: 1,
-                year: 2024,
-                semester: 1,
-                registers: 69,
-                maxStudents: 100,
-                minStudents: 20,
-                phaseId: 10001,
-                phaseName: 'ĐỢT ĐĂNG KÝ 1 HỌC KÌ 1 NĂM 2025',
-                status: 'PENDING',
-            }
-        ],
+        openedSections: [],
     },
     reducers: {
         

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const GET_TEACHER_FOR_COURSE_API = 'http://localhost:8080/api/v1/teachers';
+export const GET_TEACHER_FOR_COURSE_API = `${import.meta.env.VITE_API_URL}/api/v1/teachers`;
 
 export const fetchTeacherForCourse = createAsyncThunk('teachers/getTeacherForCourse',
     async ({ courseId }, { rejectWithValue }) => {

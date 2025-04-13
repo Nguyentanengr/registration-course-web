@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const USER_PROFILE_API = "http://localhost:3000/api/v1/users/{}"
+const USER_PROFILE_API = `${import.meta.env.VITE_API_URL}/api/v1/users/{}`
 const TOKEN = "kexmdk*99Tccxj#kmxx9LbH*$n.sywKnJ86grT6xj#kmxx9LbH*$n.sywKnJ8"
 
 export const getUserProfile = createAsyncThunk("auth/changePassword",

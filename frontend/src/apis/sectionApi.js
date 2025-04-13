@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const GET_SECTION_API = "http://localhost:8080/api/v1/sessions";
-const DELETE_SECTION_API = "http://localhost:8080/api/v1/sessions/";
-const POST_SECTION_API = "http://localhost:8080/api/v1/sessions";
-const GET_ABLE_SECTION_API = "http://localhost:8080/api/v1/sessions/able-open"
+const GET_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions`;
+const DELETE_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/`;
+const POST_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions`;
+const GET_ABLE_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/able-open`
 
 const getStatusSection = (string) => {
     switch (string) {

@@ -1,8 +1,8 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+    import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const GET_ALL_CLASS_INFO_API = 'http://localhost:8080/api/v1/classes';
-export const GET_CLASS_ACTIVE_API = 'http://localhost:8080/api/v1/classes/active';
-export const GET_CLASS_ACTIVE_INFO_API = 'http://localhost:8080/api/v1/classes/active-info';
+export const GET_ALL_CLASS_INFO_API = `${import.meta.env.VITE_API_URL}/api/v1/classes`;
+export const GET_CLASS_ACTIVE_API = `${import.meta.env.VITE_API_URL}/api/v1/classes/active`;
+export const GET_CLASS_ACTIVE_INFO_API = `${import.meta.env.VITE_API_URL}/api/v1/classes/active-info`;
 
 export const fetchActiveClassIds = createAsyncThunk('classes/getActiveClassIds',
     async (_, { rejectWithValue }) => {

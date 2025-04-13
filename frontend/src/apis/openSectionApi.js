@@ -1,12 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const POST_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/batch';
-export const GET_OPENED_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
-export const REVERT_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/revert';
-export const CONFIRM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions';
-export const GET_CONFORM_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/conform';
-export const GET_REGISTER_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/for-register';
-export const GET_REGISTERED_OPEN_SECTION_API = 'http://localhost:8080/api/v1/open-sessions/by-student';
+export const POST_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/batch`;
+export const GET_OPENED_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions`;
+export const REVERT_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/revert`;
+export const CONFIRM_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions`;
+export const GET_CONFORM_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/conform`;
+export const GET_REGISTER_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/for-register`;
+export const GET_REGISTERED_OPEN_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions/by-student`;
 
 const normalizeObject = (openSections) => {
 
@@ -84,7 +84,7 @@ export const fetchOpenedSection = createAsyncThunk('openSections/getOpened',
     async ({ searchKey }, { rejectWithValue }) => {
         try {
 
-            const TARGET_API = `http://localhost:8080/api/v1/open-sessions?searchKey=${searchKey}`;
+            const TARGET_API = `${import.meta.env.VITE_API_URL}/api/v1/open-sessions?searchKey=${searchKey}`;
             console.log(TARGET_API);
             const TOKEN = localStorage.getItem('token');
             const response = await fetch(TARGET_API, {
@@ -213,7 +213,7 @@ export const fetchComformOpenSection = createAsyncThunk('openSections/getConform
     }
 );
 
-// http://localhost:8080/api/v1/open-sessions/for-register?accountId=10035&filterType=0
+// VITE_API_URL/api/v1/open-sessions/for-register?accountId=10035&filterType=0
 
 
 
@@ -249,7 +249,7 @@ export const fetchRegisterOpenSection = createAsyncThunk('openSections/getRegist
     }
 );
 
-// http://localhost:8080/api/v1/open-sessions/by-student?accountId=10035
+// VITE_API_URL/api/v1/open-sessions/by-student?accountId=10035
 
 
 export const fetchRegisteredOpenSection = createAsyncThunk('openSections/getRegistered', 

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 
-const GET_SCHEDULE_ON_SECTION_API = 'http://localhost:8080/api/v1/schedules/on-session?sessionId=';
+const GET_SCHEDULE_ON_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/schedules/on-session?sessionId=`;
 
 export const fetchScheduleOnSection = createAsyncThunk('schedules/getScheduleOnSection'
     , async ({ sessionId }, { rejectWithValue }) => {

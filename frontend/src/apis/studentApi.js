@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 
-export const GET_STUDENTS_BY_OPEN_SECTION = 'http://localhost:8080/api/v1/students/by-session';
-export const GET_STUDENTS_BY_ACCOUNT = 'http://localhost:8080/api/v1/students/account'
+export const GET_STUDENTS_BY_OPEN_SECTION = `${import.meta.env.VITE_API_URL}/api/v1/students/by-session`;
+export const GET_STUDENTS_BY_ACCOUNT = `${import.meta.env.VITE_API_URL}/api/v1/students/account`
 
 
 export const fetchStudentsByOpenSection = createAsyncThunk('students/byOpenSection', 

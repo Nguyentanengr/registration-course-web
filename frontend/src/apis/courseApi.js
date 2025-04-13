@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const GET_COURSE_BY_SEMESTER_API = 'http://localhost:8080/api/v1/courses';
+export const GET_COURSE_BY_SEMESTER_API = `${import.meta.env.VITE_API_URL}/api/v1/courses`;
 
 
 

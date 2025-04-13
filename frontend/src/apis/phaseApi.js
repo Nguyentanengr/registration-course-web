@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const GET_PHASE_API = 'http://localhost:8080/api/v1/phases';
-export const POST_PHASE_API = 'http://localhost:8080/api/v1/phases';
+export const GET_PHASE_API = `${import.meta.env.VITE_API_URL}/api/v1/phases`;
+export const POST_PHASE_API = `${import.meta.env.VITE_API_URL}/api/v1/phases`;
 
 const normalizeObject = (phase) => {
     const target = {

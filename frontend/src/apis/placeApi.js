@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const GET_PLACES_API = 'http://localhost:8080/api/v1/places';
+export const GET_PLACES_API = `${import.meta.env.VITE_API_URL}/api/v1/places`;
 
 export const fetchAllPlaces = createAsyncThunk('places/getAllPlaces',
     async (_, { rejectWithValue }) => {
