@@ -25,6 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -98,7 +100,10 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:5173"); // only the given localhost (Bắt buộc)
+        corsConfiguration.setAllowedOrigins(List.of(
+                "https://delightful-smoke-046f67200.6.azurestaticapps.net",
+                "https://sboxhcm.online"
+        )); // only the given localhost
         corsConfiguration.addAllowedHeader("*"); // allowed any header
         corsConfiguration.addAllowedMethod("*"); // allowed any method: GET, POST, ...
         corsConfiguration.setAllowCredentials(true); // to send refresh token into Http-Only (Cookie)
