@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import GlobalStyles from "./assets/styles/Global";
 import MainLayout from "./components/layouts/MainLayout";
 import Login from "./components/pages/login/Login";
@@ -21,6 +21,7 @@ const App = () => {
       <div className="app">
         <Routes>
           {/* Apply MainLayout */}
+          <Route path="/" element={<Navigate to="/portal" replace />} />
           <Route path="/portal" element={<MainLayout />}>
             <Route index element={<Login />} />
             <Route element={<ProtectedRoute allowedRoles={["STUDENT"]} />} >
