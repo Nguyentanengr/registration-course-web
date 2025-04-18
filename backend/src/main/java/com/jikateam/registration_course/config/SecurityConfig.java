@@ -102,7 +102,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(List.of(
                 "https://delightful-smoke-046f67200.6.azurestaticapps.net",
-                "https://sboxhcm.online"
+                "https://sboxhcm.online",
+                "http://localhost:5173"
         )); // only the given localhost
         corsConfiguration.addAllowedHeader("*"); // allowed any header
         corsConfiguration.addAllowedMethod("*"); // allowed any method: GET, POST, ...

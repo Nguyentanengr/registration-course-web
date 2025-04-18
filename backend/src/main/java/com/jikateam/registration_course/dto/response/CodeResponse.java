@@ -29,6 +29,9 @@ public enum CodeResponse {
 
 
 
+    SCHEDULE_CONFLICT(9115, HttpStatus.CONFLICT, "Conflict schedules"),
+    SESSION_IS_FULL(9113, HttpStatus.CONFLICT, "Session is full"),
+    PREREQUISITE_NOT_MET(9111, HttpStatus.CONFLICT, "Conflict prerequisite"),
     STUDENT_NOT_FOUND(9109, HttpStatus.BAD_REQUEST, "Student does not exist"),
     DISSATISFIED_SESSION_IN_PHASE(9107, HttpStatus.BAD_REQUEST, "Dissatisfied about session in this phase"),
     INVALID_FILTER_TYPE(9105, HttpStatus.BAD_REQUEST, "Invalid filter type for get open session"),
