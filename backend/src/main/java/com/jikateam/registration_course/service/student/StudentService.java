@@ -1,9 +1,12 @@
 package com.jikateam.registration_course.service.student;
 
 import com.jikateam.registration_course.converter.StudentConverter;
+import com.jikateam.registration_course.dto.response.CodeResponse;
+import com.jikateam.registration_course.dto.response.ListStudentRegisterResponse;
 import com.jikateam.registration_course.dto.response.StudentInfoResponse;
 import com.jikateam.registration_course.dto.response.StudentRegisterResponse;
 import com.jikateam.registration_course.entity.Student;
+import com.jikateam.registration_course.exception.BusinessException;
 import com.jikateam.registration_course.repository.EnrollmentRepository;
 import com.jikateam.registration_course.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -33,7 +39,56 @@ public class StudentService {
             return studentConverter.mapToStudentRegisterResponse(student, registerDate);
         }).toList();
 
+    }
 
+    public List<ListStudentRegisterResponse> getAllStudentByOpenSessionIds(List<Integer> openSessionIds) {
+
+        List<Object[]> response = studentRepository.getAllByOpenSessionIds(openSessionIds);
+
+        Map<Integer, ListStudentRegisterResponse> map =new HashMap<>();
+
+        response.forEach((arrayResponse) -> {
+            var openSessionId = (Integer) arrayResponse[0];
+            var student = (Student) arrayResponse[1];
+            var registerDate = (LocalDateTime) arrayResponse[2];
+            var courseId = (String) arrayResponse[3];
+            var classId = (String) arrayResponse[4];
+            var groupNumber = (Integer) arrayResponse[5];
+
+            if (!map.containsKey(openSessionId)) {
+                map.put(openSessionId, ListStudentRegisterResponse.builder()
+                        .openSessionId(openSessionId)
+                        .courseId(courseId)
+                        .classId(classId)
+                        .groupNumber(groupNumber)
+                        .students(new ArrayList<StudentRegisterResponse>())
+                        .build());
+            }
+
+            var students = map.get(openSessionId).students();
+
+            students.add(StudentRegisterResponse.builder()
+                    .studentId(student.getStudentId())
+                    .fullname(student.getFullname())
+                    .gender(student.getGender())
+                    .dateOfBirth(student.getDateOfBirth())
+                    .registerDate(registerDate)
+                    .build());
+
+        });
+
+        if (map.size() != openSessionIds.size()) {
+            throw new BusinessException(CodeResponse.EXPORT_STUDENT_ERROR);
+        }
+
+        log.info("Fetched student list for {} sessions.", map.size());
+
+        List<ListStudentRegisterResponse> responses = new ArrayList<>();
+        map.forEach((key, value) -> {
+            responses.add(value);
+        });
+
+        return responses;
     }
 
 

@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 public class UpdateSessionInfoService {
 
     private final SessionRepository sessionRepository;
-    private final ClassRepository classRepository;
-    private final CourseRepository courseRepository;
     private final SessionConverter sessionConverter;
     private final OpenSessionRegistrationRepository openSessionRegistrationRepository;
 
@@ -37,28 +35,8 @@ public class UpdateSessionInfoService {
                 .orElseThrow(() -> new BusinessException(CodeResponse.SESSION_NOT_FOUND));
 
         // can not update when sessionId is contained Open Session Registration
-        boolean isOpening = openSessionRegistrationRepository.existBySession(sessionId);
-        if (isOpening) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
-
-
-        // check if class is changed or not (same course)
-        String oldClazzId = session.getClazz().getClazzId();
-        String newClazzId = request.clazzId();
-        String oldCourseId = session.getCourse().getCourseId();
-        String newCourseId = request.courseId();
-
-        Clazz clazz = oldClazzId.equals(newClazzId)
-                ? null
-                : classRepository.findById(newClazzId)
-                . orElseThrow(() -> new BusinessException(CodeResponse.CLASS_NOT_FOUND));
-
-        Course course = oldCourseId.equals(newCourseId)
-                ? null
-                : courseRepository.findById(newCourseId)
-                . orElseThrow(() -> new BusinessException(CodeResponse.COURSE_NOT_FOUND));
-
-        if (clazz != null) log.info("Class is changed: {}", clazz.getSessions());
-        if (course != null) log.info("Course is changed: {}", course.getCourseId());
+        boolean invalidStatus = openSessionRegistrationRepository.invalidUpdateStatus(sessionId);
+        if (invalidStatus) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
         // check capacity on changed max student
         if (!request.maxStudents().equals(session.getMaxStudents())) {
@@ -68,17 +46,7 @@ public class UpdateSessionInfoService {
             validateCapacity(request, places);
         }
 
-        // check teacher on changed course.
-        if (!request.courseId().equals(session.getCourse().getCourseId())) {
-            Set<Teacher> teachers = session.getSchedules().stream()
-                    .map(Schedule::getTeacher)
-                    .collect(Collectors.toSet());
-            validateTeacher(request, teachers);
-        }
-
         sessionConverter.updateToSessionEntity(request, session);
-        if (clazz != null) session.setClazz(clazz);
-        if (course != null) session.setCourse(course);
 
         Session updatedSession = sessionRepository.save(session);
         RegistrationStatus status = sessionRepository.findStatusById(sessionId);
@@ -97,14 +65,4 @@ public class UpdateSessionInfoService {
         }
     }
 
-    private void validateTeacher(UpdateSessionInfoRequest request, Set<Teacher> teachers) {
-        // kiem tra xem teacher co dang ky day mon hoc vua duoc thay doi khong
-        teachers.forEach(teacher -> {
-            boolean isRegister = teacher.getCourses().stream()
-                    .map(Course::getCourseId)
-                    .anyMatch(courseId -> courseId.equals(request.courseId()));
-
-            if (!isRegister) throw new BusinessException(CodeResponse.DISSATISFIED_TEACHER);
-        });
-    }
 }

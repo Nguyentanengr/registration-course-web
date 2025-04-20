@@ -18,6 +18,11 @@ import java.util.List;
 @Repository
 public interface OpenSessionRegistrationRepository extends JpaRepository<OpenSessionRegistration, Integer> {
 
+    @Query("SELECT COUNT(o) > 0 FROM OpenSessionRegistration o " +
+            "WHERE o.session.sessionId = :sessionId " +
+            "AND o.status != 0")
+    boolean invalidUpdateStatus(@Param("sessionId") Integer sessionId);
+
     @Query("SELECT COUNT(o) > 0 FROM OpenSessionRegistration o WHERE o.session.sessionId = :sessionId")
     boolean existBySession(@Param("sessionId") Integer sessionId);
 

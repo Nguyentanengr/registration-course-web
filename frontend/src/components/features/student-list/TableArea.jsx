@@ -6,6 +6,9 @@ import ListStudent from './ListStudent';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCheckedSectionId, removeCheckedSectionId, setCheckedSectionId, setSearchKey } from '../../../stores/slices/studentListSlice';
 import { fetchComformOpenSection } from '../../../apis/openSectionApi';
+import CircleSpinner from '../../commons/CircleSpinner';
+import { exportStudentsByOpenSections } from '../../../apis/exportApi';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableArea = () => {
     const [onSee, setOnSee] = useState(false);
@@ -20,6 +23,7 @@ const TableArea = () => {
         searchKey,
         openSections,
         checkedSectionIds,
+        seLoading,
     } = useSelector((state) => state.studentList);
 
     const handleSingleCheckBox = (openSectionId) => {
@@ -33,6 +37,23 @@ const TableArea = () => {
             allCBoxRef.current.checked = false;
         }
     };
+
+    const handleExportFile = (openSectionIds) => {
+        console.log("openSectionIds");
+        console.log(openSectionIds);
+
+        dispatch(exportStudentsByOpenSections({ openSessionIds: openSectionIds }))
+            .unwrap()
+            .then((action) => {
+                // action chứa { fileName, success }
+                console.log("Tải file thành công");
+            })
+            .catch((error) => {
+                console.error("Error exporting file:", error);
+                toast.error(error.message || "Đã có lỗi xảy ra khi tải file!");
+            });
+    };
+
 
     const handleAllCheckBox = () => {
         const isChecked = allCBoxRef.current.checked;
@@ -78,6 +99,17 @@ const TableArea = () => {
 
     return (
         <TableAreaContainer>
+            <ToastContainer
+                position="top-right" // Vị trí thông báo
+                autoClose={3000} // Tự động đóng sau 3 giây
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <div className="tool-bar">
                 <div className="left">
                     <div className="select-all wrap-center">
@@ -96,7 +128,7 @@ const TableArea = () => {
                     <div className="search-container wrap-center">
                         <div className="input-container wrap-center">
                             <div className="icon wrap-center">
-                                <Icons.SearchIcon />
+                                {seLoading ? <CircleSpinner size={15} color='#575757' /> : <Icons.SearchIcon />}
                             </div>
                             <input
                                 type="text"
@@ -109,7 +141,10 @@ const TableArea = () => {
                         </div>
                     </div>
                     <div className="excel-btn">
-                        <button className={`excel wrap-center ${checkedSectionIds.length > 0 ? 'active' : ''}`}>
+                        <button
+                            className={`excel wrap-center ${checkedSectionIds.length > 0 ? 'active' : ''}`}
+                            onClick={() => handleExportFile(checkedSectionIds)}
+                        >
                             <div className="icon wrap-center">
                                 <Icons.File />
                             </div>
@@ -165,7 +200,10 @@ const TableArea = () => {
                                             <div className="see wrap-center" onClick={() => handleCheckStudentList(openSection)}>
                                                 <Icons.Eye />
                                             </div>
-                                            <div className="down wrap-center">
+                                            <div
+                                                className="down wrap-center"
+                                                onClick={() => handleExportFile([openSection.openSessionId])}
+                                            >
                                                 <Icons.Download />
                                             </div>
                                         </div>

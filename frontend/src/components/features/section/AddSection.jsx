@@ -167,6 +167,7 @@ const AddSection = ({ setIsAdding }) => {
         });
         return !studentsError && !periodsError && !datesError;
     };
+    
     const validateAddSchedule = () => {
         const periodsError = validatePeriods();
         const datesError = validateDates();

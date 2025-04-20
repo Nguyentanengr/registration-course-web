@@ -9,6 +9,9 @@ import studentListReducer from "./slices/studentListSlice";
 import studentInfoReducer from "./slices/studentInfoSlice";
 import registerReducer from "./slices/registerSlice";
 import timeTableReducer from "./slices/timeTableSlice";
+import editSectionReducer from "./slices/editSectionSlice";
+import editScheduleReducer from "./slices/editScheduleSlice";
+
 export default configureStore({
     reducer: {
         user: userReducer,
@@ -21,5 +24,7 @@ export default configureStore({
         studentInfo: studentInfoReducer,
         register: registerReducer,
         timeTable: timeTableReducer,
+        editSection: editSectionReducer,
+        editSchedule: editScheduleReducer,
     },
 });

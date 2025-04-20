@@ -81,7 +81,10 @@ export const TableAreaContainer = styled.div`
 
                 .input-container {
                     gap: 5px;
+
                     .icon {
+                        width: 20px;
+                        height: 20px;
                         font-size: 22px;
                         color: ${Theme.soft};
 
@@ -104,6 +107,7 @@ export const TableAreaContainer = styled.div`
                     padding: 0 20px;
                     gap: 10px;
                     opacity: 0.5;
+                    pointer-events: none;
                     .icon {
                         font-size: 20px;
                     }
@@ -115,6 +119,7 @@ export const TableAreaContainer = styled.div`
                     &.active {
                         opacity: 1;
                         cursor: pointer;
+                        pointer-events:all;
                     }
                 }
             }

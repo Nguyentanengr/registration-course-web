@@ -27,8 +27,8 @@ public enum CodeResponse {
     DELETE_OPEN_SESSION_SUCCESSFULLY(1000, HttpStatus.OK, "Delete a open session list successfully"),
     UPDATE_OPEN_SESSION_STATUS_SUCCESSFULLY(1000, HttpStatus.OK, "Update a open session status successfully"),
 
-
-
+    EXPORT_STUDENT_ERROR(9119, HttpStatus.CONFLICT, "One of the open session is missed when export student"),
+    PHASE_IS_OPENED(9117, HttpStatus.CONFLICT, "Phase is opened"),
     SCHEDULE_CONFLICT(9115, HttpStatus.CONFLICT, "Conflict schedules"),
     SESSION_IS_FULL(9113, HttpStatus.CONFLICT, "Session is full"),
     PREREQUISITE_NOT_MET(9111, HttpStatus.CONFLICT, "Conflict prerequisite"),

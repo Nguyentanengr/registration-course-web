@@ -18,7 +18,6 @@ public record UpdatePhaseRequest(
         @NotNull(message = "PHASE_YEAR_IS_BLANK")
         Integer year,
 
-        @Future(message = "PHASE_TIME_IN_PAST")
         LocalDateTime openTime,
 
         @Future(message = "PHASE_TIME_IN_PAST")

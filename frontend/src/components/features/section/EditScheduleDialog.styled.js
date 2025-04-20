@@ -1,25 +1,13 @@
-
-
 import styled from 'styled-components';
 import { Theme } from '../../../assets/styles/Theme';
 
-export const AddSectionContainer = styled.div`
+export const EditScheduleDialogContainer = styled.div`
     width: 45vw;
     height: 90vh;
     background-color: ${Theme.header};
     padding: 30px 25px;
     border-radius: 10px;
     overflow-y: scroll;
-    animation: fadeIn 0.2s ease-in-out;
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
 
     &::-webkit-scrollbar {
         width: 8px;
@@ -44,60 +32,18 @@ export const AddSectionContainer = styled.div`
         font-size: 20px;
     }
 
-    .section-1 {
-        width: 100%;
-        margin-top: 30px;
-        display: flex;
-        gap: 20px;
-
-        .option-box {
-            flex: 1;
-
-            .select-option {
-                margin-top: 5px;
-            }
-        }
-        
-    }
-
-    .section-2 {
-        width: 100%;
-        margin-top: 30px;
-        display: flex;
-
-        .option-box {
-            flex: 1;
-
-            .select-option {
-                margin-top: 5px;
-            }
-        }
-    }
-
-    .section-3 {
-        width: 100%;
-        margin-top: 30px;
-        display: flex;
-        gap: 20px;
-
-        .counter-box {
-            flex: 1;
-
-            .counter {
-                margin-top: 5px;
-            }
-        }
-    }
-
     .section-4 {
         width: 100%;
-        margin-top: 30px;
+        margin-top: 0px;
 
         .header {
             width: 100%;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            .icon {
+                font-size: 24px;
+            }
 
             .h-title {
                 font-weight: 500;
@@ -120,7 +66,7 @@ export const AddSectionContainer = styled.div`
         }
 
         .body {
-            margin-top: 20px;
+            margin-top: 30px;
             width: 100%;
             border-radius: 5px;
             border: 1px solid ${Theme.hover};
@@ -147,6 +93,7 @@ export const AddSectionContainer = styled.div`
                 .box {
                     flex: 1;
                     display: flex;
+                    gap: 15px;
 
                     .sp-option-box {
                         flex: 1;
@@ -211,7 +158,7 @@ export const AddSectionContainer = styled.div`
         }
     }
 
-    .section-5 {
+    .section-schedule {
         margin-top: 30px;
         
         .a-title {
@@ -221,13 +168,14 @@ export const AddSectionContainer = styled.div`
         .table-container {
             margin-top: 10px;
             width: 100%;
+            height: auto;
             overflow-x: auto;
             background: white;
             border-radius: 8px;
             box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
             font-size: 14px;
 
-            .table {
+            .table-schedule {
                 width: 100%;
                 border-collapse: collapse;
             }
@@ -236,6 +184,7 @@ export const AddSectionContainer = styled.div`
                 padding: 8px;
                 text-align: left;
                 border-bottom: 1px solid ${Theme.hover};
+                height: 30px;
             }
 
             td {

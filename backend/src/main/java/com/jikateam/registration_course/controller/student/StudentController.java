@@ -6,10 +6,7 @@ import com.jikateam.registration_course.service.student.StudentService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +29,21 @@ public class StudentController {
 
         CodeResponse codeResponse = CodeResponse.SUCCESS;
         return DataResponse.<List<StudentRegisterResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+
+    }
+
+    @PostMapping("/by-sessions")
+    public DataResponse<List<ListStudentRegisterResponse>> getListStudentBySessionIds
+            (@RequestBody List<Integer> openSessionIds) {
+
+        List<ListStudentRegisterResponse> responses =
+                studentService.getAllStudentByOpenSessionIds(openSessionIds);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<ListStudentRegisterResponse>>builder()
                 .code(codeResponse.getCode())
                 .data(responses)
                 .build();

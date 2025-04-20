@@ -19,6 +19,14 @@ public interface StudentRepository extends JpaRepository<Student, String> {
             "WHERE o.openSessionRegistrationId = :openSessionId AND o.status IN (4, 5, 6)")
     List<Object[]> getAllByOpenSessionId(@Param("openSessionId") Integer openSessionId);
 
+    @Query("SELECT o.openSessionRegistrationId, " +
+            "e.student, e.enrollTime, s.course.courseId, s.clazz.clazzId, s.groupNumber " +
+            "FROM Enrollment e " +
+            "JOIN e.openSessionRegistration o " +
+            "JOIN o.session s " +
+            "WHERE o.openSessionRegistrationId IN :openSessionIds AND o.status IN (4, 5, 6)")
+    List<Object[]> getAllByOpenSessionIds(@Param("openSessionIds") Iterable<Integer> openSessionIds);
+
     @Query("SELECT s.studentId, s.fullname, m.majorName, c.clazzId" +
             ", c.currentSemester, c.startYear, c.currentYear" +
             ", c.educationProgram.educationProgramId, c.specialization.specializationId " +

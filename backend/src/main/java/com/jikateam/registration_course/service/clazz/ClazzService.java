@@ -42,8 +42,9 @@ public class ClazzService {
 
         var responses = clazzes.stream()
                 .map((clazz) -> {
-                    int nextSemester = clazz.getCurrentSemester() == 1 ? 2 : 1;
-                    int nextYear = clazz.getCurrentSemester() == 1
+                    int nextSemester = clazz.getCurrentSemester() == 1 ? 2
+                            : clazz.getCurrentSemester() == 2 ? 3 : 1;
+                    int nextYear = clazz.getCurrentSemester() == 1 || clazz.getCurrentSemester() == 2
                             ? clazz.getStartYear() + clazz.getCurrentYear() - 1
                             : clazz.getStartYear() + clazz.getCurrentYear();
                     log.info("Class with id = {} have next semester: {}, next year: {}"

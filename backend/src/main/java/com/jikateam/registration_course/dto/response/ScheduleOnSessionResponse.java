@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public record ScheduleOnSessionResponse(
         Integer scheduleId,
         String teacherName,
+        String teacherId,
         String placeId,
         Integer startPeriod,
         Integer endPeriod,

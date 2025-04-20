@@ -9,6 +9,8 @@ import Alert from "../../commons/Alert";
 import ScheduleDialog from './ScheduleDialog';
 import { deleteSection } from '../../../apis/sectionApi';
 import ConfirmDelete from './ConfirmDelete';
+import EditSectionDialog from './EditSectionDialog';
+import EditScheduleDialog from './EditScheduleDialog';
 
 
 const convertStatus = (status) => {
@@ -40,9 +42,12 @@ const SectionArea = () => {
         , itemPerPage, itemPerPages, sections, deleteError } = useSelector((state) => state.section);
     const [activePopupId, setActivePopupId] = useState(null);
     const [isSchedule, setIsSchedule] = useState(false);
-    const [isDelete, setIsDelete] = useState(false);
+    const [isDelete, setIsDelete] = useState(null);
     const [selectedSection, setSelectedSection] = useState(null);
     const [deletedSection, setDeletedSection] = useState(null);
+    const [onAlert, setOnAlert] = useState(false);
+    const [editSection, setEditSection] = useState(null);
+    const [editSchedule, setEditSchedule] = useState(null);
 
     // Khi tăng giảm page 
     const handlePageChange = (page) => {
@@ -69,8 +74,16 @@ const SectionArea = () => {
         setIsSchedule(!isSchedule);
     };
 
-    // Xử lý khi xóa hàng
+    // Xử lý khi click chỉnh sửa lớp học phần
+    const handleClickEditSection = (section) => {
+        setEditSection(section);
+    };
+    // Xử lý khi click chỉnh sửa lịch học
+    const handleClickEditSchedule = (section) => {
+        setEditSchedule(section);
+    };
 
+    // Xử lý khi xóa lớp học phần
     const handleClickDelete = (sectionId) => {
         setDeletedSection(sectionId);
         setIsDelete(!isDelete);
@@ -82,7 +95,13 @@ const SectionArea = () => {
             // sau khi xóa thành công thì xóa ở client
             .unwrap()
             .then((action) => {
-                dispatch(removeSection(deletedSection))
+                dispatch(removeSection(deletedSection));
+                setIsDelete(false);
+                setDeletedSection(null);
+                setOnAlert(true);
+                setInterval(() => {
+                    setOnAlert(false);
+                }, 3000);
             })
             .catch((error) => {
                 setActivePopupId(null);
@@ -186,8 +205,10 @@ const SectionArea = () => {
                                                 <Icons.More />
                                             </div>
                                             {activePopupId === section.sessionId && <div className="popup">
-
-                                                <div className={`item ${section.status === 'PENDING' ? '' : 'disable'}`}>
+                                                <div
+                                                    className={`item ${section.status === 'PENDING' || section.status === 'CREATED' ? '' : 'disable'}`}
+                                                    onClick={() => handleClickEditSection(section)}
+                                                >
                                                     <div className="icon">
                                                         <Icons.Edit />
                                                     </div>
@@ -195,7 +216,10 @@ const SectionArea = () => {
                                                         Chỉnh sửa
                                                     </div>
                                                 </div>
-                                                <div className="item">
+                                                <div
+                                                    className={`item ${section.status === 'PENDING' || section.status === 'CREATED' ? '' : 'disable'}`}
+                                                    onClick={() => handleClickEditSchedule(section)}
+                                                >
                                                     <div className="icon">
                                                         <Icons.Clock />
                                                     </div>
@@ -204,7 +228,7 @@ const SectionArea = () => {
                                                     </div>
                                                 </div>
                                                 <div
-                                                    className={`item ${section.status === 'PENDING' || section.status === 'CREATED' ? '' : 'disable'}`}
+                                                    className={`item ${section.status === 'CREATED' || section.status === 'PENDING' ? '' : 'disable'}`}
                                                     onClick={() => handleClickDelete(section.sessionId)}
                                                 >
                                                     <div className="icon">
@@ -247,13 +271,20 @@ const SectionArea = () => {
             {isSchedule && <div className='pop-up-container wrap-center'>
                 <ScheduleDialog setIsSchedule={setIsSchedule} section={selectedSection} />
             </div>}
+            {editSection && <div className='pop-up-container wrap-center'>
+                <EditSectionDialog setEditSection={setEditSection} section={editSection} />
+            </div>}
+            {editSchedule && <div className='pop-up-container wrap-center'>
+                <EditScheduleDialog setEditSchedule={setEditSchedule} section={editSchedule} />
+            </div>}
             {isDelete && <div className='pop-up-container wrap-center'>
                 <ConfirmDelete
                     setIsDelete={setIsDelete}
-                    message="Bạn có chắc chắn muốn xóa lớp học phần này? Hành động này không thể hoàn tác."
+                    message={`Bạn có chắc chắn muốn xóa lớp học phần ${deletedSection}? Hành động này không thể hoàn tác.`}
                     onDelete={handleOnDelete}
                 />
             </div>}
+            {onAlert && <Alert type='success' message={`Xóa thành công!`} />}
         </SectionAreaContainer>
     );
 };

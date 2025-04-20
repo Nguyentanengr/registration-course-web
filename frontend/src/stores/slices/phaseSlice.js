@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createPhase, fetchAllPhase } from "../../apis/phaseApi";
+import { createPhase, deletePhase, fetchAllPhase, updatePhase } from "../../apis/phaseApi";
 import { FaLeaf } from "react-icons/fa";
 
 
@@ -10,6 +10,10 @@ const phaseSlice = createSlice({
         // get method
         searchKey: '',
         getLoading: false,
+        deleteLoading: false,
+        deleteError: null,
+        updateLoading: false,
+        updateError: null,
         phases: [
             {
                 phaseId: "10011",
@@ -50,6 +54,9 @@ const phaseSlice = createSlice({
         setPhaseForm: (state, action) => {
             state.phaseForm = action.payload;
         },
+        deletePhaseItem: (state, action) => {
+            state.phases = state.phases.filter(p => p.phaseId !== action.payload);
+        },
         resetPhaseForm: (state) => {
             state.phaseForm = {
                 name: '',
@@ -84,12 +91,41 @@ const phaseSlice = createSlice({
                 state.postLoading = false;
                 state.postError = payload;
             })
+            .addCase(deletePhase.pending, (state) => {
+                state.deleteError = null;
+                state.deleteLoading = true;
+            })
+            .addCase(deletePhase.fulfilled, (state, { payload }) => {
+                state.deleteError = null;
+                state.deleteLoading = false;
+            })
+            .addCase(deletePhase.rejected, (state, { payload }) => {
+                state.deleteError = payload;
+                state.deleteLoading = false;
+            })
+            .addCase(updatePhase.pending, (state) => {
+                state.updateError = null;
+                state.updateLoading = true;
+            })
+            .addCase(updatePhase.fulfilled, (state, { payload }) => {
+                state.updateError = null;
+                state.updateLoading = false;
+            })
+            .addCase(updatePhase.rejected, (state, { payload }) => {
+                state.updateError = payload;
+                state.updateLoading = false;
+            })
 
 
     }
 
 });
 
-export const { addPhase, setFilterYear, setSearchKey
-    , setPhaseForm, resetPhaseForm } = phaseSlice.actions;
+export const {
+    addPhase,
+    setFilterYear,
+    setSearchKey,
+    setPhaseForm,
+    deletePhaseItem,
+    resetPhaseForm } = phaseSlice.actions;
 export default phaseSlice.reducer;

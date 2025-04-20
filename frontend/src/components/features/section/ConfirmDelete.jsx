@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ConfirmDeleteContainer } from './ConfirmDelete.styled';
 
-const ConfirmDelete = ({ setIsDelete, message, onDelete }) => {
+const ConfirmDelete = ({ setIsDelete, message, onDelete, action='delete' }) => {
     const thisRef = useRef(null);
 
 
@@ -30,11 +30,11 @@ const ConfirmDelete = ({ setIsDelete, message, onDelete }) => {
     }, []);
     return (
         <ConfirmDeleteContainer ref={thisRef}>
-            <div className="title">Xác nhận xóa</div>
+            <div className="title">{action === 'delete' ? 'Xác nhận xóa' : 'Xác nhận thay đổi'}</div>
             <div className="ms">{message}</div>
             <div className="footer wrap-center">
                 <button className="cancel-btn" onClick={handleClickCancel}>Hủy</button>
-                <button className="confirm-btn" onClick={handleClickConfirm}>Xóa</button>
+                <button className="confirm-btn" onClick={handleClickConfirm}>{action === 'delete' ? 'Xóa' : 'Lưu'}</button>
             </div>
         </ConfirmDeleteContainer>
     );

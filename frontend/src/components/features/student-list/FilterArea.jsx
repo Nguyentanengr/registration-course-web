@@ -26,6 +26,7 @@ const FilterArea = () => {
         searchKey,
         classIds,
         sections,
+        seLoading,
     } = useSelector((state) => state.studentList);
 
     const handleClickRefresh = () => {
@@ -36,7 +37,7 @@ const FilterArea = () => {
 
         // làm mới filter 
         dispatch(resetFilter());
-        dispatch(setOpenSections([])); 
+        // dispatch(setOpenSections([])); 
     };
 
     useEffect(() => {

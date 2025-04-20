@@ -39,8 +39,9 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
 
     @Query(
             "SELECT s FROM Session s " +
-                    "LEFT JOIN FETCH OpenSessionRegistration osr ON s.sessionId = osr.session.sessionId " +
+                    "LEFT JOIN FETCH s.openSessionRegistration osr " +
                     "LEFT JOIN FETCH s.schedules " +
+                    "LEFT JOIN FETCH s.course c " +
                     "WHERE " +
                     "(:searchKey IS NULL OR " +
                     "s.clazz.clazzId LIKE CONCAT('%', :searchKey, '%') OR " +
@@ -51,8 +52,10 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
                     "(:clazzId IS NULL OR s.clazz.clazzId = :clazzId) AND " +
                     "(:courseId IS NULL OR s.course.courseId = :courseId) AND " +
                     "(:status IS NULL OR " +
-                    "(:status = 7 AND osr IS NULL) OR " +
-                    "(:status != 7 AND CAST(osr.status AS integer) = :status))"
+                    "(:status = 7 AND (osr IS NULL OR osr.status = 0)) OR " + // lấy trạng thái: create, pending
+                    "(:status = 4 AND CAST(osr.status AS integer) IN (4, 5, 6)) OR " + // lấy các trạng thái: comfirm, teaching, completed
+                    "(:status = 1 AND CAST(osr.status AS integer) IN (1, 2)) OR " + // lấy các trạng thái: open, close
+                    "(:status = 3 AND CAST(osr.status AS integer) IN (3)))" // lấy trạng thái: cancel
     )
     Page<Session> findAllSessionByFilter(
             @Param("searchKey") String searchKey,

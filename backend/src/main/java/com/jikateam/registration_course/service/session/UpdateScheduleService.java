@@ -40,14 +40,14 @@ public class UpdateScheduleService {
         Session session = sessionRepository.findSessionForUpdate(sessionId)
                 .orElseThrow(() -> new BusinessException(CodeResponse.SESSION_NOT_FOUND));
 
-        // IMPORTANT: can change schedule of session when session's status is pending (not teaching)
-        boolean isOpeningOrTeaching = openSessionRegistrationRepository.existBySession(sessionId);
-        if (isOpeningOrTeaching) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
+        // IMPORTANT: Không thể thay đổi lịch học khi trạng thái của lớp học phần này là đã mở hoặc từng được mở
+        boolean invalidStatus = openSessionRegistrationRepository.invalidUpdateStatus(sessionId);
+        if (invalidStatus) throw new BusinessException(CodeResponse.SESSION_IS_CONFLICT);
 
-        // preload entity
-        Map<Integer, Schedule> scheduleEntities = session.getSchedules().stream()
-                .collect(Collectors.toMap(Schedule::getScheduleId, s -> s));
+        // Xóa toàn bộ lịch học cũ
+        scheduleRepository.deleteAllBySessionId(sessionId);
 
+        // Cập nhật lại toàn bộ lịch học mới.
         Set<String> placeIds = request.schedules().stream()
                 .map(ScheduleRequest::placeId)
                 .collect(Collectors.toSet());
@@ -60,57 +60,35 @@ public class UpdateScheduleService {
         Map<String, Teacher> teachers = teacherRepository.findByTeacherIdIn(teacherIds).stream()
                 .collect(Collectors.toMap(Teacher::getTeacherId, t -> t));
 
-        // delete schedule
-        Set<Integer> scheduleRequestIds = new HashSet<>();
-        for (ScheduleRequest schedule : request.schedules()) {
-            if (schedule.scheduleId() != null) scheduleRequestIds.add(schedule.scheduleId());
-        }
-        log.info("Update schedules: {}", scheduleRequestIds);
 
-        Set<Schedule> deleteSchedules = scheduleEntities.values().stream()
-                .filter(schedule -> !scheduleRequestIds.contains(schedule.getScheduleId()))
-                .collect(Collectors.toSet());
-
-        log.info("Delete schedules: {}", deleteSchedules);
-        scheduleRepository.deleteAll(deleteSchedules);
-
-        // cache entity for save batch
+        // Lưu tất cả entity -> save batch
         Set<Schedule> cacheSaveEntities = new HashSet<>();
-
 
         List<ScheduleRequest> scheduleRequests = request.schedules();
         for (ScheduleRequest scheduleRequest : scheduleRequests) {
 
-            Schedule scheduleEntity = null;
-
-            if (scheduleRequest.scheduleId() != null) { // update
-                scheduleEntity = scheduleEntities.get(scheduleRequest.scheduleId());
-                if (scheduleEntity == null) throw new BusinessException(CodeResponse.SCHEDULE_NOT_FOUND);
-                scheduleConverter.updateToScheduleEntity(scheduleRequest, scheduleEntity);
-            } else { // create
-                scheduleEntity = scheduleConverter.mapToScheduleEntity(scheduleRequest);
-            }
+            Schedule scheduleEntity = scheduleConverter.mapToScheduleEntity(scheduleRequest);
 
             Place place = places.get(scheduleRequest.placeId());
             if (place == null) throw new BusinessException(CodeResponse.PLACE_NOT_FOUND);
 
-            // check capacity when place is changed
+            // Kiểm tra thỏa mãn số lượng chỗ ngồi
             validateCapacity(session, place);
             scheduleEntity.setPlace(place);
 
             Teacher teacher = teachers.get(scheduleRequest.teacherId());
             if (teacher == null) throw new BusinessException(CodeResponse.TEACHER_NOT_FOUND);
-            // check invalid teacher when teacher is changed (teaching course and free time)
+
+            // Kiểm tra giảng viên có thỏa mãn lịch giảng dạy & môn học không
             validateTeacher(session, teacher, scheduleRequest);
             scheduleEntity.setTeacher(teacher);
 
             scheduleEntity.setSession(session);
 
-            // check place, teacher and add schedule
+            // lưu vào trong batch
             cacheSaveEntities.add(scheduleEntity);
         }
-
-
+        // Kiểm tra xung đột giữa các buổi học với nhau
         validateSchedule(cacheSaveEntities.stream().toList());
 
         session.setStartDate(cacheSaveEntities.stream()
@@ -123,16 +101,17 @@ public class UpdateScheduleService {
                 .max(LocalDate::compareTo)
                 .orElseThrow(() -> new BusinessException(CodeResponse.NO_SESSION_DATE_PROVIDED))
         );
+
         session.setSchedules(cacheSaveEntities);
 
-        log.info("Session: {}", session);
+        log.info("Saving all {} schedules...", cacheSaveEntities.size());
 
         scheduleRepository.saveAll(cacheSaveEntities);
         sessionRepository.save(session);
 
-        log.info("Session Update: {}", session);
+        log.info("Updated session {} with startDate = {}, endDate = {}"
+                , session.getSessionId(), session.getStartDate(), session.getEndDate());
 
-        log.info("Updated session: {}", session.getSchedules());
         return sessionConverter.mapToSchedulesOnSessionResponse(session);
     }
 

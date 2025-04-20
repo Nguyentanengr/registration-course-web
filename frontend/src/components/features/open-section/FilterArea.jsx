@@ -5,13 +5,15 @@ import SelectOption from '../../commons/SelectOption';
 import AddPeriod from './AddPeriod';
 import CircleSpinner from '../../commons/CircleSpinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
-import { fetchAllPhase, fetchAllPhaseBySemester } from '../../../apis/phaseApi';
+import { deletePhaseItem, setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
+import { deletePhase, fetchAllPhase, fetchAllPhaseBySemester } from '../../../apis/phaseApi';
 import { addOpenSection, removeOpenSection, resetOpenSection, resetSections, setClassId, setOpenSection, setPhaseId, setSearchSection, setSemester, setSemesters, setYear, setYears } from '../../../stores/slices/openSectionSlice';
 import { fetchActiveClassInfos } from '../../../apis/classApi';
 import { fetchSectionsBySemester } from '../../../apis/sectionApi';
 import Alert from '../../commons/Alert';
 import { confirmOpenSections, createOpenSections, fetchOpenedSection, revertOpenSections } from '../../../apis/openSectionApi';
+import ConfirmDelete from '../section/ConfirmDelete';
+import EditPeriod from './EditPeriod';
 
 
 export const cvertDateTimeJson = (string) => {
@@ -48,9 +50,11 @@ const FilterArea = () => {
     const checkBoxRefs = useRef([]);
     const checkBoxAllRefs = useRef(null);
     const popupRefs = useRef({});
+    const [isDeletePhase, setIsDeletePhase] = useState(null);
+    const [isUpdatePhase, setIsUpdatePhase] = useState(null);
     const [activePopupId, setActivePopupId] = useState(null);
 
-    const { getLoading, searchKey, phases } = useSelector((state) => state.phase);
+    const { getLoading, searchKey, phases, deleteLoading, deleteError } = useSelector((state) => state.phase);
     const {
         classes,
         classId,
@@ -109,17 +113,40 @@ const FilterArea = () => {
             })
     }
 
+    const handleClickDeletePhase = (phase) => {
+        setIsDeletePhase(phase.phaseId);
+    };
+
+    const handleClickUpdatePhase = (phase) => {
+        setIsUpdatePhase(phase);
+    };
+
+    const handleOnDelete = () => {
+        if (isDeletePhase) dispatch(deletePhase({ phaseId: isDeletePhase }))
+            .unwrap()
+            .then((action) => {
+                // xóa ở client
+                dispatch(deletePhaseItem(isDeletePhase));
+            })
+        setIsDeletePhase(null);
+    };
+
     const generateYears = () => {
         const currentYear = new Date().getFullYear() - 10;
         const yearArray = Array.from({ length: 20 }, (_, i) => currentYear + i);
         return yearArray;
     }
 
-    const isActive = (phase) => {
+    const getStatusPhase = (phase) => {
         const open = new Date(phase.openTime);
         const close = new Date(phase.closeTime);
         const now = new Date();
-        return now >= open && now <= close;
+        if (now >= open && now <= close) {
+            return 0
+        } else if (close < now) {
+            return -1
+        }
+        return 1;
     }
 
     const getPhaseIdByName = (name, phases) => {
@@ -502,7 +529,7 @@ const FilterArea = () => {
                                                 >
                                                     <div
                                                         className={`item ${section.status === 'CLOSE' ? '' : 'disable'}`}
-                                                        onClick={() => {handleConfirmOpenedSection(section.openedSectionId, 'CONFIRM')}}
+                                                        onClick={() => { handleConfirmOpenedSection(section.openedSectionId, 'CONFIRM') }}
                                                     >
                                                         <div className="icon-item">
                                                             <Icons.Confirm />
@@ -513,7 +540,7 @@ const FilterArea = () => {
                                                     </div>
                                                     <div
                                                         className={`item ${section.status === 'CLOSE' ? '' : 'disable'}`}
-                                                        onClick={() => {handleConfirmOpenedSection(section.openedSectionId, 'CANCEL')}}
+                                                        onClick={() => { handleConfirmOpenedSection(section.openedSectionId, 'CANCEL') }}
                                                     >
                                                         <div className="icon-item">
                                                             <Icons.Cancel />
@@ -524,7 +551,7 @@ const FilterArea = () => {
                                                     </div>
                                                     <div
                                                         className={`item ${section.status === 'PENDING' ? '' : 'disable'}`}
-                                                        onClick={() => {handleRemoveOpenedSection(section.openedSectionId)}}
+                                                        onClick={() => { handleRemoveOpenedSection(section.openedSectionId) }}
                                                     >
                                                         <div className="icon-item">
                                                             <Icons.Trash />
@@ -615,13 +642,37 @@ const FilterArea = () => {
                                         <td>{cvertDateTimeJson(phase.openTime)}</td>
                                         <td>{cvertDateTimeJson(phase.closeTime)}</td>
                                         <td><div className="box">
-                                            <span
-                                                className={`status ${isActive(phase) ? '' : 'inactive'}`}
+                                            <div
+                                                className={`status ${getStatusPhase(phase) == 0 ? ''
+                                                    : getStatusPhase(phase) == -1 ? 'inactive'
+                                                        : 'coming'}`}
                                             >
-                                                {isActive(phase) ? 'Đang hoạt động' : 'Không hoạt động'}
-                                            </span>
+                                                <div className="text">
+                                                    {getStatusPhase(phase) == 0 ? 'Đang hoạt động'
+                                                        : getStatusPhase(phase) == -1 ? 'Đã diễn ra' : 'Sắp diễn ra'}
+                                                </div>
+                                            </div>
                                         </div></td>
-                                        <td><Icons.More /></td>
+                                        <td>
+                                            <div className="action-area">
+                                                <div
+                                                    className={`action-container ${getStatusPhase(phase) == -1 ? 'disable' : ''}`}
+                                                    onClick={() => handleClickUpdatePhase(phase)}
+                                                >
+                                                    <div className="icon wrap-center">
+                                                        <Icons.Edit />
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={`action-container ${getStatusPhase(phase) == 1 ? '' : 'disable'}`}
+                                                    onClick={() => handleClickDeletePhase(phase)}
+                                                >
+                                                    <div className="icon wrap-center">
+                                                        <Icons.Trash />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
 
                                     </tr>
                                 ))}
@@ -631,6 +682,17 @@ const FilterArea = () => {
                 </div>
             </div>}
             {postError && <Alert message={postError.massage || 'Đã có lỗi xảy ra'} />}
+            {deleteError && <Alert message={deleteError.massage || 'Đã có lỗi xảy ra'} />}
+            {isDeletePhase && <div className='pop-up-container wrap-center'>
+                <ConfirmDelete
+                    setIsDelete={() => setIsDeletePhase(null)}
+                    message={`Bạn có chắc chắn đợt đăng ký ${isDeletePhase}? Tất cả dữ liệu liên quan đến đợt đăng ký này có thể sẽ bị xóa, không thể hoàn tác.`}
+                    onDelete={handleOnDelete}
+                />
+            </div>}
+            {isUpdatePhase && <div className='pop-up-container wrap-center'>
+                <EditPeriod setIsUpdate={setIsUpdatePhase} phase={isUpdatePhase}/>
+            </div>}
         </FilterAreaContainer>
     )
 }

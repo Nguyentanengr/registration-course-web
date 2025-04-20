@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
 @Mapper(componentModel = "spring")
 public interface ScheduleConverter {
 
+    @Mapping(target = "scheduleId", ignore = true)
     Schedule mapToScheduleEntity(ScheduleRequest request);
 
     @Mapping(target = "scheduleId", ignore = true)
@@ -28,6 +29,7 @@ public interface ScheduleConverter {
 
 
     @Mapping(target = "teacherName", source = "teacher.fullname")
+    @Mapping(target = "teacherId", source = "teacher.teacherId")
     @Mapping(target = "placeId", source = "place.placeId")
     ScheduleOnSessionResponse mapToScheduleOnSessionResponse(Schedule schedule);
 }

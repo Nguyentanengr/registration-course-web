@@ -10,10 +10,11 @@ import { fetchTeacherForCourse } from "../../apis/teacherApi";
 const sectionSlice = createSlice({
     name: "section",
     initialState: {
+        counter: 1,
         loading: false,
         error: null,
         filter: 'Tất cả học phần',
-        filters: ['Tất cả học phần', 'Đang hoạt động', 'Đang mở', 'Sắp tới'],
+        filters: ['Tất cả học phần', 'Đang hoạt động', 'Đang mở', 'Sắp tới', 'Đã hủy'],
         sections: [],
         currentPage: 1,
         totalPage: 1,
@@ -99,8 +100,9 @@ const sectionSlice = createSlice({
             state.places = [];
         },
         addSchedule: (state, action) => {
-            let schedule = { ...action.payload, "scheduleId": state.addSectionForm.schedules.length + 1 };
+            let schedule = { ...action.payload, "scheduleId": state.counter };
             state.addSectionForm.schedules = [...state.addSectionForm.schedules, schedule];
+            state.counter += 1;
         },
         removeSchedule: (state, action) => { // action only contain id:string
             state.addSectionForm.schedules = state.addSectionForm.schedules

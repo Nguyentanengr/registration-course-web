@@ -582,23 +582,60 @@ export const FilterAreaContainer = styled.div`
             &.time-box {
                 width: 230px;
             }
-            span {
+                
+            .status {
                 color: ${Theme.lightDark};
+                border-radius: 15px;
+                background-color: ${Theme.logo};
+                color: ${Theme.header};
+                padding: 3px 15px;
+                font-size: 14px;
+                width: 150px;
+                display: flex;
+                justify-content: center;
 
-                &.status {
-                    border-radius: 15px;
-                    background-color: ${Theme.logo};
-                    color: ${Theme.header};
-                    padding: 3px 15px;
-                    font-size: 14px;
+                &.inactive {
+                    background-color: ${Theme.lightSoft};
+                    color: ${Theme.dark};
+                }
+                &.coming {
+                    background-color: ${Theme.softBlue};
+                    color: ${Theme.dark};
+                }
+            }
 
-                    &.inactive {
+            .action-area {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+
+                .action-container {
+                    padding: 3px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    transition: 0.2s;
+
+                    &.disable {
+                        pointer-events: none;
+                        opacity: 0.3;
+                    }
+
+                    &:hover {
                         background-color: ${Theme.hover};
-                        color: ${Theme.dark};
                     }
                 }
             }
         }
+    }
+
+    .pop-up-container {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: ${Theme.boldShadow};
     }
 
 `;

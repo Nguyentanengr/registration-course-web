@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -77,11 +78,13 @@ public class PhaseService {
     public void deleteRegistrationPhase(Integer phaseId) {
 
         // check if phase is exist
-        RegistrationPhase phase = phaseRepository.findByIdWithOpenSession(phaseId)
+        RegistrationPhase phase = phaseRepository.findById(phaseId)
                 .orElseThrow(() -> new BusinessException(CodeResponse.PHASE_NOT_FOUND));
 
-        if (!phase.getOpenSessionRegistrations().isEmpty()) {
-            throw new BusinessException(CodeResponse.PHASE_CONTAINS_OPEN_SESSION);
+        if (phase.getOpenTime().isAfter(LocalDateTime.now())) {
+            phaseRepository.delete(phase);
+        } else {
+            throw new BusinessException(CodeResponse.PHASE_IS_OPENED);
         }
 
         phaseRepository.delete(phase);

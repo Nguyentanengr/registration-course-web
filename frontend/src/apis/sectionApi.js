@@ -3,7 +3,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 const GET_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions`;
 const DELETE_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/`;
 const POST_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions`;
-const GET_ABLE_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/able-open`
+const GET_ABLE_SECTION_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/able-open`;
+const PUT_SECTION_INFO_API = `${import.meta.env.VITE_API_URL}/api/v1/sessions/`;
 
 const getStatusSection = (string) => {
     switch (string) {
@@ -12,9 +13,11 @@ const getStatusSection = (string) => {
         case 'Đang hoạt động':
             return '&status=4';
         case 'Đang mở':
-            return '&status=0';
+            return '&status=1';
         case 'Sắp tới':
             return '&status=7';
+        case 'Đã hủy':
+            return '&status=3';
         default:
             return '';
     }
@@ -186,4 +189,40 @@ export const fetchSectionsBySemester = createAsyncThunk('sections/getAllBySemest
                 message: error.message || "Lỗi kết nối tới server"
             });
         }
+    });
+
+
+    export const updateSectionInfo = createAsyncThunk('sections/updateSectionInfo'
+        , async ({ sessionId, editSectionForm }, { rejectWithValue }) => {
+            
+            try {
+                const TOKEN = localStorage.getItem('token');
+                const TARGET_API = PUT_SECTION_INFO_API + sessionId;
+                console.log(TARGET_API);
+                const response = await fetch(TARGET_API, {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorized": "Bearer" + TOKEN,
+                    },
+                    body: JSON.stringify(editSectionForm),
+                });
+    
+                const objectResponse = await response.json();
+                if (objectResponse.code != 1000) {
+                    return rejectWithValue({
+                        code: objectResponse.code,
+                        message: objectResponse.message
+                    });
+                }
+                console.log(objectResponse);
+                return objectResponse;
+            } catch (error) {
+                console.log("reject");
+                
+                return rejectWithValue({
+                    code: 9090,
+                    message: error.message || 'Lỗi kết nối đến server'
+                });
+            }
     });
