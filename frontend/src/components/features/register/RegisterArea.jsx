@@ -141,7 +141,7 @@ const RegisterArea = ({ }) => {
                                 <td>{openSession.sessionInfo.courseInfo.courseId}</td>
                                 <td>{openSession.sessionInfo.courseInfo.courseName}</td>
                                 <td>{openSession.sessionInfo.classId}</td>
-                                <td>{openSession.sessionInfo.classId}</td>
+                                <td>{openSession.sessionInfo.groupNumber}</td>
                                 <td>{openSession.sessionInfo.courseInfo.credits}</td>
                                 <td>{openSession.sessionInfo.maxStudents}</td>
                                 <td>{openSession.empty}</td>

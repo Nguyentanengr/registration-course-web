@@ -85,6 +85,8 @@ const TableArea = () => {
         }
     };
 
+
+
     const handleCheckStudentList = (openSection) => {
         if (!onSee) {
             console.log(openSection);
@@ -95,6 +97,11 @@ const TableArea = () => {
 
     useEffect(() => {
         console.log(checkedSectionIds)
+        // Tắt tất cả single checkbox
+        if (checkedSectionIds.length === 0) {
+            allCBoxRef.current.checked = false;
+            singleCBoxRefs.current.forEach((el) => { if (el) el.checked = false });
+        }
     }, [checkedSectionIds]);
 
     return (

@@ -5,7 +5,7 @@ import { Icons } from '../../../assets/icons/Icon';
 import SelectOption from '../../commons/SelectOption';
 import { FilterAreaContainer } from './FilterArea.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetFilter, setFilterClassId, setFilterSemester, setFilterYear, setOpenSections } from '../../../stores/slices/studentListSlice';
+import { resetFilter, setCheckedSectionId, setFilterClassId, setFilterSemester, setFilterYear, setOpenSections } from '../../../stores/slices/studentListSlice';
 import { fetchAllClassInfos } from '../../../apis/classApi';
 import { fetchComformOpenSection } from '../../../apis/openSectionApi';
 
@@ -53,6 +53,8 @@ const FilterArea = () => {
             semester: semester
         })); 
 
+        dispatch(setCheckedSectionId([]));
+        
     }, [filterClassId, filterYear, filterSemester]);
 
     // gọi api lấy dữ liệu classID

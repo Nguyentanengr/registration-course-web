@@ -90,6 +90,8 @@ export const ListStudentContainer = styled.div`
         gap: 10px;
 
         .excel-btn {
+            transition: 0.2s;
+            border-radius: 5px;
             .excel {
                 border-radius: 5px;
                 border: 1px solid ${Theme.hover};
@@ -104,6 +106,7 @@ export const ListStudentContainer = styled.div`
                 p {
                     font-weight: 400;
                     opacity: 1;
+                    font-size: 16px;
                 }
 
                 &.active {
@@ -112,15 +115,18 @@ export const ListStudentContainer = styled.div`
                     cursor: pointer;
                 }
             }
+            &:hover {
+                background-color: ${Theme.hover};
+            }
         }
 
         .close-btn {
             border-radius: 5px;
-            height: 35px;
+            height: 36px;
             background-color: ${Theme.logo};
             font-size: 16px;
             font-weight: 500;
-            padding: 0 20px;
+            padding: 0px 20px;
             cursor: pointer;
             color: ${Theme.header};
             &:hover {

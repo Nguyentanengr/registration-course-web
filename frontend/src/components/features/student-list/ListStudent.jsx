@@ -4,6 +4,8 @@ import { ListStudentContainer } from './ListStudent.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { convertToDayMonthYear } from '../schedule/FilterArea';
 import { fetchStudentsByOpenSection } from '../../../apis/studentApi';
+import { exportStudentsByOpenSections } from '../../../apis/exportApi';
+import { toast } from 'react-toastify';
 
 
 export const convertGenderToVie = (gender) => {
@@ -40,9 +42,21 @@ const ListStudent = ({ setOnSee, openSection }) => {
         setOnSee(false);
     }
 
-    const handleClickExcel = () => {
-        setOnSee(false);
-    }
+    const handleExportFile = (openSectionIds) => {
+            console.log("openSectionIds");
+            console.log(openSectionIds);
+    
+            dispatch(exportStudentsByOpenSections({ openSessionIds: openSectionIds }))
+                .unwrap()
+                .then((action) => {
+                    // action chứa { fileName, success }
+                    console.log("Tải file thành công");
+                })
+                .catch((error) => {
+                    console.error("Error exporting file:", error);
+                    toast.error(error.message || "Đã có lỗi xảy ra khi tải file!");
+                });
+        };
 
     // khi form hiện lên -> fetch dữ liệu
     useEffect(() => {
@@ -108,7 +122,7 @@ const ListStudent = ({ setOnSee, openSection }) => {
 
             <div className="confirm-box">
                 <div className="excel-btn">
-                    <button className='excel wrap-center active' onClick={handleClickExcel}>
+                    <button className='excel wrap-center active' onClick={() => handleExportFile([openSection.openSessionId])}>
                         <div className="icon wrap-center">
                             <Icons.File />
                         </div>
