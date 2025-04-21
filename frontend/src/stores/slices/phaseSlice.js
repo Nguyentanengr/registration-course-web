@@ -2,6 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 import { createPhase, deletePhase, fetchAllPhase, updatePhase } from "../../apis/phaseApi";
 import { FaLeaf } from "react-icons/fa";
 
+const getTomorrow = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const day = String(tomorrow.getDate()).padStart(2, '0');
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0'); // tháng bắt đầu từ 0
+    const year = tomorrow.getFullYear();
+    return `${year}-${month}-${day}T00:00:00`;
+};
 
 const phaseSlice = createSlice({
     name: 'phase',
@@ -40,8 +50,8 @@ const phaseSlice = createSlice({
             name: '',
             year: null,
             semester: null,
-            openTime: null,
-            closeTime: null,
+            openTime: getTomorrow(),
+            closeTime: getTomorrow(),
         },
     },
     reducers: {
@@ -62,9 +72,13 @@ const phaseSlice = createSlice({
                 name: '',
                 year: null,
                 semester: null,
-                openTime: null,
-                closeTime: null,
+                openTime: "2025-06-14T23:59:59",
+                closeTime: "2025-06-24T23:59:59"
             };
+        },
+        resetFetchState: (state) => {
+            state.updateError = null;
+            state.updateLoading = false;
         }
 
     },
@@ -122,6 +136,7 @@ const phaseSlice = createSlice({
 });
 
 export const {
+    resetFetchState,
     addPhase,
     setFilterYear,
     setSearchKey,

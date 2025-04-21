@@ -105,6 +105,35 @@ export const fetchAllPhaseBySemester = createAsyncThunk('phases/getAllBySemester
         }
     });
 
+    export const fetchAllAblePhaseBySemester = createAsyncThunk('phases/getAllAbleBySemester',
+        async ({ year, semester }, { rejectWithValue }) => {
+            try {
+                const TOKEN = localStorage.getItem('token');
+                const TARGET_API = GET_PHASE_API + `/able?year=${year}&semester=${semester}`;
+                console.log(TARGET_API);
+                const response = await fetch(TARGET_API, {
+                    method: "GET",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Authorized": "Bearer " + TOKEN,
+                    },
+                });
+                const objectResponse = await response.json();
+                if (objectResponse.code != 1000) {
+                    return rejectWithValue({
+                        code: objectResponse.code,
+                        message: objectResponse.message,
+                    });
+                }
+                return objectResponse;
+            } catch (error) {
+                return rejectWithValue({
+                    code: 9090,
+                    message: error.message || 'Lỗi kết nối đến server'
+                });
+            }
+        });
+
     export const deletePhase = createAsyncThunk('phases/deletePhase',
         async ({ phaseId }, { rejectWithValue }) => {
             try {

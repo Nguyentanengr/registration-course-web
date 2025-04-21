@@ -10,7 +10,7 @@ public record UpdateSessionInfoRequest(
         @Max(value = 10, message = "INVALID_GROUP_NUMBER")
         Integer groupNumber,
 
-        @Min(value = 20, message = "INVALID_STUDENT_QUANTITY")
+        @Min(value = 1, message = "INVALID_STUDENT_QUANTITY")
         Integer minStudents,
 
         @Max(value = 1000, message = "INVALID_STUDENT_QUANTITY")

@@ -118,6 +118,10 @@ const AddSection = ({ setIsAdding }) => {
         }
         const startDate = new Date(addScheduleForm.startDate);
         const endDate = new Date(addScheduleForm.endDate);
+        const now = new Date();
+        if (startDate < now) {
+            return 'Ngày áp dụng không thể trong quá khứ';
+        }
         if (startDate > endDate) {
             return 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc';
         }
@@ -241,7 +245,7 @@ const AddSection = ({ setIsAdding }) => {
     // Tải các thông tin khi giao diện bật lên
     useEffect(() => {
         // Lấy danh sách năm tính từ năm hiện tại
-        const currentYear = new Date().getFullYear();
+        const currentYear = new Date().getFullYear() - 1;
         const yearArray = Array.from({ length: 10 }, (_, i) => currentYear + i);
         dispatch(setYears(yearArray));
         // Lấy danh sách lớp - còn nằm trong niên khóa
@@ -253,6 +257,8 @@ const AddSection = ({ setIsAdding }) => {
         const todayStr = today.toLocaleDateString('en-GB');
         dispatch(addStartDate(convertToYearMonthDay(todayStr)));
         dispatch(addEndDate(convertToYearMonthDay(todayStr)));
+
+        return () => dispatch(resetAddSectionState());
     }, [])
 
     // Tìm môn học khi thông tin lớp - năm học - học kì thay đổi

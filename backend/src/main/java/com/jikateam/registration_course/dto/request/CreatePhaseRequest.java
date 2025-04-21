@@ -18,15 +18,11 @@ public record CreatePhaseRequest(
         @NotNull(message = "PHASE_YEAR_IS_BLANK")
         Integer year,
 
-        @Future(message = "PHASE_TIME_IN_PAST")
+        @FutureOrPresent(message = "PHASE_TIME_IN_PAST")
         LocalDateTime openTime,
 
-        @Future(message = "PHASE_TIME_IN_PAST")
+        @FutureOrPresent(message = "PHASE_TIME_IN_PAST")
         LocalDateTime closeTime
 ) {
 
-    @AssertTrue(message = "INVALID_TIME_DURATION")
-    public boolean isBeforeDate() {
-        return openTime.isBefore(closeTime);
-    }
 }

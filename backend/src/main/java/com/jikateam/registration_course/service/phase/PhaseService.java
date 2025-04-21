@@ -109,6 +109,14 @@ public class PhaseService {
         return phases.stream().map(phaseConverter::mapToPhaseResponse).toList();
     }
 
+    public List<PhaseResponse> getAblePhaseByFilter(String searchKey, Integer semester, Integer year) {
+
+        List<RegistrationPhase> phases = phaseRepository.findAllAbleByFilter(searchKey, semester, year);
+
+        log.info("List Phase Response {}", phases);
+        return phases.stream().map(phaseConverter::mapToPhaseResponse).toList();
+    }
+
     public PhaseResponse getLatestPhase() {
 
         var phaseEntity = phaseRepository.findLatest();

@@ -44,6 +44,17 @@ public class CreateSingleSessionService {
         Clazz clazz = classRepository.findById(request.clazzId())
                 .orElseThrow(() -> new BusinessException(CodeResponse.CLASS_NOT_FOUND));
 
+        boolean invalidYear = false;
+        if (request.year() < clazz.getStartYear() + clazz.getCurrentYear() - 1) {
+            invalidYear = true;
+        } else if (request.year() == clazz.getStartYear() + clazz.getCurrentYear() - 1) {
+            if (request.semester() <= clazz.getCurrentSemester()) {
+                invalidYear = true;
+            }
+        }
+
+        if (invalidYear) throw new BusinessException(CodeResponse.INVALID_SESSION_YEAR);
+
         Course course = courseRepository.findById(request.courseId())
                 .orElseThrow(() -> new BusinessException(CodeResponse.COURSE_NOT_FOUND));
 

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchActiveClassInfos } from "../../apis/classApi";
-import { fetchAllPhaseBySemester } from "../../apis/phaseApi";
+import { fetchAllAblePhaseBySemester, fetchAllPhaseBySemester } from "../../apis/phaseApi";
 import { fetchSectionsBySemester } from "../../apis/sectionApi";
 import { createOpenSections, fetchOpenedSection } from "../../apis/openSectionApi";
 import { SiTicketmaster } from "react-icons/si";
@@ -76,7 +76,7 @@ const openSectionSlice = createSlice({
             .addCase(fetchActiveClassInfos.fulfilled, (state, { payload }) => {
                 state.classes = payload.data;
             })
-            .addCase(fetchAllPhaseBySemester.fulfilled, (state, { payload }) => {
+            .addCase(fetchAllAblePhaseBySemester.fulfilled, (state, { payload }) => {
                 state.openPhases = payload.data;
             })
             .addCase(fetchSectionsBySemester.fulfilled, (state, { payload }) => {

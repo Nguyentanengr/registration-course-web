@@ -25,7 +25,7 @@ public record CreateSessionRequest(
         @Max(value = 10, message = "INVALID_GROUP_NUMBER")
         Integer groupNumber,
 
-        @Min(value = 20, message = "INVALID_STUDENT_QUANTITY")
+        @Min(value = 1, message = "INVALID_STUDENT_QUANTITY")
         Integer minStudents,
 
         @Max(value = 1000, message = "INVALID_STUDENT_QUANTITY")
@@ -43,7 +43,7 @@ public record CreateSessionRequest(
 
         @AssertTrue(message = "INVALID_SESSION_YEAR")
         public boolean isFutureYear() {
-               return year >= LocalDate.now().getYear();
+               return year >= LocalDate.now().getYear() - 1;
         }
 
 }

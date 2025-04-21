@@ -6,7 +6,7 @@ import AddPeriod from './AddPeriod';
 import CircleSpinner from '../../commons/CircleSpinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { deletePhaseItem, setFilterYear, setSearchKey } from '../../../stores/slices/phaseSlice';
-import { deletePhase, fetchAllPhase, fetchAllPhaseBySemester } from '../../../apis/phaseApi';
+import { deletePhase, fetchAllAblePhaseBySemester, fetchAllPhase } from '../../../apis/phaseApi';
 import { addOpenSection, removeOpenSection, resetOpenSection, resetSections, setClassId, setOpenSection, setPhaseId, setSearchSection, setSemester, setSemesters, setYear, setYears } from '../../../stores/slices/openSectionSlice';
 import { fetchActiveClassInfos } from '../../../apis/classApi';
 import { fetchSectionsBySemester } from '../../../apis/sectionApi';
@@ -256,7 +256,7 @@ const FilterArea = () => {
     // Khi lớp - năm - học kì thay đổi -> fetch Đợt, fetch Học phần
     useEffect(() => {
         if (year && semester) {
-            dispatch(fetchAllPhaseBySemester({ year: year, semester: semester }));
+            dispatch(fetchAllAblePhaseBySemester({ year: year, semester: semester }));
         }
     }, [year, semester]);
     useEffect(() => {

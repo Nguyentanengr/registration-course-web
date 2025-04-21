@@ -54,6 +54,25 @@ public class PhaseController {
 
     }
 
+    @GetMapping("/able")
+    public DataResponse<?> getAllAbleByFilter(
+            @RequestParam(defaultValue = "") String searchKey,
+            @RequestParam(required = false) Integer semester,
+            @RequestParam(required = false) Integer year
+    ) {
+
+
+        List<PhaseResponse> responses = phaseService
+                .getAblePhaseByFilter(searchKey, semester, year);
+
+        CodeResponse codeResponse = CodeResponse.SUCCESS;
+        return DataResponse.<List<PhaseResponse>>builder()
+                .code(codeResponse.getCode())
+                .data(responses)
+                .build();
+
+    }
+
     @PostMapping
     public DataResponse<PhaseResponse> createRegistrationPhase
             (@RequestBody @Valid CreatePhaseRequest request) {

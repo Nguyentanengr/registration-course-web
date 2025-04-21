@@ -9,7 +9,7 @@ import { createPhase, fetchAllPhase } from '../../../apis/phaseApi';
 
 
 export const generateFromCurrentYears = () => {
-    const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear() - 1;
     const yearArray = Array.from({ length: 10 }, (_, i) => currentYear + i);
     return yearArray;
 }
@@ -71,8 +71,9 @@ const AddPeriod = ({ setIsAdding }) => {
     useEffect(() => {
         const open = new Date(phaseForm.openTime);
         const close = new Date(phaseForm.closeTime);
+        const now = new Date();
         if (open > close) {
-            setErrorTime('Ngày mở phải trước hoặc bằng ngày đóng')
+            setErrorTime('Ngày mở phải trước ngày đóng')
         } else {
             setErrorTime('')
         }

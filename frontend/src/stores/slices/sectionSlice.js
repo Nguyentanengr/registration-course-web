@@ -133,6 +133,11 @@ const sectionSlice = createSlice({
 
         removeSection: (state, action) => {
             state.sections = state.sections.filter((s) => !(s.sessionId == action.payload));
+        },
+
+        resetFetchState: (state) => {
+            state.postError = null;
+            state.postLoading = false;
         }
     },
     extraReducers: (builder) => {
@@ -196,5 +201,5 @@ const sectionSlice = createSlice({
 });
 
 export const { setFilter, setCurrentPage, setSearchKey, setClassId, setYear, setSemester,
-    setCourseId, setGroup, setMinStudents, setMaxStudents, addSchedule, removeSchedule, setItemPerPage, removeSection, resetScheduleState, setYears, setSchedules, resetSectionForm, resetAddSectionState, resetTeacherAndPlace } = sectionSlice.actions;
+    setCourseId, setGroup, setMinStudents, setMaxStudents, addSchedule, removeSchedule, setItemPerPage, removeSection, resetScheduleState, setYears, setSchedules, resetSectionForm, resetAddSectionState, resetTeacherAndPlace, resetFetchState } = sectionSlice.actions;
 export default sectionSlice.reducer;

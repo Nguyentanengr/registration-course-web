@@ -50,8 +50,8 @@ const EditSectionDialog = ({ setEditSection, section }) => {
         if (groupNumber <= 0 || groupNumber > 10) {
             return 'Số thứ tự nhóm nằm trong khoảng 1 - 10';
         }
-        if (minStudents < 20) {
-            return 'Số sinh viên tối thiểu phải lớn hơn hoặc bằng 20';
+        if (minStudents < 1) {
+            return 'Số sinh viên tối thiểu phải lớn hơn 0';
         }
         if (maxStudents > 200) {
             return 'Số sinh viên tối đa không được vượt quá 200';

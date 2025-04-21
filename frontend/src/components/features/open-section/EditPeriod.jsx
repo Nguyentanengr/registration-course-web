@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from '../../commons/DatePicker';
 import SelectOption from '../../commons/SelectOption';
 import { AddPeriodContainer } from './AddPeriod.styled';
-import { resetPhaseForm, setPhaseForm } from '../../../stores/slices/phaseSlice';
+import { resetFetchState, resetPhaseForm, setPhaseForm } from '../../../stores/slices/phaseSlice';
 import { useEffect, useRef, useState } from 'react';
 import Alert from '../../commons/Alert';
 import { createPhase, fetchAllPhase, updatePhase } from '../../../apis/phaseApi';
@@ -90,8 +90,21 @@ const EditPeriod = ({ setIsUpdate, phase }) => {
     useEffect(() => {
         const open = new Date(phaseForm.openTime);
         const close = new Date(phaseForm.closeTime);
-        if (open > close) {
-            setErrorTime('Ngày mở phải trước hoặc bằng ngày đóng')
+        const now = new Date();
+
+        open.setHours(0, 0, 0, 0);
+        close.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0);
+        now.setDate(now.getDate() + 1);
+
+        if (getStatusPhase(phase) == 0 && (close < now)) {
+            setErrorTime('Thời gian đóng phải là thời gian trong tương lai')
+        }
+        else if (getStatusPhase(phase) == 1 && (close < now || open < now)) {
+            setErrorTime('Thời gian mở/đóng phải là thời gian trong tương lai')
+        }
+        else if (open >= close) {
+            setErrorTime('Thời gian mở phải trước ngày đóng')
         } else {
             setErrorTime('')
         }
@@ -119,7 +132,10 @@ const EditPeriod = ({ setIsUpdate, phase }) => {
             year: phase.year,
             semester: phase.semester,
         }));
-        return () => dispatch(resetPhaseForm());
+        return () => {
+            dispatch(resetPhaseForm());
+            dispatch(resetFetchState());
+        };
     }, [])
 
     return (

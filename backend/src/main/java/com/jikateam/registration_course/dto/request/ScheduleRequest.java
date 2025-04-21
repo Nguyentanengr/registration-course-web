@@ -26,10 +26,10 @@ public record ScheduleRequest(
         @Max(value = 12, message = "INVALID_PERIOD")
         Integer endPeriod,
 
-        @Future(message = "START_DATE_IS_PAST")
+        @FutureOrPresent(message = "START_DATE_IS_PAST")
         LocalDate startDate,
 
-        @Future(message = "END_DATE_IS_PAST")
+        @FutureOrPresent(message = "END_DATE_IS_PAST")
         LocalDate endDate
 ) {
 

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { postRegister } from '../../../apis/registerApi';
 import Alert from '../../commons/Alert';
 import { addRegisteredSession, removeRegisteredSession, setPostError } from '../../../stores/slices/registerSlice';
+import { fetchRegisterOpenSection } from '../../../apis/openSectionApi';
 
 
 export const convertToDateTimeString = (date) => {
@@ -71,6 +72,9 @@ const RegisterArea = ({ }) => {
                     ...prev,
                     [openSession.openSessionId]: isChecked
                 }));
+
+                const user = JSON.parse(localStorage.getItem('user'));
+                dispatch(fetchRegisterOpenSection({ accountId: user.userId, filterType: 0 }));
             });
     };
 
@@ -106,7 +110,7 @@ const RegisterArea = ({ }) => {
         if (postError) {
             const timeout = setTimeout(() => {
                 dispatch(setPostError(null));
-            }, 5000);
+            }, 3000);
             return () => clearTimeout(timeout);
         }
     }, [postError]);

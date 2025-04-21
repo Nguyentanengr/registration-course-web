@@ -34,7 +34,7 @@ public class RegistrationPhase {
     @Column(name = "close_time", nullable = false)
     private LocalDateTime closeTime;
 
-    @OneToMany(mappedBy = "registrationPhase")
+    @OneToMany(mappedBy = "registrationPhase", cascade = CascadeType.REMOVE)
     private Set<OpenSessionRegistration> openSessionRegistrations;
 
     @Override

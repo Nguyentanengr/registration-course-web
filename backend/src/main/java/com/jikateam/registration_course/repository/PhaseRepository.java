@@ -73,6 +73,20 @@ public interface PhaseRepository extends JpaRepository<RegistrationPhase, Intege
             @Param("year") Integer year
     );
 
+    @Query(
+            "SELECT p FROM RegistrationPhase p " +
+            "WHERE (%:searchKey% IS NULL OR %:searchKey% = '' OR p.registrationPhaseName LIKE %:searchKey%) " +
+            "AND (:semester IS NULL OR p.semester = :semester) " +
+            "AND (:year IS NULL OR p.year = :year) " +
+            "AND p.closeTime > CURRENT_TIMESTAMP " +
+            "ORDER BY p.registrationPhaseId ASC"
+    )
+    List<RegistrationPhase> findAllAbleByFilter(
+            @Param("searchKey") String searchKey,
+            @Param("semester") Integer semester,
+            @Param("year") Integer year
+    );
+
     @Query("SELECT p FROM RegistrationPhase p " +
             "WHERE p.registrationPhaseId IN :phaseIds " +
             "AND p.openTime > CURRENT_TIMESTAMP"
