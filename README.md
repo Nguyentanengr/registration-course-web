@@ -1,67 +1,129 @@
-# Step by step to create initial react app
+# SBox - Course Registration System 📚
 
- 1. run the following command and choose your techstack (javascript -> reactjs)
-```sh
-npm create vite@latest frontend 
+![](about.docs\images\portal-login.png)
+
+## Overview
+SBox is a web application designed for **Học Viện Công Nghệ Bưu Chính Viễn Thông** to streamline course registration for students and course management for administrators. It provides a user-friendly interface for students to register for courses and view schedules, while allowing administrators to manage courses, registration periods, and student enrollments efficiently.
+
+## Features
+
+### For Administrators 🛠️
+- **Manage Courses**: Create, view, update, and delete course sections.
+- **Manage Registration Periods**: Create registration periods and assign course sections to them.
+- **Monitor Enrollments**: Track the number of registered students and approve course sections.
+- **Export Data**: View the list of registered students and export data as Excel or ZIP files.
+
+### For Students 🎓
+- **View Available Courses**: Browse open course sections based on the student's current class.
+- **Register for Courses**: Enroll in courses and track registration status.
+- **View Schedules**: Access detailed timetables for registered courses.
+
+## Technologies Used 🛠️
+- **Backend**:
+  - Java 17
+  - Spring Boot 3.4
+  - Spring Data JPA
+  - Spring Security with OAuth2 JWT
+  - MapStruct
+  - Lombok
+  - Mailjet (for email services)
+- **Frontend**:
+  - JavaScript
+  - React.js
+  - HTML & CSS
+- **Database**: MySQL (hosted on Azure)
+- **Cache**: Redis (optional)
+- **Build Tool**: Maven
+
+## Prerequisites
+- Java 17 or higher
+- Node.js 18.x or higher
+- Maven 3.8.x or higher
+- MySQL database (Azure or local)
+- Mailjet API key (for email functionality)
+- JWT secret key (for authentication)
+- Redis (optional, for caching)
+- IDE (e.g., IntelliJ IDEA) or terminal for running commands
+
+## Installation 🚀
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Nguyentanengr/registration-course-web.git
+cd registration-course-web
 ```
 
- 2. next, run the command
-```sh
-cd frontend
+### 2. Configure Environment Variables
+- Create a `.env` file in the `/backend/src/main/resources/` directory based on the `application.properties` template.
+- Example `.env`:
+```plaintext
+DBMS_URL=jdbc:mysql://<your-hostname>:3306/<your-database>
+DBMS_USERNAME=xxxxxxxxxxxx
+DBMS_PASSWORD=xxxxxxxxxxxxx
+JWT_SEC_KEY=tozUzuCtjmD1+2sEFUxUuVkBf...
+MAIL_KEY=5213f23ac46793d728388cfd9649...
+MAIL_SECRET=a0911c2e19ecec8b6d2d65452...
+REDIS_KEY=XtVPfnvs3tnlISqzLHty94nKqdU...
 ```
 
- 3. install library (redux-toolkit, redux, router-dom, ...)
-```sh
-npm install @reduxjs/toolkit react-redux react-router-dom styled-components react-icon
-```
+### 3. Run the Frontend
+- Navigate to the frontend directory:
+  ```bash
+  cd frontend
+  ```
+- Install dependencies:
+  ```bash
+  npm install
+  ```
+- Start the development server:
+  ```bash
+  npm run dev
+  ```
+- The frontend will run at `http://localhost:5173`.
+  - **Student Portal**: Automatically redirects to `http://localhost:5173/portal`
+  - **Admin Portal**: Access at `http://localhost:5173/admin`
 
- 4. run project in localhost (default port: http://localhost:5174)
-```sh
-npm run dev
-```
+### 4. Run the Backend using IntelliJ IDEA
+- Ensure the `dotenv` library is configured in your IDE.
+- Open `RegistrationCourseApplication.java` in `/backend/src/main/java/com/jikateam/registration_course/`.
+- Run the application directly from IntelliJ. The `.env` file will be automatically loaded.
 
-# How to push project to git
+### 5. Verify Installation
+- Access the application:
+  - **Student Portal**: `http://localhost:5173/portal`
+  - **Admin Portal**: `http://localhost:5173/admin`
+- If you encounter issues, check:
+  - CORS configuration in the backend (`/backend/src/main/java/com/jikateam/registration_course/config/SecurityConfig.java`).
+  - Base API URL in the frontend (`/frontend/.env` or similar).
 
- 1. create a repository in git (ignore README.md while create app) and copy url (default branch: master)
+## Contact 📧
+For questions or feedback, contact [your-email@example.com](mailto:nguyen.tan.engr@gmail.com) or open an issue on GitHub.
 
- 2. open the command line, go to the created project folder, and run the following command to create git in local
-```sh
-git init
-```
+## Preview 📸
 
- 3. add all file into git (git ignores empty directories by default)
-```sh
-git add .
-```
+### Register course section page
+![](about.docs\images\portal-register.png)
 
- 4. link between local and repository
-```sh
-git remote add origin https://github.com/Nguyentanengr/initial-react-app.git
-```
 
- 5. commit and push project to branch master in repository
-```sh
-git commit -m 'initial react app;
-git push origin master
-```
 
-# How to clone project and run
 
- 1. copy url of project ('https://github.com/.../initial-react-app.git') and run command
-```sh
-git clone https://github.com/Nguyentanengr/initial-react-app.git
-```
- 2. Open cmd and move to project
-```sh
-cd frontend
-```
+### Timetable page
+![](about.docs\images\portal-schedule.png)
 
- 4. install library packages defined inside the project
-```sh
-npm install 
-```
 
- 4. run project 
-```sh
-npm run dev
-```
+
+### Course section page
+![](about.docs\images\admin-section.png)
+
+![](about.docs\images\admin-create-section.png)
+
+### Open course section page
+![](about.docs\images\admin-create-phase.png)
+![](about.docs\images\admin-open-section.png)
+
+### List opened course page
+![](about.docs\images\admin-students.png)
+![](about.docs\images\admin-list-student.png)
+
+
+#### For more detail: read the report at about.docs/report/.docs
