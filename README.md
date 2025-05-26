@@ -102,7 +102,7 @@ For questions or feedback, contact [your-email@example.com](mailto:nguyen.tan.en
 ## Preview 📸
 
 ### Register course section page
-![](about.docs\images\portal-register.png)
+![](about.docs/images/portal-register.png)
 
 
 
