@@ -1,6 +1,6 @@
 # SBox - Course Registration System 📚
 
-![](about.docs\images\portal-login.png)
+![](about.docs/images/portal-login.png)
 
 ## Overview
 SBox is a web application designed for **Học Viện Công Nghệ Bưu Chính Viễn Thông** to streamline course registration for students and course management for administrators. It provides a user-friendly interface for students to register for courses and view schedules, while allowing administrators to manage courses, registration periods, and student enrollments efficiently.
@@ -102,28 +102,28 @@ For questions or feedback, contact [your-email@example.com](mailto:nguyen.tan.en
 ## Preview 📸
 
 ### Register course section page
-![](about.docs\images\portal-register.png)
+![](about.docs/images/portal-register.png)
 
 
 
 
 ### Timetable page
-![](about.docs\images\portal-schedule.png)
+![](about.docs/images/portal-schedule.png)
 
 
 
 ### Course section page
-![](about.docs\images\admin-section.png)
+![](about.docs/images/admin-section.png)
 
-![](about.docs\images\admin-create-section.png)
+![](about.docs/images/admin-create-section.png)
 
 ### Open course section page
-![](about.docs\images\admin-create-phase.png)
-![](about.docs\images\admin-open-section.png)
+![](about.docs/images/admin-create-phase.png)
+![](about.docs/images/admin-open-section.png)
 
 ### List opened course page
-![](about.docs\images\admin-students.png)
-![](about.docs\images\admin-list-student.png)
+![](about.docs/images/admin-students.png)
+![](about.docs/images/admin-list-student.png)
 
 
 #### For more detail: read the report at about.docs/report/.docs
