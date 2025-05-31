@@ -107,7 +107,7 @@ const Login = () => {
                                 <input
                                     name="username"
                                     type="text"
-                                    placeholder="Mã sinh viên"
+                                    placeholder="Vd:n22dccn156"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     onKeyDown={handleOnKeyDown}
@@ -126,7 +126,7 @@ const Login = () => {
                                 <input
                                     name="password"
                                     type="password"
-                                    placeholder="Mật khẩu"
+                                    placeholder="Vd: n22dccn156@"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     onKeyDown={handleOnKeyDown}

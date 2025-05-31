@@ -102,7 +102,7 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(List.of(
-                "https://delightful-smoke-046f67200.6.azurestaticapps.net",
+                "https://white-pebble-093407c00.6.azurestaticapps.net",
                 "https://sboxhcm.online",
                 "http://localhost:5173"
         )); // only the given localhost

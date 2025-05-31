@@ -105,7 +105,7 @@ const AdminLogin = () => {
                                 <input
                                     name="username"
                                     type="text"
-                                    placeholder="Mã quản lý"
+                                    placeholder="Vd: m16qtvn102"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     onKeyDown={handleOnKeyDown}
@@ -124,7 +124,7 @@ const AdminLogin = () => {
                                 <input
                                     name="password"
                                     type="password"
-                                    placeholder="Mật khẩu"
+                                    placeholder="Vd: m16qtvn102@"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     onKeyDown={handleOnKeyDown}
